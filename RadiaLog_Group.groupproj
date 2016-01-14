@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3C1E838D-B0B3-4996-8D31-34B61F6CAD5F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="RadiaLog.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="RadiaLog">
+        <MSBuild Projects="RadiaLog.dproj"/>
+    </Target>
+    <Target Name="RadiaLog:Clean">
+        <MSBuild Projects="RadiaLog.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RadiaLog:Make">
+        <MSBuild Projects="RadiaLog.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="RadiaLog"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="RadiaLog:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="RadiaLog:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
