@@ -15,8 +15,8 @@ uses
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
   // Jcl/Jvcl units
-  JvComponentBase, JvGIFCtrl, JvExControls, JvExMask, JvCaptionButton, JvChart,
-  JvSpin, JvAnimatedImage,
+  JvComponentBase, JvCaptionButton, JvChart, JvExMask, JvSpin, JvExControls,
+  JvAnimatedImage, JvGIFCtrl,
   // Own units
   Defaults, About;
 

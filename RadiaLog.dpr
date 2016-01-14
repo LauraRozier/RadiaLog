@@ -1,6 +1,11 @@
 program RadiaLog;
 
 uses
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   Vcl.Forms,
   Main in 'src\Main.pas' {mainForm},
   Defaults in 'src\Defaults.pas',
