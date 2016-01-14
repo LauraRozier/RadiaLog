@@ -39,7 +39,7 @@ object mainForm: TmainForm
         TabOrder = 0
         object fStatusLed: TcyLed
           Left = 346
-          Top = 451
+          Top = 455
           Width = 33
           Height = 33
           Hint = 'Start/Stop counter'
@@ -158,7 +158,7 @@ object mainForm: TmainForm
           AsyncDrawing = True
           Animate = True
           Center = True
-          FrameIndex = 70
+          FrameIndex = 87
           Image.Data = {
             0D4C0500474946383961C800C800F700000001000104000507030A09000E0D01
             0B0D0A1310001114011617001516141919031C1B00201E002321021F201D2522
@@ -11202,7 +11202,7 @@ object mainForm: TmainForm
           end
           object Label10: TLabel
             Left = 10
-            Top = 50
+            Top = 51
             Width = 67
             Height = 14
             Margins.Left = 10
@@ -11249,7 +11249,7 @@ object mainForm: TmainForm
           end
           object chkBoxRadmon: TCheckBox
             Left = 121
-            Top = 76
+            Top = 77
             Width = 97
             Height = 17
             Caption = 'Enabled'
@@ -11395,7 +11395,7 @@ object mainForm: TmainForm
         object fCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 752
+          Width = 748
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -11417,7 +11417,7 @@ object mainForm: TmainForm
         object fErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 752
+          Width = 748
           Height = 227
           Margins.Left = 10
           Margins.Right = 10

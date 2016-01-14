@@ -15,9 +15,10 @@ uses
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
   // Jcl/Jvcl units
-  JvExControls, JvExMask, JvComponentBase, JvChart, JvCaptionButton, JvSpin,
+  JvComponentBase, JvGIFCtrl, JvExControls, JvExMask, JvCaptionButton, JvChart,
+  JvSpin, JvAnimatedImage,
   // Own units
-  Defaults, About, JvAnimatedImage, JvGIFCtrl;
+  Defaults, About;
 
 type
   TmainForm = class(TForm)
