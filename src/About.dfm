@@ -4,8 +4,8 @@ object aboutForm: TaboutForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 310
-  ClientWidth = 314
+  ClientHeight = 265
+  ClientWidth = 313
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -101,47 +101,33 @@ object aboutForm: TaboutForm
     Left = 8
     Top = 136
     Width = 297
-    Height = 166
+    Height = 121
     Caption = 'Credits'
     TabOrder = 1
-    object Label8: TLabel
-      Left = 16
-      Top = 24
-      Width = 178
-      Height = 13
-      Caption = 'JEDI Visual Component Library - 3.49'
-    end
-    object Label9: TLabel
-      Left = 40
-      Top = 43
-      Width = 240
-      Height = 13
-      Caption = 'Caption Button, Chart, GIF animator and Spin edit'
-    end
     object Label10: TLabel
       Left = 16
-      Top = 72
+      Top = 24
       Width = 130
       Height = 13
       Caption = 'TurboPack AsyncPro - 4.06'
     end
     object Label11: TLabel
       Left = 40
-      Top = 91
+      Top = 43
       Width = 99
       Height = 13
       Caption = 'Serial communication'
     end
     object Label12: TLabel
       Left = 16
-      Top = 120
+      Top = 72
       Width = 120
       Height = 13
       Caption = 'Cindy components - 7.05'
     end
     object Label13: TLabel
       Left = 40
-      Top = 139
+      Top = 91
       Width = 139
       Height = 13
       Caption = 'Led button and Simple gauge'

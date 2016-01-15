@@ -22,8 +22,6 @@ type
     Label6: TLabel;
     Label7: TLabel;
     lblVersion: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
