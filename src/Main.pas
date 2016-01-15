@@ -7,16 +7,14 @@ uses
   Windows, SysUtils, Classes, Math, INIFiles, Generics.Collections,
   // VCL units
   Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Graphics,
-  Vcl.Forms, Vcl.Menus, Vcl.Mask,
+  Vcl.Forms, Vcl.Menus, Vcl.Mask, VCLTee.TeEngine, VCLTee.Series,
+  VCLTee.TeeProcs, VCLTee.Chart,
   // Indy units
   IdHTTP, IdException, IdExceptionCore, IdStack,
   // Asynch Pro units
   AdPort, OoMisc,
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
-  // Jcl/Jvcl units
-  JvComponentBase, JvCaptionButton, JvChart, JvExMask, JvSpin, JvExControls,
-  JvAnimatedImage, JvGIFCtrl,
   // Own units
   Defaults, About, ThimoEdit;
 
@@ -26,16 +24,15 @@ type
     fNetTimer: TTimer;
     fStatusBar: TStatusBar;
     fComPort: TApdComPort;
-    fBtnAbout: TJvCaptionButton;
     fPageControl: TPageControl;
       tabMain: TTabSheet;
         ScrollBox1: TScrollBox;
-          fTopImg: TJvGIFAnimator;
           Label12: TLabel;
           lblCPM: TLabel;
           fStatusLed: TcyLed;
           fCPMBar: TcySimpleGauge;
           Label4: TLabel;
+          lblSvR: TLabel;
           GroupBox1: TGroupBox;
             Label1: TLabel;
             Label5: TLabel;
@@ -58,8 +55,7 @@ type
             Label13: TLabel;
             chkBoxUnitType: TCheckBox;
             Label15: TLabel;
-            lblSvR: TLabel;
-            edtFactor: TJvSpinEdit;
+            edtFactor: TThimoFloatEdit;
           GroupBox4: TGroupBox;
             lblTubes: TLabel;
             lblFactors: TLabel;
@@ -71,9 +67,9 @@ type
           Label3: TLabel;
       tabGraph: TTabSheet;
         ScrollBox2: TScrollBox;
-          fCPMChart: TJvChart;
-
-
+          fCPMChart: TChart;
+          Series1: TFastLineSeries;
+    fLogoImage: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure fMainTimerTimer(Sender: TObject);
@@ -83,8 +79,6 @@ type
     procedure chkBoxClick(Sender: TObject);
     procedure edtChange(Sender: TObject);
   private
-    { Private stuff }
-    edtFloatEdit: TThimoFloatEdit;
     CPMList: TList<Integer>;
     PlotPointList: TList<TChartData>;
     Buffer: string[255];
@@ -191,10 +185,6 @@ begin
   edtFactor.Value          := ConvertFactor;
   chkBoxUnitType.Checked   := ConvertmR;
   safeToWrite              := True;
-
-  edtFloatEdit.Create(GroupBox4);
-  edtFloatEdit.Top := GroupBox4.Height - 30;
-  edtFloatEdit.Left := 10;
 end;
 
 
@@ -270,30 +260,26 @@ begin
     PlotPointList.Delete(0);
 
   PlotPointList.Add(plotData);
-  fCPMChart.Data.Clear;
-  fCPMChart.Options.XLegends.Clear;
+  fCPMChart.Series[0].Clear;
 
   for I := 0 to PLOTCAP do
   begin
     if I <= PlotPointList.Count - 1 then
     begin
-      fCPMChart.Data.Value[0, I] := PlotPointList[I].value;
+      if PlotPointList[I].value >= fCPMChart.LeftAxis.Maximum then
+        fCPMChart.LeftAxis.Maximum := PlotPointList[I].value + 10;
 
-      if PlotPointList[I].value >= fCPMChart.Options.PrimaryYAxis.YMax then
-        fCPMChart.Options.PrimaryYAxis.YMax := PlotPointList[I].value + 10;
-      fCPMChart.Options.XLegends.Add(FormatDateTime('HH:MM:SS', PlotPointList[I].dateTime));
+      //fCPMChart.Data.Value[0, I] := PlotPointList[I].value;
+      fCPMChart.Series[0].Add(PlotPointList[I].value, FormatDateTime('HH:MM:SS', PlotPointList[I].dateTime));
+      //fCPMChart.Options.XLegends.Add(FormatDateTime('HH:MM:SS', PlotPointList[I].dateTime));
     end else
     begin
-      fCPMChart.Data.Value[0, I] := 0;
-
-      if I < PLOTCAP then
-        fCPMChart.Options.XLegends.Add('Empty')
-      else
-        fCPMChart.Options.XLegends.Add('')
+      //fCPMChart.Data.Value[0, I] := 0;
+      fCPMChart.Series[0].Add(0, 'Empty');
     end;
   end;
 
-  fCPMChart.PlotGraph;
+  fCPMChart.Update;
 end;
 
 
