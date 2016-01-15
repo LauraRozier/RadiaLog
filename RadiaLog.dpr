@@ -9,7 +9,9 @@ uses
   Vcl.Forms,
   Main in 'src\Main.pas' {mainForm},
   Defaults in 'src\Defaults.pas',
-  About in 'src\About.pas' {aboutForm};
+  About in 'src\About.pas' {aboutForm},
+  ThimoControls in 'src\controls\ThimoControls.pas',
+  ThimoUtils in 'src\common\ThimoUtils.pas';
 
 {$R *.res}
 

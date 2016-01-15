@@ -3,8 +3,12 @@ unit About;
 interface
 
 uses
-  Winapi.Windows, System.Classes, Vcl.Forms, Vcl.ExtCtrls, Vcl.Controls,
-  Vcl.StdCtrls, ShellApi, JvExControls, JvLinkLabel, Defaults;
+  // System units
+  Controls, Classes,
+  // VCL units
+  Vcl.Forms, Vcl.StdCtrls,
+  // Custom units
+  Defaults, ThimoUtils;
 
 type
   TaboutForm = class(TForm)
@@ -27,10 +31,6 @@ type
     procedure websiteLinkClick(Sender: TObject);
     procedure Label7Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
   end;
 
 var
@@ -47,12 +47,12 @@ end;
 
 procedure TaboutForm.Label7Click(Sender: TObject);
 begin
-  ShellExecute(0, 'open', PChar('mailto:thibmorozier@gmail.com'), nil, nil, SW_SHOWNORMAL);
+  MailTo('RadiaLog ' + VERSION + VERSION_SUFFIX, '');
 end;
 
 procedure TaboutForm.websiteLinkClick(Sender: TObject);
 begin
-  ShellExecute(0, 'open', PChar('http://www.thibmoprograms.com/'), nil, nil, SW_SHOWNORMAL);
+  BrowseURL('http://www.thibmoprograms.com/');
 end;
 
 end.

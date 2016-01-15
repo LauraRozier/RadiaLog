@@ -18,60 +18,62 @@ uses
   JvComponentBase, JvCaptionButton, JvChart, JvExMask, JvSpin, JvExControls,
   JvAnimatedImage, JvGIFCtrl,
   // Own units
-  Defaults, About;
+  Defaults, About, ThimoEdit;
 
 type
   TmainForm = class(TForm)
     fMainTimer: TTimer;
-    fPageControl: TPageControl;
-    tabMain: TTabSheet;
-    tabLog: TTabSheet;
-    tabGraph: TTabSheet;
+    fNetTimer: TTimer;
     fStatusBar: TStatusBar;
     fComPort: TApdComPort;
-    fNetTimer: TTimer;
-    ScrollBox1: TScrollBox;
-    GroupBox1: TGroupBox;
-    Label1: TLabel;
-    comPortBox: TComboBox;
-    ScrollBox2: TScrollBox;
-    ScrollBox3: TScrollBox;
-    fCPMEdit: TRichEdit;
-    Label2: TLabel;
-    Label3: TLabel;
-    fErrorEdit: TRichEdit;
-    fCPMChart: TJvChart;
-    fStatusLed: TcyLed;
-    fCPMBar: TcySimpleGauge;
-    Label4: TLabel;
     fBtnAbout: TJvCaptionButton;
-    Label5: TLabel;
-    comBaudBox: TComboBox;
-    comParityBox: TComboBox;
-    comDataBitsBox: TComboBox;
-    comStopBitsBox: TComboBox;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    GroupBox2: TGroupBox;
-    Label9: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    edtUsername: TEdit;
-    edtPassword: TEdit;
-    Label12: TLabel;
-    chkBoxRadmon: TCheckBox;
-    lblCPM: TLabel;
-    GroupBox3: TGroupBox;
-    Label13: TLabel;
-    chkBoxUnitType: TCheckBox;
-    Label15: TLabel;
-    lblSvR: TLabel;
-    edtFactor: TJvSpinEdit;
-    fTopImg: TJvGIFAnimator;
-    GroupBox4: TGroupBox;
-    lblTubes: TLabel;
-    lblFactors: TLabel;
+    fPageControl: TPageControl;
+      tabMain: TTabSheet;
+        ScrollBox1: TScrollBox;
+          fTopImg: TJvGIFAnimator;
+          Label12: TLabel;
+          lblCPM: TLabel;
+          fStatusLed: TcyLed;
+          fCPMBar: TcySimpleGauge;
+          Label4: TLabel;
+          GroupBox1: TGroupBox;
+            Label1: TLabel;
+            Label5: TLabel;
+            Label6: TLabel;
+            Label7: TLabel;
+            Label8: TLabel;
+            comPortBox: TComboBox;
+            comBaudBox: TComboBox;
+            comParityBox: TComboBox;
+            comDataBitsBox: TComboBox;
+            comStopBitsBox: TComboBox;
+          GroupBox2: TGroupBox;
+            Label9: TLabel;
+            Label10: TLabel;
+            Label11: TLabel;
+            edtUsername: TEdit;
+            edtPassword: TEdit;
+            chkBoxRadmon: TCheckBox;
+          GroupBox3: TGroupBox;
+            Label13: TLabel;
+            chkBoxUnitType: TCheckBox;
+            Label15: TLabel;
+            lblSvR: TLabel;
+            edtFactor: TJvSpinEdit;
+          GroupBox4: TGroupBox;
+            lblTubes: TLabel;
+            lblFactors: TLabel;
+      tabLog: TTabSheet;
+        ScrollBox3: TScrollBox;
+          fCPMEdit: TRichEdit;
+          fErrorEdit: TRichEdit;
+          Label2: TLabel;
+          Label3: TLabel;
+      tabGraph: TTabSheet;
+        ScrollBox2: TScrollBox;
+          fCPMChart: TJvChart;
+
+
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure fMainTimerTimer(Sender: TObject);
@@ -82,6 +84,7 @@ type
     procedure edtChange(Sender: TObject);
   private
     { Private stuff }
+    edtFloatEdit: TThimoFloatEdit;
     CPMList: TList<Integer>;
     PlotPointList: TList<TChartData>;
     Buffer: string[255];
@@ -188,6 +191,10 @@ begin
   edtFactor.Value          := ConvertFactor;
   chkBoxUnitType.Checked   := ConvertmR;
   safeToWrite              := True;
+
+  edtFloatEdit.Create(GroupBox4);
+  edtFloatEdit.Top := GroupBox4.Height - 30;
+  edtFloatEdit.Left := 10;
 end;
 
 

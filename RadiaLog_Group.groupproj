@@ -6,6 +6,9 @@
         <Projects Include="RadiaLog.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\ThimoControls\ThimoControls.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="RadiaLog:Make">
         <MSBuild Projects="RadiaLog.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ThimoControls">
+        <MSBuild Projects="..\ThimoControls\ThimoControls.dproj"/>
+    </Target>
+    <Target Name="ThimoControls:Clean">
+        <MSBuild Projects="..\ThimoControls\ThimoControls.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ThimoControls:Make">
+        <MSBuild Projects="..\ThimoControls\ThimoControls.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="RadiaLog"/>
+        <CallTarget Targets="RadiaLog;ThimoControls"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="RadiaLog:Clean"/>
+        <CallTarget Targets="RadiaLog:Clean;ThimoControls:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="RadiaLog:Make"/>
+        <CallTarget Targets="RadiaLog:Make;ThimoControls:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -158,7 +158,7 @@ object mainForm: TmainForm
           AsyncDrawing = True
           Animate = True
           Center = True
-          FrameIndex = 63
+          FrameIndex = 98
           Image.Data = {
             0D4C0500474946383961C800C800F700000001000104000507030A09000E0D01
             0B0D0A1310001114011617001516141919031C1B00201E002321021F201D2522
@@ -11364,10 +11364,6 @@ object mainForm: TmainForm
     object tabLog: TTabSheet
       Caption = 'Log'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBox3: TScrollBox
         Left = 0
         Top = 0
@@ -11399,7 +11395,7 @@ object mainForm: TmainForm
         object fCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 744
+          Width = 720
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -11421,7 +11417,7 @@ object mainForm: TmainForm
         object fErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 744
+          Width = 720
           Height = 227
           Margins.Left = 10
           Margins.Right = 10
