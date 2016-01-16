@@ -5,7 +5,7 @@ uses
   Windows, Classes, SysUtils, Variants, Vcl.Forms;
 
 const
-  VERSION = '0.3';
+  VERSION = '0.4';
   VERSION_PREFIX = '- Version: ';
   VERSION_SUFFIX = ' Alpha';
   RADMON_HOST = 'www.radmon.org';

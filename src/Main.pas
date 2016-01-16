@@ -16,7 +16,7 @@ uses
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
   // Own units
-  Defaults, About, ThimoEdit;
+  Defaults, About, ThimoEdit, Vcl.Imaging.pngimage;
 
 type
   TmainForm = class(TForm)
@@ -32,7 +32,7 @@ type
           fStatusLed: TcyLed;
           fCPMBar: TcySimpleGauge;
           Label4: TLabel;
-          lblSvR: TLabel;
+    lblDosi: TLabel;
           GroupBox1: TGroupBox;
             Label1: TLabel;
             Label5: TLabel;
@@ -91,6 +91,7 @@ type
     procedure triggerAvail(CP: TObject; Count: Word);
     procedure updateCPMBar(aCPM: Integer);
     procedure updatePlot(aCPM: Integer);
+    procedure updateDosiLbl(aCPM: Integer);
   end;
 
 var
@@ -269,17 +270,25 @@ begin
       if PlotPointList[I].value >= fCPMChart.LeftAxis.Maximum then
         fCPMChart.LeftAxis.Maximum := PlotPointList[I].value + 10;
 
-      //fCPMChart.Data.Value[0, I] := PlotPointList[I].value;
       fCPMChart.Series[0].Add(PlotPointList[I].value, FormatDateTime('HH:MM:SS', PlotPointList[I].dateTime));
-      //fCPMChart.Options.XLegends.Add(FormatDateTime('HH:MM:SS', PlotPointList[I].dateTime));
     end else
-    begin
-      //fCPMChart.Data.Value[0, I] := 0;
       fCPMChart.Series[0].Add(0, 'Empty');
-    end;
   end;
 
   fCPMChart.Update;
+end;
+
+
+procedure TmainForm.updateDosiLbl(aCPM: Integer);
+var
+  DosiValue: Double;
+begin
+  DosiValue := aCPM * ConvertFactor;
+
+  if ConvertmR then
+    lblDosi.Caption := FormatFloat(',0.000000', DosiValue / SVTOR) + ' µR/h'
+  else
+    lblDosi.Caption := FormatFloat(',0.000000', DosiValue) + ' µSv/h';
 end;
 
 
@@ -359,6 +368,10 @@ begin
     begin
       ConvertmR := chkBoxUnitType.Checked;
       Settings.WriteBool('CONVERT', 'UnitR', ConvertmR);
+      if PlotPointList.Count > 0 then
+        updateDosiLbl(PlotPointList[PlotPointList.Count - 1].value)
+      else
+        updateDosiLbl(0);
     end;
 
     FreeAndNil(Settings);
@@ -390,11 +403,25 @@ begin
 
     if UploadRM then
       fNetTimer.Enabled := True;
+
+    comPortBox.Enabled     := False;
+    comBaudBox.Enabled     := False;
+    comParityBox.Enabled   := False;
+    comDataBitsBox.Enabled := False;
+    comStopBitsBox.Enabled := False;
+
+    fCPMEdit.Clear;
+    fErrorEdit.Clear;
   end else
   begin
-    fComPort.Open      := False;
-    fNetTimer.Enabled  := False;
-    fMainTimer.Enabled := False;
+    fComPort.Open          := False;
+    fNetTimer.Enabled      := False;
+    fMainTimer.Enabled     := False;
+    comPortBox.Enabled     := True;
+    comBaudBox.Enabled     := True;
+    comParityBox.Enabled   := True;
+    comDataBitsBox.Enabled := True;
+    comStopBitsBox.Enabled := True;
   end;
 end;
 
@@ -402,7 +429,6 @@ end;
 procedure TmainForm.fMainTimerTimer(Sender: TObject);
 var
   I, curCPM: Integer;
-  radValue: Double;
   dateTime: string;
 begin
   curCPM             := 0;
@@ -411,10 +437,10 @@ begin
 
   for I := 0 to Length(Buffer) do
     if Buffer[I] in [#48..#57] then
-      curCPM := (curCPM * 10) + StrToInt(string(Buffer[I]));
+      curCPM := (curCPM * 10) + (Ord(Buffer[I]) - 48);
 
   fCPMEdit.Lines.Add(dateTime);
-  fCPMEdit.Lines.Add(string(#9 + 'Raw string: ' + Buffer));
+  fCPMEdit.Lines.Add(#9 + 'Raw string: ' + string(Buffer));
   fCPMEdit.Lines.Add(#9 + 'curCPM: ' + IntToStr(curCPM) + sLineBreak);
   Buffer := '';
 
@@ -423,12 +449,7 @@ begin
 
   updatePlot(curCPM);
   updateCPMBar(curCPM);
-  radValue := curCPM * ConvertFactor;
-
-  if ConvertmR then
-    lblSvR.Caption := FormatFloat('0.######', radValue / SVTOR) + ' µR/h'
-  else
-    lblSvR.Caption := FormatFloat('0.######', radValue) + ' µSv/h';
+  updateDosiLbl(curCPM);
 end;
 
 
@@ -522,10 +543,11 @@ begin
     if not hadException then
       if httpReply.ToLower.Contains('incorrect') then
         logText := #9 + 'Error sending data to RadMon.' + sLineBreak +
-                   #9 + ' Check your username and password.' + sLineBreak
+                   #9 + 'Check your username and password.' + sLineBreak
       else
         if httpReply.ToLower.Contains('error') then
-          logText := #9 + 'Error sending data to RadMon.' + ' An unknown error occurred.' + sLineBreak +
+          logText := #9 + 'Error sending data to RadMon.' + sLineBreak +
+                     #9 + 'An unknown error occurred.' + sLineBreak +
                      #9 + 'Please make sure your username is correct, it is case-sensitive!' + sLineBreak
         else
         begin
