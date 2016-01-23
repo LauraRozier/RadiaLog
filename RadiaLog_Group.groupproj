@@ -6,6 +6,9 @@
         <Projects Include="RadiaLog.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\RadiaLog_Android\RadiaLogDroid.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -23,14 +26,23 @@
     <Target Name="RadiaLog:Make">
         <MSBuild Projects="RadiaLog.dproj" Targets="Make"/>
     </Target>
+    <Target Name="RadiaLogDroid">
+        <MSBuild Projects="..\RadiaLog_Android\RadiaLogDroid.dproj"/>
+    </Target>
+    <Target Name="RadiaLogDroid:Clean">
+        <MSBuild Projects="..\RadiaLog_Android\RadiaLogDroid.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="RadiaLogDroid:Make">
+        <MSBuild Projects="..\RadiaLog_Android\RadiaLogDroid.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="RadiaLog"/>
+        <CallTarget Targets="RadiaLog;RadiaLogDroid"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="RadiaLog:Clean"/>
+        <CallTarget Targets="RadiaLog:Clean;RadiaLogDroid:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="RadiaLog:Make"/>
+        <CallTarget Targets="RadiaLog:Make;RadiaLogDroid:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

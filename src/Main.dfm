@@ -4292,7 +4292,7 @@ object mainForm: TmainForm
     Top = 0
     Width = 784
     Height = 543
-    ActivePage = tabLog
+    ActivePage = tabMain
     Align = alClient
     TabOrder = 0
     object tabMain: TTabSheet
@@ -4304,15 +4304,14 @@ object mainForm: TmainForm
         Height = 515
         Align = alClient
         TabOrder = 0
-        ExplicitTop = -32
-        object fStatusLed: TcyLed
-          Left = 346
+        object cStatusLed: TcyLed
+          Left = 509
           Top = 455
           Width = 33
           Height = 33
           Hint = 'Start/Stop counter'
           ShowHint = True
-          OnClick = fStatusLedClick
+          OnClick = cStatusLedClick
           LedValue = False
           Bevels = <
             item
@@ -4336,16 +4335,16 @@ object mainForm: TmainForm
           ShapeLedColorOff = 16384
           ShapeLedColorDisabled = 13416
         end
-        object fCPMBar: TcySimpleGauge
+        object cCPMBar: TcySimpleGauge
           Left = 15
           Top = 394
-          Width = 363
+          Width = 528
           Height = 33
           DegradeBalance = 50
           ItemOffBrush.Color = clGray
           ItemOnBrush.Color = clLime
           ItemOnPen.Color = clGreen
-          ItemsCount = 32
+          ItemsCount = 47
           ItemsHeight = 21
           Max = 200.000000000000000000
           Smooth = True
@@ -4367,7 +4366,7 @@ object mainForm: TmainForm
           Step = 1.000000000000000000
         end
         object Label4: TLabel
-          Left = 264
+          Left = 427
           Top = 460
           Width = 76
           Height = 19
@@ -4418,8 +4417,8 @@ object mainForm: TmainForm
           Font.Style = [fsBold]
           ParentFont = False
         end
-        object fLogoImage: TImage
-          Left = 472
+        object cLogoImage: TImage
+          Left = 560
           Top = 13
           Width = 200
           Height = 200
@@ -5589,7 +5588,7 @@ object mainForm: TmainForm
         object GroupBox2: TGroupBox
           Left = 15
           Top = 137
-          Width = 364
+          Width = 530
           Height = 108
           Caption = 'User Settings'
           Font.Charset = DEFAULT_CHARSET
@@ -5658,7 +5657,7 @@ object mainForm: TmainForm
           object chkBoxRadmon: TCheckBox
             Left = 121
             Top = 77
-            Width = 97
+            Width = 80
             Height = 17
             Caption = 'Enabled'
             Checked = True
@@ -5668,10 +5667,10 @@ object mainForm: TmainForm
           end
         end
         object GroupBox3: TGroupBox
-          Left = 15
-          Top = 261
-          Width = 364
-          Height = 81
+          Left = 392
+          Top = 13
+          Width = 153
+          Height = 108
           Caption = 'Conversation'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5682,14 +5681,14 @@ object mainForm: TmainForm
           TabOrder = 2
           object Label13: TLabel
             Left = 10
-            Top = 24
+            Top = 28
             Width = 46
             Height = 14
             Caption = 'Factor: '
           end
           object Label15: TLabel
             Left = 10
-            Top = 50
+            Top = 66
             Width = 65
             Height = 14
             Margins.Left = 10
@@ -5698,8 +5697,8 @@ object mainForm: TmainForm
           end
           object chkBoxUnitType: TCheckBox
             Left = 81
-            Top = 49
-            Width = 72
+            Top = 65
+            Width = 64
             Height = 17
             Hint = 'Hint hint'
             Caption = #181'R/h'
@@ -5709,9 +5708,9 @@ object mainForm: TmainForm
             OnClick = chkBoxClick
           end
           object edtFactor: TThimoFloatEdit
-            Left = 81
-            Top = 21
-            Width = 72
+            Left = 78
+            Top = 25
+            Width = 67
             Height = 22
             DecimalSeparator = ','
             Value = 0.005700000000000000
@@ -5727,9 +5726,9 @@ object mainForm: TmainForm
           end
         end
         object GroupBox4: TGroupBox
-          Left = 472
+          Left = 560
           Top = 229
-          Width = 217
+          Width = 200
           Height = 268
           Caption = 'Common conversion factors'
           Font.Charset = DEFAULT_CHARSET
@@ -5753,7 +5752,7 @@ object mainForm: TmainForm
             ParentFont = False
           end
           object lblFactors: TLabel
-            Left = 160
+            Left = 144
             Top = 24
             Width = 44
             Height = 16
@@ -5764,6 +5763,102 @@ object mainForm: TmainForm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+          end
+        end
+        object GroupBox5: TGroupBox
+          Left = 352
+          Top = 264
+          Width = 202
+          Height = 89
+          Caption = 'Capture mode'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 4
+          object rbSerial: TRadioButton
+            Left = 16
+            Top = 32
+            Width = 113
+            Height = 17
+            Caption = 'Serial'
+            TabOrder = 0
+            OnClick = rbModeClick
+          end
+          object rbAudio: TRadioButton
+            Left = 16
+            Top = 55
+            Width = 113
+            Height = 17
+            Caption = 'Audio'
+            TabOrder = 1
+            OnClick = rbModeClick
+          end
+        end
+        object GroupBox6: TGroupBox
+          Left = 15
+          Top = 264
+          Width = 322
+          Height = 89
+          Caption = 'Audio Settings'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          TabOrder = 5
+          object Label14: TLabel
+            Left = 10
+            Top = 28
+            Width = 110
+            Height = 14
+            Caption = 'Threshold (RMS): '
+          end
+          object Label16: TLabel
+            Left = 10
+            Top = 56
+            Width = 97
+            Height = 14
+            Caption = 'PulseWidth (s): '
+          end
+          object edtThreshold: TThimoFloatEdit
+            Left = 126
+            Top = 24
+            Width = 75
+            Height = 22
+            DecimalSeparator = ','
+            Value = 0.010000000000000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+            Text = '0,0100'
+            OnChange = edtChange
+          end
+          object edtPulseWidth: TThimoFloatEdit
+            Left = 126
+            Top = 52
+            Width = 75
+            Height = 22
+            Decimals = 3
+            DecimalSeparator = ','
+            DisplayFormat = ',0.###'
+            Value = 0.005000000000000000
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -12
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            Text = '0,005'
+            OnChange = edtChange
           end
         end
       end
@@ -5799,10 +5894,10 @@ object mainForm: TmainForm
           Margins.Top = 10
           Caption = 'Event Log:'
         end
-        object fCPMEdit: TRichEdit
+        object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 748
+          Width = 728
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5821,10 +5916,10 @@ object mainForm: TmainForm
           TabOrder = 0
           Zoom = 100
         end
-        object fErrorEdit: TRichEdit
+        object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 748
+          Width = 728
           Height = 227
           Margins.Left = 10
           Margins.Right = 10
@@ -5856,7 +5951,7 @@ object mainForm: TmainForm
         Height = 515
         Align = alClient
         TabOrder = 0
-        object fCPMChart: TChart
+        object cCPMChart: TChart
           Left = 0
           Top = 0
           Width = 772
@@ -5952,6 +6047,40 @@ object mainForm: TmainForm
         end
       end
     end
+    object tabAudio: TTabSheet
+      Caption = 'Audio scope'
+      ImageIndex = 3
+      object SLScope2: TSLScope
+        Left = 3
+        Top = 3
+        Width = 770
+        Height = 509
+        TabOrder = 0
+        InputPins.Form = mainForm
+        InputPins.Pins = (
+          (
+            mainForm.cRMSMeter.OutputPins._Pin0
+            'mainForm.cRMSMeter.OutputPins.Pin [0]')
+          (
+            mainForm.cRMSMeter.OutputPins._Pin1
+            'mainForm.cRMSMeter.OutputPins.Pin [1]'))
+        Channels = <
+          item
+            Name = 'Channel0'
+            InputPin.Form = mainForm
+            InputPin.SourcePin = (
+              mainForm.cRMSMeter.OutputPins._Pin0
+              'mainForm.cRMSMeter.OutputPins.Pin [0]')
+          end
+          item
+            Name = 'Channel1'
+            InputPin.Form = mainForm
+            InputPin.SourcePin = (
+              mainForm.cRMSMeter.OutputPins._Pin1
+              'mainForm.cRMSMeter.OutputPins.Pin [1]')
+          end>
+      end
+    end
   end
   object fStatusBar: TStatusBar
     Left = 0
@@ -5964,23 +6093,46 @@ object mainForm: TmainForm
         Width = 150
       end>
   end
-  object fMainTimer: TTimer
+  object cMainTimer: TTimer
     Enabled = False
     Interval = 100
-    OnTimer = fMainTimerTimer
+    OnTimer = cMainTimerTimer
     Left = 760
   end
-  object fComPort: TApdComPort
+  object cComPort: TApdComPort
     Baud = 2400
     AutoOpen = False
     TraceName = 'APRO.TRC'
     LogName = 'APRO.LOG'
-    Left = 704
+    Left = 728
   end
-  object fNetTimer: TTimer
+  object cAudioSrc: TALAudioIn
     Enabled = False
-    Interval = 60000
-    OnTimer = fNetTimerTimer
-    Left = 732
+    OutputPin.Form = mainForm
+    OutputPin.SinkPins = (
+      mainForm.cRMSMeter.InputPin)
+    Left = 700
+  end
+  object cRMSMeter: TALRMSMeter
+    InputPin.Form = mainForm
+    InputPin.SourcePin = mainForm.cAudioSrc.OutputPin
+    OutputPins.Form = mainForm
+    OutputPins.Pins = (
+      Sinks
+      (
+        (
+          mainForm.SLScope2.InputPins._Pin0
+          'mainForm.SLScope2.InputPins.Channel0'))
+      Sinks
+      (
+        (
+          mainForm.SLScope2.InputPins._Pin1
+          'mainForm.SLScope2.InputPins.Channel1')))
+    Left = 668
+  end
+  object cPulseTimer: TTimer
+    Interval = 50
+    OnTimer = cPulseTimerTimer
+    Left = 636
   end
 end
