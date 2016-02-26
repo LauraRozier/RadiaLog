@@ -4306,7 +4306,7 @@ object mainForm: TmainForm
         TabOrder = 0
         object cStatusLed: TcyLed
           Left = 509
-          Top = 455
+          Top = 471
           Width = 33
           Height = 33
           Hint = 'Start/Stop counter'
@@ -4337,7 +4337,7 @@ object mainForm: TmainForm
         end
         object cCPMBar: TcySimpleGauge
           Left = 15
-          Top = 394
+          Top = 426
           Width = 528
           Height = 33
           DegradeBalance = 50
@@ -4367,7 +4367,7 @@ object mainForm: TmainForm
         end
         object Label4: TLabel
           Left = 427
-          Top = 460
+          Top = 476
           Width = 76
           Height = 19
           Caption = 'Counter: '
@@ -4380,7 +4380,7 @@ object mainForm: TmainForm
         end
         object Label12: TLabel
           Left = 15
-          Top = 369
+          Top = 401
           Width = 47
           Height = 19
           Caption = 'CPM: '
@@ -4393,7 +4393,7 @@ object mainForm: TmainForm
         end
         object lblCPM: TLabel
           Left = 68
-          Top = 369
+          Top = 401
           Width = 10
           Height = 19
           Caption = '0'
@@ -4406,7 +4406,7 @@ object mainForm: TmainForm
         end
         object lblDosi: TLabel
           Left = 15
-          Top = 460
+          Top = 476
           Width = 128
           Height = 19
           Caption = '0.000000 '#181'Sv/h'
@@ -5707,22 +5707,15 @@ object mainForm: TmainForm
             TabOrder = 0
             OnClick = chkBoxClick
           end
-          object edtFactor: TThimoFloatEdit
-            Left = 78
-            Top = 25
-            Width = 67
+          object edtFactor: TcyEditFloat
+            Left = 62
+            Top = 26
+            Width = 72
             Height = 22
-            DecimalSeparator = ','
-            Value = 0.005700000000000000
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
             TabOrder = 1
-            Text = '0,0057'
+            Text = '0.0057'
             OnChange = edtChange
+            Precision = 4
           end
         end
         object GroupBox4: TGroupBox
@@ -5767,9 +5760,9 @@ object mainForm: TmainForm
         end
         object GroupBox5: TGroupBox
           Left = 352
-          Top = 137
+          Top = 129
           Width = 202
-          Height = 216
+          Height = 256
           Caption = 'Capture mode'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5826,7 +5819,7 @@ object mainForm: TmainForm
           Left = 15
           Top = 264
           Width = 322
-          Height = 89
+          Height = 121
           Caption = 'Audio Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5845,17 +5838,23 @@ object mainForm: TmainForm
           object Label16: TLabel
             Left = 10
             Top = 56
-            Width = 97
+            Width = 96
             Height = 14
-            Caption = 'PulseWidth (s): '
+            Caption = 'Pulsewidth (s): '
           end
-          object edtThreshold: TThimoFloatEdit
+          object Label18: TLabel
+            Left = 10
+            Top = 85
+            Width = 86
+            Height = 14
+            Caption = 'Audio device: '
+          end
+          object cbAudioDevice: TComboBox
             Left = 126
-            Top = 24
-            Width = 75
+            Top = 80
+            Width = 187
             Height = 22
-            DecimalSeparator = ','
-            Value = 0.010000000000000000
+            Style = csDropDownList
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -12
@@ -5863,27 +5862,27 @@ object mainForm: TmainForm
             Font.Style = []
             ParentFont = False
             TabOrder = 0
-            Text = '0,0100'
             OnChange = edtChange
           end
-          object edtPulseWidth: TThimoFloatEdit
+          object edtPulseWidth: TcyEditFloat
             Left = 126
             Top = 52
-            Width = 75
+            Width = 99
             Height = 22
-            Decimals = 3
-            DecimalSeparator = ','
-            DisplayFormat = ',0.###'
-            Value = 0.005000000000000000
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
             TabOrder = 1
-            Text = '0,005'
+            Text = '0.0070'
             OnChange = edtChange
+            Precision = 4
+          end
+          object edtThreshold: TcyEditFloat
+            Left = 126
+            Top = 24
+            Width = 99
+            Height = 22
+            TabOrder = 2
+            Text = '0.0300'
+            OnChange = edtChange
+            Precision = 4
           end
         end
       end
@@ -5891,6 +5890,10 @@ object mainForm: TmainForm
     object tabLog: TTabSheet
       Caption = 'Log'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox3: TScrollBox
         Left = 0
         Top = 0
@@ -5922,7 +5925,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 724
+          Width = 692
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5944,7 +5947,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 724
+          Width = 692
           Height = 227
           Margins.Left = 10
           Margins.Right = 10
@@ -5969,6 +5972,10 @@ object mainForm: TmainForm
     object tabGraph: TTabSheet
       Caption = 'Graph'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox2: TScrollBox
         Left = 0
         Top = 0
@@ -6075,6 +6082,10 @@ object mainForm: TmainForm
     object tabAudio: TTabSheet
       Caption = 'Audio scope'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object SLScope2: TSLScope
         Left = 3
         Top = 3

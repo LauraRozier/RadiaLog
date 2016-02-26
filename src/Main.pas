@@ -16,12 +16,11 @@ uses
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
   // Audio Labs (Mitov)
-  Mitov.VCLTypes, Mitov.Types,
-  LPControlDrawLayers,
+  Mitov.VCLTypes, Mitov.Types, LPControlDrawLayers,
   SLControlCollection, SLBasicDataDisplay, SLDataDisplay, SLDataChart, SLScope,
   ALCommonMeter, ALRMSMeter, ALAudioIn,
   // Own units
-  Defaults, About, ThimoEdit;
+  Defaults, About, AudioGeigers, cyEdit, cyEditFloat;
 
 type
   TmainForm = class(TForm)
@@ -60,15 +59,25 @@ type
             chkBoxRadmon: TCheckBox;
           GroupBox3: TGroupBox;
             Label13: TLabel;
+            edtFactor: TcyEditFloat;
             chkBoxUnitType: TCheckBox;
             Label15: TLabel;
-            edtFactor: TThimoFloatEdit;
           GroupBox4: TGroupBox;
             lblTubes: TLabel;
             lblFactors: TLabel;
           GroupBox5: TGroupBox;
-    rbMyGeiger: TRadioButton;
+            Label17: TLabel;
+            rbMyGeiger: TRadioButton;
+            rbGMC: TRadioButton;
+            rbNetIO: TRadioButton;
             rbAudio: TRadioButton;
+          GroupBox6: TGroupBox;
+            Label14: TLabel;
+            edtThreshold: TcyEditFloat;
+            Label16: TLabel;
+            edtPulseWidth: TcyEditFloat;
+            Label18: TLabel;
+    cbAudioDevice: TComboBox;
       tabLog: TTabSheet;
         ScrollBox3: TScrollBox;
           cCPMEdit: TRichEdit;
@@ -81,15 +90,7 @@ type
           Series1: TFastLineSeries;
       tabAudio: TTabSheet;
         SLScope2: TSLScope;
-    GroupBox6: TGroupBox;
-    edtThreshold: TThimoFloatEdit;
-    edtPulseWidth: TThimoFloatEdit;
-    Label14: TLabel;
-    Label16: TLabel;
     cPulseTimer: TTimer;
-    Label17: TLabel;
-    rbGMC: TRadioButton;
-    rbNetIO: TRadioButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cMainTimerTimer(Sender: TObject);
@@ -109,11 +110,14 @@ type
     fAudioMode, fSamePulse, fUploadRM, fConvertmR, fSafeToWrite: Boolean;
     fConvertFactor, fAudioThreshold, fAudioPulseWidth: Double;
     fSettings: TINIFile;
+    fAudioControl: tAudioGeiger;
     procedure triggerAvail(CP: TObject; Count: Word);
     procedure updateCPMBar(aCPM: Integer);
     procedure updatePlot(aCPM: Integer);
     procedure updateDosiLbl(aCPM: Integer);
     procedure onAudioValChange(Sender: TObject; aChannel: Integer; aValue, aMin, aMax: Real);
+  public
+    audioDevs: TStringList;
   end;
 
 var
@@ -179,7 +183,7 @@ begin
     fSettings.WriteInteger('SERIAL', 'DataBits',   8);
     fSettings.WriteInteger('SERIAL', 'StopBits',   0);
     fSettings.WriteFloat('AUDIO',    'Threshold',  0.0300);
-    fSettings.WriteFloat('AUDIO',    'PulseWidth', 0.007);
+    fSettings.WriteFloat('AUDIO',    'PulseWidth', 0.0070);
     fSettings.WriteString('USER',    'Username',   'TestUser');
     fSettings.WriteString('USER',    'Password',   'TestPass');
     fSettings.WriteBool('USER',      'Upload',     True);
@@ -194,7 +198,7 @@ begin
   fComDataBits     := fSettings.ReadInteger('SERIAL', 'DataBits',   8);
   fComStopBits     := fSettings.ReadInteger('SERIAL', 'StopBits',   0);
   fAudioThreshold  := fSettings.ReadFloat('AUDIO',    'Threshold',  0.0300);
-  fAudioPulseWidth := fSettings.ReadFloat('AUDIO',    'PulseWidth', 0.007);
+  fAudioPulseWidth := fSettings.ReadFloat('AUDIO',    'PulseWidth', 0.0070);
   fUsername        := fSettings.ReadString('USER',    'Username',   'TestUser');
   fPassword        := fSettings.ReadString('USER',    'Password',   'TestPass');
   fUploadRM        := fSettings.ReadBool('USER',      'Upload',     True);
@@ -218,10 +222,18 @@ begin
   chkBoxUnitType.Checked   := fConvertmR;
   fSafeToWrite             := True;
   tabAudio.TabVisible      := fAudioMode;
-  rbSerial.Checked         := not fAudioMode;
+  rbMyGeiger.Checked       := not fAudioMode;
   rbAudio.Checked          := fAudioMode;
   fTimeToWait              := -1;
   fSamePulse               := False;
+
+//  cbAudioDevice
+  //fill the combobox
+  audioDevs     := TStringList.Create;
+  fAudioControl := tAudioGeiger.Create;
+  fAudioControl.GetAudioEnum(audioDevs);
+  cbAudioDevice.Items.AddStrings(audioDevs);
+  cbAudioDevice.ItemIndex := 0;
 end;
 
 
@@ -235,6 +247,7 @@ begin
   cPulseTimer.Enabled := False;
   FreeAndNil(fCPMList);
   FreeAndNil(fPlotPointList);
+  FreeAndNil(audioDevs);
 end;
 
 
@@ -450,7 +463,7 @@ end;
 
 procedure TmainForm.rbModeClick(Sender: TObject);
 begin
-  rbSerial.Checked    := Sender = rbSerial;
+  rbMyGeiger.Checked  := Sender = rbMyGeiger;
   rbAudio.Checked     := Sender = rbAudio;
   fAudioMode          := rbAudio.Checked;
   tabAudio.TabVisible := fAudioMode;
@@ -512,7 +525,7 @@ begin
     comStopBitsBox.Enabled := False;
     edtThreshold.Enabled   := False;
     edtPulseWidth.Enabled  := False;
-    rbSerial.Enabled       := False;
+    rbMyGeiger.Enabled     := False;
     rbAudio.Enabled        := False;
   end else
   begin
@@ -532,7 +545,7 @@ begin
     comStopBitsBox.Enabled := True;
     edtThreshold.Enabled   := True;
     edtPulseWidth.Enabled  := True;
-    rbSerial.Enabled       := True;
+    rbMyGeiger.Enabled     := True;
     rbAudio.Enabled        := True;
   end;
 end;

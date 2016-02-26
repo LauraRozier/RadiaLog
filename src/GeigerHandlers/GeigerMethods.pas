@@ -1,6 +1,9 @@
 unit GeigerMethods;
 
 interface
+uses
+  OpenAL;
+
 type
   tMethodSerial = class
     private
@@ -13,17 +16,32 @@ type
       // Published stuff
   end;
 
-  tMethodAudio = class
+  tMethodAudio = class(TObject)
     private
-      constructor Create;
+      fALDevice, fALCaptureDevice: PALCdevice;
+      fIsSoundInitialized: Boolean;
     protected
       // Protected stuff
     public
-      // Public stuff
+      constructor Create(aPort: String);
+      destructor Destroy;
     published
-      // Published stuff
+      property Initialized: Boolean Read fIsSoundInitialized;
   end;
 
 implementation
+constructor tMethodAudio.Create(aPort: String);
+begin
+  fIsSoundInitialized := InitOpenAL;
+  Set8087CW($133F);
+end;
+
+
+destructor tMethodAudio.Destroy;
+begin
+  //alcCloseDevice(fALCaptureDevice);
+  //alcCloseDevice(fALDevice);
+  AlutExit;
+end;
 
 end.

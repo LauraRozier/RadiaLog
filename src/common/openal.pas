@@ -55,7 +55,8 @@ unit openal;
 interface
 
 uses
-  Classes, SysUtils
+  Classes
+  , SysUtils
   {$IFDEF MSWindows},Windows{$ENDIF}
   ;
 
@@ -77,14 +78,14 @@ type
   TALboolean = Boolean;
   PALboolean = ^TALboolean;
   //character
-  TALchar = char;
-  PALchar = pchar;
+  TALchar = Ansichar;
+  PALchar = pAnsichar;
   // OpenAL 8bit signed byte.
   TALbyte = ShortInt;
   PALbyte = ^TALbyte;
   // OpenAL 8bit unsigned byte.
-  TALuByte = Char;
-  PALuByte = PChar;
+  TALuByte = AnsiChar;
+  PALuByte = PAnsiChar;
   // OpenAL 16bit signed short integer type.
   TALshort = SmallInt;
   PALshort = ^TALshort;
@@ -130,14 +131,14 @@ type
   TALCboolean = boolean;
   PALCboolean = ^TALCboolean;
   // ALC character type
-  TALCchar = char;
-  PALCchar = pchar;
+  TALCchar = Ansichar;
+  PALCchar = pAnsichar;
   // ALC 8bit signed byte.
   TALCbyte = ShortInt;
   PALCbyte = ^TALCbyte;
   // ALC 8bit unsigned byte.
-  TALCubyte = Char;
-  PALCubyte = PChar;
+  TALCubyte = AnsiChar;
+  PALCubyte = PAnsiChar;
   // ALC 16bit signed short integer type.
   TALCshort = smallint;
   PALCshort = ^TALCshort;
@@ -1897,11 +1898,9 @@ var
   AlutLibHandle      : THandle = 0;
 {$ENDIF}
   EFXUtilLibHandle       : THandle = 0;
-type
-  HMODULE = THandle;
 
 {$IFDEF ALUT}
-function InitOpenAL(LibName: String = callibname; AlutLibName: String = calutlibname): Boolean;
+function InitOpenAL(LibName: String = callibname;AlutLibName: String = calutlibname): Boolean;
 {$ELSE}
 function InitOpenAL(LibName: String = callibname): Boolean;
 {$ENDIF}
@@ -1910,20 +1909,20 @@ procedure ReadOpenALExtensions;
 
 implementation
 
-//uses classes;
+{$IFDEF MSWindows} uses mmsystem; {$ENDIF}
 
 type
   //WAV file header
   TWAVHeader = record
     RIFFHeader: array [1..4] of AnsiChar;
-    FileSize: Integer;
+    FileSize: longint;
     WAVEHeader: array [1..4] of AnsiChar;
     FormatHeader: array [1..4] of AnsiChar;
-    FormatHeaderSize: Integer;
+    FormatHeaderSize: longint;
     FormatCode: Word;
     ChannelNumber: Word;
-    SampleRate: Integer;
-    BytesPerSecond: Integer;
+    SampleRate: longint;
+    BytesPerSecond: longint;
     BytesPerSample: Word;
     BitsPerSample: Word;
   end;
@@ -2210,9 +2209,12 @@ var
   WavHeader: TWavHeader;
   readname: pansichar;
   name: ansistring;
-  readint: integer;
+  readint: longint;
 begin
     Result:=False;
+
+    size:=0;
+    data:=nil;
 
     //Read wav header
     stream.Read(WavHeader, sizeof(TWavHeader));
@@ -2236,18 +2238,18 @@ begin
     //go to end of wavheader
     stream.seek((8-44)+12+4+WavHeader.FormatHeaderSize+4,soFromCurrent); //hmm crappy...
 
+    getmem(readname,4); //only alloc memory once, thanks to zy.
     //loop to rest of wave file data chunks
     repeat
       //read chunk name
-      getmem(readname,4);
       stream.Read(readname^, 4);
-      name:=readname[0]+readname[1]+readname[2]+readname[3];
+      name := readname[0]+readname[1]+readname[2]+readname[3];
       if name='data' then
       begin
         //Get the size of the wave data
         stream.Read(readint,4);
         size:=readint;
-        //if WavHeader.BitsPerSample = 8 then size:=size+1; //fix for 8bit???
+        //if WavHeader.BitsPerSample = 8 then size:=size+8; //fix for 8bit???
         //Read the actual wave data
         getmem(data,size);
         stream.Read(Data^, size);
@@ -2270,14 +2272,16 @@ begin
         stream.Position:=stream.Position+readint;
       end;
     until stream.Position>=stream.size;
+    freemem(readname);
 
+    loop:= 0;
 end;
 
 procedure alutLoadWAVFile(fname: string; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint);
 var
   Stream : TFileStream;
 begin
-  Stream:=TFileStream.Create(fname,$0000);
+  Stream:=TFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
   LoadWavStream(Stream, format, data, size, freq, loop);
   Stream.Free;
 end;
