@@ -67,7 +67,7 @@ type
             lblTubes: TLabel;
             lblFactors: TLabel;
           GroupBox5: TGroupBox;
-            rbSerial: TRadioButton;
+    rbMyGeiger: TRadioButton;
             rbAudio: TRadioButton;
       tabLog: TTabSheet;
         ScrollBox3: TScrollBox;
@@ -87,6 +87,9 @@ type
     Label14: TLabel;
     Label16: TLabel;
     cPulseTimer: TTimer;
+    Label17: TLabel;
+    rbGMC: TRadioButton;
+    rbNetIO: TRadioButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cMainTimerTimer(Sender: TObject);

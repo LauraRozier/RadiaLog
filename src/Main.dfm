@@ -5588,7 +5588,7 @@ object mainForm: TmainForm
         object GroupBox2: TGroupBox
           Left = 15
           Top = 137
-          Width = 530
+          Width = 322
           Height = 108
           Caption = 'User Settings'
           Font.Charset = DEFAULT_CHARSET
@@ -5628,7 +5628,7 @@ object mainForm: TmainForm
           object edtUsername: TEdit
             Left = 121
             Top = 20
-            Width = 232
+            Width = 192
             Height = 22
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -5642,7 +5642,7 @@ object mainForm: TmainForm
           object edtPassword: TEdit
             Left = 121
             Top = 48
-            Width = 232
+            Width = 192
             Height = 22
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -5767,9 +5767,9 @@ object mainForm: TmainForm
         end
         object GroupBox5: TGroupBox
           Left = 352
-          Top = 264
+          Top = 137
           Width = 202
-          Height = 89
+          Height = 216
           Caption = 'Capture mode'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5778,22 +5778,47 @@ object mainForm: TmainForm
           Font.Style = [fsBold]
           ParentFont = False
           TabOrder = 4
-          object rbSerial: TRadioButton
+          object Label17: TLabel
             Left = 16
-            Top = 32
+            Top = 23
+            Width = 33
+            Height = 14
+            Caption = 'Serial'
+          end
+          object rbMyGeiger: TRadioButton
+            Left = 31
+            Top = 43
             Width = 113
             Height = 17
-            Caption = 'Serial'
+            Caption = 'MyGeiger'
             TabOrder = 0
             OnClick = rbModeClick
           end
           object rbAudio: TRadioButton
             Left = 16
-            Top = 55
+            Top = 112
             Width = 113
             Height = 17
             Caption = 'Audio'
             TabOrder = 1
+            OnClick = rbModeClick
+          end
+          object rbGMC: TRadioButton
+            Left = 31
+            Top = 66
+            Width = 113
+            Height = 17
+            Caption = 'GMC'
+            TabOrder = 2
+            OnClick = rbModeClick
+          end
+          object rbNetIO: TRadioButton
+            Left = 31
+            Top = 89
+            Width = 113
+            Height = 17
+            Caption = 'NetIO'
+            TabOrder = 3
             OnClick = rbModeClick
           end
         end
@@ -5897,7 +5922,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 728
+          Width = 724
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5919,7 +5944,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 728
+          Width = 724
           Height = 227
           Margins.Left = 10
           Margins.Right = 10

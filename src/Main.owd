@@ -1,0 +1,15 @@
+<VERSION 1/>
+<UNIT Main>
+  <COMPONENT cAudioSrc>
+    <Y 256/>
+    <X 304/>
+  </COMPONENT>
+  <COMPONENT ALRMSMeter1>
+    <Y 560/>
+    <X 256/>
+  </COMPONENT>
+  <COMPONENT SLScope2>
+    <Y 592/>
+    <X 720/>
+  </COMPONENT>
+</UNIT>
