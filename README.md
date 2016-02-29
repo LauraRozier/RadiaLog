@@ -1,7 +1,8 @@
 [contribMD]: https://github.com/thibmo/RadiaLog/blob/master/CONTRIBUTING.md  "CONTRIBUTING.md"
 [syntaxMD]: https://github.com/thibmo/RadiaLog/blob/master/SYNTAX.md  "SYNTAX.md"
 
-# RadiaLog
+RadiaLog
+########
 Radiation logger with support for Radmon.
 
 ---    
