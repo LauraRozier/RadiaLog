@@ -1,6 +1,6 @@
 **Adding commits guidelines**
 
-Er zijn veel formats en guidelines, echter gebruik ik zelf de volgende, deze ziet er ook in de CLI erg goed te lezen uit.
+There are many formats and guidelines, However I use the folowing, it also looks and reads well via the CLI.
 
 > Top note: All sections are split by a blank-line.
 >
