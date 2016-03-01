@@ -8,7 +8,7 @@ uses
   // VCL units
   Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Graphics,
   Vcl.Forms, Vcl.Menus, Vcl.Mask, VCLTee.TeEngine, VCLTee.Series,
-  VCLTee.TeeProcs, VCLTee.Chart, Vcl.Imaging.pngimage, VCL.LPControl,
+  VCLTee.TeeProcs, VCLTee.Chart, Vcl.Imaging.pngimage,
   { // Indy units
   IdHTTP, IdException, IdExceptionCore, IdStack,
   // Asynch Pro units
@@ -21,7 +21,7 @@ uses
   SLControlCollection, SLBasicDataDisplay, SLDataDisplay, SLDataChart, SLScope,
   ALCommonMeter, ALRMSMeter, ALAudioIn, }
   // Own units
-  Defaults, About, AudioGeigers, SerialGeigers;//, NetworkMethods;
+  Defaults, About, GeigerMethods, AudioGeigers, SerialGeigers, OoMisc, AdPort;
 
 type
   TmainForm = class(TForm)
@@ -89,9 +89,10 @@ type
         ScrollBox2: TScrollBox;
           cCPMChart: TChart;
           Series1: TFastLineSeries;
-      tabAudio: TTabSheet;
-        SLScope2: TSLScope;
+      //tabAudio: TTabSheet;
+        //SLScope2: TSLScope;
     cPulseTimer: TTimer;
+    ApdComPort1: TApdComPort;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cMainTimerTimer(Sender: TObject);
@@ -101,6 +102,7 @@ type
     procedure edtChange(Sender: TObject);
     procedure rbModeClick(Sender: TObject);
     procedure cPulseTimerTimer(Sender: TObject);
+    procedure ReapTimerTick(Sender: TObject);
   private
     // CPM related
     fCPMList:       TList<Integer>;
@@ -110,17 +112,18 @@ type
     fAudioThreshold, fAudioPulseWidth: Double;
     fAudioControl: tAudioGeiger;
     // Serial related
-    fBuffer:  string[255];
+    // fBuffer:  string[255];
     fComPort: string;
     fComBaud: Integer;
     fComDataBits, fComStopBits, fComParity: Word;
-	fMGControl: TMyGeiger;
-	// fGMCControl: TGMC;
-	// fNetIOControl: TNetIO;
+	  fMGControl: TMyGeiger;
+	  // fGMCControl: TGMC;
+	  // fNetIOControl: TNetIO;
     // User related
     fConvertFactor: Double;
     fSettings: TINIFile;
     // Timer related
+    fThreadReapTimer: TTimer;
     fTicks, fTimeToWait: Integer;
     fSamePulse: Boolean;
     // Modes
@@ -131,11 +134,11 @@ type
     fSafeToWrite: Boolean;
 	Saved8087CW:  Word;
     //fNetworkHandler: TNetworkController;
-    procedure triggerAvail(CP: TObject; Count: Word);
+    // procedure triggerAvail(CP: TObject; Count: Word);
     procedure updateCPMBar(aCPM: Integer);
     procedure updatePlot(aCPM: Integer);
     procedure updateDosiLbl(aCPM: Integer);
-    procedure onAudioValChange(Sender: TObject; aChannel: Integer; aValue, aMin, aMax: Real);
+    // procedure onAudioValChange(Sender: TObject; aChannel: Integer; aValue, aMin, aMax: Real);
   public
     audioDevs: TStringList;
   end;
@@ -154,28 +157,28 @@ var
   AudioEnumerator: TAudioEnum;
 begin
   // Set initial values
-  Saved8087CW             := Default8087CW;
+  Saved8087CW := Default8087CW;
   Set8087CW($133F);
-  mainForm.Caption        := 'RadiaLog ' + VERSION_PREFIX + VERSION + VERSION_SUFFIX;
-  exeDir                  := ExtractFilePath(Application.ExeName);
-  { cComPort.OnTriggerAvail := triggerAvail;
-  cComPort.Open           := False;
-  cComPort.DeviceLayer    := dlWin32;
-  cComPort.RS485Mode      := False; }
-  fCPMList                := TList<Integer>.Create;
-  fPlotPointList          := TList<TChartData>.Create;
-  chkBoxUnitType.Hint     := 'Checked: µR/h' + sLineBreak + 'Unckecked: µSv/h';
-  lblTubes.Caption        := 'SBM-20' + sLineBreak + 'SBM-19' + sLineBreak +
-                             'SI-29BG' + sLineBreak + 'SI-180G' + sLineBreak +
-                             'LND-712' + sLineBreak + 'LND-7317' + sLineBreak +
-                             'J305' + sLineBreak + 'SBT11-A' + sLineBreak +
-                             'SBT-9' + sLineBreak + 'M4011' + sLineBreak;
-  lblFactors.Caption      := '0.0057' + sLineBreak + '0.0021' + sLineBreak +
-                             '0.0082' + sLineBreak + '0.0031' + sLineBreak +
-                             '0.0081' + sLineBreak + '0.0024' + sLineBreak +
-                             '0.0081' + sLineBreak + '0.0031' + sLineBreak +
-                             '0.0117' + sLineBreak + '0.0066' + sLineBreak;
-  cRMSMeter.OnValueChange := onAudioValChange;
+  mainForm.Caption         := 'RadiaLog ' + VERSION_PREFIX + VERSION + VERSION_SUFFIX;
+  exeDir                   := ExtractFilePath(Application.ExeName);
+  { cComPort.OnTriggerAvail  := triggerAvail;
+  cComPort.Open            := False;
+  cComPort.DeviceLayer     := dlWin32;
+  cComPort.RS485Mode       := False; }
+  fCPMList                 := TList<Integer>.Create;
+  fPlotPointList           := TList<TChartData>.Create;
+  chkBoxUnitType.Hint      := 'Checked: µR/h' + sLineBreak + 'Unckecked: µSv/h';
+  lblTubes.Caption         := 'SBM-20' + sLineBreak + 'SBM-19' + sLineBreak +
+                              'SI-29BG' + sLineBreak + 'SI-180G' + sLineBreak +
+                              'LND-712' + sLineBreak + 'LND-7317' + sLineBreak +
+                              'J305' + sLineBreak + 'SBT11-A' + sLineBreak +
+                              'SBT-9' + sLineBreak + 'M4011' + sLineBreak;
+  lblFactors.Caption       := '0.0057' + sLineBreak + '0.0021' + sLineBreak +
+                              '0.0082' + sLineBreak + '0.0031' + sLineBreak +
+                              '0.0081' + sLineBreak + '0.0024' + sLineBreak +
+                              '0.0081' + sLineBreak + '0.0031' + sLineBreak +
+                              '0.0117' + sLineBreak + '0.0066' + sLineBreak;
+  //cRMSMeter.OnValueChange := onAudioValChange;
   // Populate COM port select box
   comPortBox.Items.BeginUpdate;
   comPortBox.Items.Clear;
@@ -250,7 +253,7 @@ begin
   edtFactor.Value          := fConvertFactor;
   chkBoxUnitType.Checked   := fConvertmR;
   fSafeToWrite             := True;
-  tabAudio.TabVisible      := fAudioMode;
+  //tabAudio.TabVisible      := fAudioMode;
   rbMyGeiger.Checked       := fMyGeigerMode;
   rbGMC.Checked            := fGMCMode;
   rbNetIO.Checked          := fNetIOMode;
@@ -265,6 +268,11 @@ begin
   cbAudioDevice.Items.AddStrings(audioDevs);
   cbAudioDevice.ItemIndex := 0;
   FreeAndNil(AudioEnumerator);
+
+  fThreadReapTimer          := TTimer.Create(nil);
+  fThreadReapTimer.Enabled  := False;
+  fThreadReapTimer.OnTimer  := ReapTimerTick;
+  fThreadReapTimer.Interval := 300;
 end;
 
 
@@ -296,6 +304,7 @@ begin
   FreeAndNil(fCPMList);
   FreeAndNil(fPlotPointList);
   FreeAndNil(audioDevs);
+  FreeAndNil(fThreadReapTimer);
   Set8087CW(Saved8087CW); // Default value (with exceptions) is $1372.
 end;
 
@@ -522,7 +531,7 @@ begin
   fGMCMode            := rbGMC.Checked;
   fNetIOMode          := rbNetIO.Checked;
 
-  tabAudio.TabVisible := fAudioMode;
+  //tabAudio.TabVisible := fAudioMode;
 
   if fSafeToWrite then
   begin
@@ -555,7 +564,7 @@ begin
     fTimeToWait := -1;
     fAudioCpm   := 0;
     fSamePulse  := False;
-    fBuffer     := '';
+    // fBuffer     := '';
     fCPMList.Clear;
     fPlotPointList.Clear;
     cCPMEdit.Clear;
@@ -572,7 +581,7 @@ begin
                                              False)
       else
         fAudioControl := TAudioGeiger.Create(fAudioThreshold,
-                                             cbAudioDevice.Items[cbAudioDevice.itemindex],
+                                             AnsiString(cbAudioDevice.Items[cbAudioDevice.itemindex]),
                                              cCPMEdit,
                                              cErrorEdit,
                                              False);
@@ -585,8 +594,8 @@ begin
       cComPort.StopBits  := fComStopBits;
       cComPort.Open      := True;
       cMainTimer.Enabled := True; }
-	  fMGControl := TMyGeiger.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase]))
-	                                 fComBaud,
+	    fMGControl := TMyGeiger.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
+	                                   fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
                                      fComStopBits,
@@ -611,38 +620,18 @@ begin
   begin
     cMainTimer.Enabled := False;
 
-    if fAudioMode then
-    begin
-      //cAudioSrc.Stop;
-      //cAudioSrc.Enabled := False;
-      fAudioControl.StopWork := True;
-      fAudioControl.Terminate;
-      FreeAndNil(fAudioControl);
-    end else
-      cComPort.Open := False;
-
-    comPortBox.Enabled     := True;
-    comBaudBox.Enabled     := True;
-    comParityBox.Enabled   := True;
-    comDataBitsBox.Enabled := True;
-    comStopBitsBox.Enabled := True;
-    edtThreshold.Enabled   := True;
-    edtPulseWidth.Enabled  := True;
-    rbAudio.Enabled        := True;
-    rbMyGeiger.Enabled     := True;
-    rbGMC.Enabled          := True;
-    rbNetIO.Enabled        := True;
+    fThreadReapTimer.Enabled := True;
   end;
 end;
 
 
 procedure TmainForm.cMainTimerTimer(Sender: TObject);
-var
-  I, curCPM{, totalCPM}: Integer;
-  dateTime: string;
+{ var
+  I, curCPM, totalCPM: Integer;
+  dateTime: string; }
 begin
   fTicks   := fTicks + 1;
-  dateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
+  { dateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
 
   if fTimeToWait = 0 then
   begin
@@ -668,7 +657,7 @@ begin
     if fTimeToWait <> -1 then
       fTimeToWait := fTimeToWait - 1;
 
-  { if (fTicks mod 300 = 0) and fAudioMode then
+  f (fTicks mod 300 = 0) and fAudioMode then
   begin
     curCPM    := fAudioCpm * 2;
     fAudioCpm := 0;
@@ -698,6 +687,41 @@ begin
     fCPMList.Clear;
     FreeAndNil(fNetworkHandler);
   end; }
+end;
+
+
+procedure TmainForm.ReapTimerTick(Sender: TObject);
+begin
+  fThreadReapTimer.Enabled := False;
+
+  if fAudioMode then
+  begin
+    //cAudioSrc.Stop;
+    //cAudioSrc.Enabled := False;
+    fAudioControl.Terminate;
+    //fAudioControl.DisposeOf;
+    fAudioControl := nil;
+    //FreeAndNil(fAudioControl);
+  end else
+  begin
+    //cComPort.Open := False;
+    fMGControl.Terminate;
+    //fMGControl.DisposeOf;
+    fMGControl := nil;
+    //FreeAndNil(fMGControl);
+  end;
+
+  comPortBox.Enabled     := True;
+  comBaudBox.Enabled     := True;
+  comParityBox.Enabled   := True;
+  comDataBitsBox.Enabled := True;
+  comStopBitsBox.Enabled := True;
+  edtThreshold.Enabled   := True;
+  edtPulseWidth.Enabled  := True;
+  rbAudio.Enabled        := True;
+  rbMyGeiger.Enabled     := True;
+  rbGMC.Enabled          := True;
+  rbNetIO.Enabled        := True;
 end;
 
 

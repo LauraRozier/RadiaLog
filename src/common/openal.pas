@@ -55,118 +55,120 @@ unit openal;
 interface
 
 uses
-  Classes, SysUtils
-  {$IFDEF MSWindows},Windows{$ENDIF};
+  Classes
+  , SysUtils
+  {$IFDEF MSWindows},Windows{$ENDIF}
+  ;
 
 { $ DEFINE ALUT} //define ALUT to use alut.dll
 
 const
 {$IFDEF MSWindows}
-  callibname   = 'OpenAL32.dll';
-  calutlibname = 'Alut.dll';
+  callibname='OpenAL32.dll';
+  calutlibname='Alut.dll';
 {$ENDIF}
 {$IFDEF Linux}
-  callibname   = 'libopenal.so';
-  calutlibname = 'libalut.so';
+  callibname='libopenal.so';
+  calutlibname='libalut.so';
 {$ENDIF}
 
 
 type
   // OpenAL boolean type.
   TALboolean = Boolean;
-  PALboolean = ^Boolean;
-  // OpenAL character type.
-  TALchar = Char;
-  PALchar = ^Char;
+  PALboolean = ^TALboolean;
+  //character
+  TALchar = char;
+  PALchar = pchar;
   // OpenAL 8bit signed byte.
   TALbyte = ShortInt;
-  PALbyte = ^ShortInt;
+  PALbyte = ^TALbyte;
   // OpenAL 8bit unsigned byte.
-  TALuByte = AnsiChar;
-  PALuByte = ^AnsiChar;
+  TALuByte = Char;
+  PALuByte = PChar;
   // OpenAL 16bit signed short integer type.
   TALshort = SmallInt;
-  PALshort = ^SmallInt;
+  PALshort = ^TALshort;
   // OpenAL 16bit unsigned short integer type.
   TALushort = Word;
-  PALushort = ^Word;
+  PALushort = ^TALushort;
   // OpenAL 32bit unsigned integer type.
   TALuint = Cardinal;
-  PALuint = ^Cardinal;
+  PALuint = ^TALuint;
   // OpenAL 32bit signed integer type.
   TALint = Integer;
-  PALint = ^Integer;
+  PALint = ^TALint;
   // OpenAL 32bit floating point type.
   TALfloat = Single;
-  PALfloat = ^Single;
+  PALfloat = ^TALfloat;
   // OpenAL 64bit double point type.
   TALdouble = Double;
-  PALdouble = ^Double;
+  PALdouble = ^TALdouble;
   // OpenAL 32bit type.
   TALsizei = Cardinal;
-  PALsizei = ^Cardinal;
+  PALsizei = ^TALsizei;
   // OpenAL void type
   TALvoid = Pointer;
-  PALvoid = ^Pointer;
+  PALvoid = ^TALvoid;
   PPALvoid = ^PALvoid;
   // OpenAL enumerations.
   TALenum = Integer;
-  PALenum = ^Integer;
+  PALenum = ^TALenum;
   // OpenAL bitfields.
   TALbitfield = Cardinal;
-  PALbitfield = ^Cardinal;
+  PALbitfield = ^TALbitfield;
   // OpenAL clamped float.
-  TALclampf = Single;
-  PALclampf = ^Single;
+  TALclampf = TALfloat;
+  PALclampf = ^TALclampf;
   // Openal clamped double.
-  TALclampd = Double;
-  PALclampd = ^Double;
+  TALclampd = TALdouble;
+  PALclampd = ^TALclampd;
 
   // ALC enumerations.
-  TALCenum = Integer;
-  PALCenum = ^Integer;
+  TALCenum = integer;
+  PALCenum = ^TALCenum;
   // ALC boolean type.
-  TALCboolean = Boolean;
-  PALCboolean = ^Boolean;
+  TALCboolean = boolean;
+  PALCboolean = ^TALCboolean;
   // ALC character type
-  TALCchar = Char;
-  PALCchar = ^Char;
+  TALCchar = char;
+  PALCchar = pchar;
   // ALC 8bit signed byte.
   TALCbyte = ShortInt;
-  PALCbyte = ^ShortInt;
+  PALCbyte = ^TALCbyte;
   // ALC 8bit unsigned byte.
-  TALCubyte = AnsiChar;
-  PALCubyte = ^AnsiChar;
+  TALCubyte = Char;
+  PALCubyte = PChar;
   // ALC 16bit signed short integer type.
-  TALCshort = SmallInt;
-  PALCshort = ^SmallInt;
+  TALCshort = smallint;
+  PALCshort = ^TALCshort;
   // ALC 16bit unsigned short integer type.
   TALCushort = Word;
-  PALCushort = ^Word;
+  PALCushort = ^TALCushort;
   // ALC 32bit unsigned integer type.
   TALCuint = Cardinal;
-  PALCuint = ^Cardinal;
+  PALCuint = ^TALCuint;
   // ALC 32bit signed integer type.
-  TALCint = Integer;
-  PALCint = ^Integer;
+  TALCint = integer;
+  PALCint = ^TALCint;
   // ALC 32bit floating point type.
-  TALCfloat = Single;
-  PALCfloat = ^Single;
+  TALCfloat = single;
+  PALCfloat = ^TALCfloat;
   // ALC 64bit double point type.
-  TALCdouble = Double;
-  PALCdouble = ^Double;
+  TALCdouble = double;
+  PALCdouble = ^TALCdouble;
   // ALC 32bit type.
-  TALCsizei = Cardinal;
-  PALCsizei = ^Cardinal;
+  TALCsizei = integer;
+  PALCsizei = ^TALCsizei;
   // ALC void type
   TALCvoid = Pointer;
-  PALCvoid = ^Pointer;
+  PALCvoid = ^TALCvoid;
   // ALC device
-  TALCdevice = Pointer;
-  PALCdevice = ^Pointer;
+  TALCdevice = TALCvoid;
+  PALCdevice = ^TALCdevice;
   // ALC context
-  TALCcontext = Pointer;
-  PALCcontext = ^Pointer;
+  TALCcontext = TALCvoid;
+  PALCcontext = ^TALCcontext;
 
   //EAX extension
   DSPROPERTY_EAX_LISTENERPROPERTY = LongWORD;
@@ -189,22 +191,22 @@ type
   //       should define your own structure to insure future compatibility.
   //
   TEaxListenerProperties = packed record
-    lRoom: Integer; // room effect level at low frequencies
-    lRoomHF: Integer;
+    lRoom: integer; // room effect level at low frequencies
+    lRoomHF: integer;
     // room effect high-frequency level re. low frequency levelimplementation
-    flRoomRolloffFactor: Double; // like DS3D flRolloffFactor but for room effect
-    flDecayTime: Double; // reverberation decay time at low frequenciesend.
-    flDecayHFRatio: Double; // high-frequency to low-frequency decay time ratio
-    lReflections: Integer; // early reflections level relative to room effect
-    flReflectionsDelay: Double; // initial reflection delay time
-    lReverb: Integer; // late reverberation level relative to room effect
-    flReverbDelay: Double;
+    flRoomRolloffFactor: double; // like DS3D flRolloffFactor but for room effect
+    flDecayTime: double; // reverberation decay time at low frequenciesend.
+    flDecayHFRatio: double; // high-frequency to low-frequency decay time ratio
+    lReflections: integer; // early reflections level relative to room effect
+    flReflectionsDelay: double; // initial reflection delay time
+    lReverb: integer; // late reverberation level relative to room effect
+    flReverbDelay: double;
     // late reverberation delay time relative to initial reflection
-    dwEnvironment: Cardinal; // sets all listener properties
-    flEnvironmentSize: Double; // environment size in meters
-    flEnvironmentDiffusion: Double; // environment diffusion
-    flAirAbsorptionHF: Double; // change in level per meter at 5 kHz
-    dwFlags: Cardinal; // modifies the behavior of properties
+    dwEnvironment: cardinal; // sets all listener properties
+    flEnvironmentSize: double; // environment size in meters
+    flEnvironmentDiffusion: double; // environment diffusion
+    flAirAbsorptionHF: double; // change in level per meter at 5 kHz
+    dwFlags: cardinal; // modifies the behavior of properties
   end;
   PEaxListenerProperties = ^TEaxListenerProperties;
 
@@ -221,21 +223,21 @@ type
   //              myBuffer = { 0, -200, ... , 0x00000003 };
   //
   TEaxBufferProperties = packed record
-    lDirect: Integer; // direct path level
-    lDirectHF: Integer; // direct path level at high frequencies
-    lRoom: Integer; // room effect level
-    lRoomHF: Integer; // room effect level at high frequencies
-    flRoomRolloffFactor: Double; // like DS3D flRolloffFactor but for room effect
-    lObstruction: Integer;
+    lDirect: integer; // direct path level
+    lDirectHF: integer; // direct path level at high frequencies
+    lRoom: integer; // room effect level
+    lRoomHF: integer; // room effect level at high frequencies
+    flRoomRolloffFactor: double; // like DS3D flRolloffFactor but for room effect
+    lObstruction: integer;
     // main obstruction control (attenuation at high frequencies)
-    flObstructionLFRatio: Double;
+    flObstructionLFRatio: double;
     // obstruction low-frequency level re. main control
-    lOcclusion: Integer;
+    lOcclusion: integer;
     // main occlusion control (attenuation at high frequencies)
-    flOcclusionLFRatio: Double; // occlusion low-frequency level re. main control
-    flOcclusionRoomRatio: Double; // occlusion room effect level re. main control
-    lOutsideVolumeHF: Integer; // outside sound cone level at high frequencies
-    flAirAbsorptionFactor: Double;
+    flOcclusionLFRatio: double; // occlusion low-frequency level re. main control
+    flOcclusionRoomRatio: double; // occlusion room effect level re. main control
+    lOutsideVolumeHF: integer; // outside sound cone level at high frequencies
+    flAirAbsorptionFactor: double;
     // multiplies DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF
     dwFlags: Cardinal; // modifies the behavior of properties
   end;
@@ -250,10 +252,10 @@ const
   AL_NONE                                   = 0;
 
   //Boolean False.
-  AL_FALSE                                  = False;
+  AL_FALSE                                  = 0;
 
   //Boolean True.
-  AL_TRUE                                   = True;
+  AL_TRUE                                   = 1;
 
   //Indicate the type of AL_SOURCE.
   //Sources can be spatialized
@@ -1246,8 +1248,8 @@ type
   PEFXEAXREVERBPROPERTIES = ^_EFXEAXREVERBPROPERTIES;
 
   _EFXLOWPASSFILTER = packed record
-    flGain: single;
-    flGainHF: single;
+	  flGain: single;
+	  flGainHF: single;
   end;
   EFXLOWPASSFILTER = _EFXLOWPASSFILTER;
   PEFXLOWPASSFILTER = ^_EFXLOWPASSFILTER;
@@ -1256,8 +1258,8 @@ type
 
 const
   //EAX extension
-  DSPROPSETID_EAX20_ListenerProperties: TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
-  DSPROPSETID_EAX20_BufferProperties:   TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_ListenerProperties     : TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_BufferProperties       : TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
 
   // For compatibility with future EAX versions:
   //DSPROPSETID_EAX_ListenerProperties = DSPROPSETID_EAX20_ListenerProperties;
@@ -1895,7 +1897,7 @@ var
 {$IFDEF ALUT}
   AlutLibHandle      : THandle = 0;
 {$ENDIF}
-  EFXUtilLibHandle   : THandle = 0;
+  EFXUtilLibHandle       : THandle = 0;
 
 {$IFDEF ALUT}
 function InitOpenAL(LibName: String = callibname;AlutLibName: String = calutlibname): Boolean;
@@ -2136,38 +2138,38 @@ begin
       if alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), ALC_EXT_EFX_NAME) then
       begin
         alGenEffects := alGetProcAddress('alGenEffects');
-	alDeleteEffects := alGetProcAddress('alDeleteEffects');
-	alIsEffect := alGetProcAddress('alIsEffect');
-	alEffecti := alGetProcAddress('alEffecti');
-	alEffectiv := alGetProcAddress('alEffectiv');
-	alEffectf := alGetProcAddress('alEffectf');
-	alEffectfv := alGetProcAddress('alEffectfv');
-	alGetEffecti := alGetProcAddress('alGetEffecti');
-	alGetEffectiv := alGetProcAddress('alGetEffectiv');
-	alGetEffectf := alGetProcAddress('alGetEffectf');
+		    alDeleteEffects := alGetProcAddress('alDeleteEffects');
+		    alIsEffect := alGetProcAddress('alIsEffect');
+		    alEffecti := alGetProcAddress('alEffecti');
+		    alEffectiv := alGetProcAddress('alEffectiv');
+		    alEffectf := alGetProcAddress('alEffectf');
+		    alEffectfv := alGetProcAddress('alEffectfv');
+		    alGetEffecti := alGetProcAddress('alGetEffecti');
+		    alGetEffectiv := alGetProcAddress('alGetEffectiv');
+		    alGetEffectf := alGetProcAddress('alGetEffectf');
         alGetEffectfv := alGetProcAddress('alGetEffectfv');
         alGenFilters := alGetProcAddress('alGenFilters');
-	alDeleteFilters := alGetProcAddress('alDeleteFilters');
-	alIsFilter := alGetProcAddress('alIsFilter');
-	alFilteri := alGetProcAddress('alFilteri');
-	alFilteriv := alGetProcAddress('alFilteriv');
-	alFilterf := alGetProcAddress('alFilterf');
-	alFilterfv := alGetProcAddress('alFilterfv');
-	alGetFilteri := alGetProcAddress('alGetFilteri');
-	alGetFilteriv := alGetProcAddress('alGetFilteriv');
-	alGetFilterf := alGetProcAddress('alGetFilterf');
-	alGetFilterfv := alGetProcAddress('alGetFilterfv');
-	alGenAuxiliaryEffectSlots := alGetProcAddress('alGenAuxiliaryEffectSlots');
-	alDeleteAuxiliaryEffectSlots := alGetProcAddress('alDeleteAuxiliaryEffectSlots');
-	alIsAuxiliaryEffectSlot := alGetProcAddress('alIsAuxiliaryEffectSlot');
-	alAuxiliaryEffectSloti := alGetProcAddress('alAuxiliaryEffectSloti');
-	alAuxiliaryEffectSlotiv := alGetProcAddress('alAuxiliaryEffectSlotiv');
+		    alDeleteFilters := alGetProcAddress('alDeleteFilters');
+		    alIsFilter := alGetProcAddress('alIsFilter');
+		    alFilteri := alGetProcAddress('alFilteri');
+		    alFilteriv := alGetProcAddress('alFilteriv');
+		    alFilterf := alGetProcAddress('alFilterf');
+		    alFilterfv := alGetProcAddress('alFilterfv');
+		    alGetFilteri := alGetProcAddress('alGetFilteri');
+		    alGetFilteriv := alGetProcAddress('alGetFilteriv');
+		    alGetFilterf := alGetProcAddress('alGetFilterf');
+		    alGetFilterfv := alGetProcAddress('alGetFilterfv');
+		    alGenAuxiliaryEffectSlots := alGetProcAddress('alGenAuxiliaryEffectSlots');
+		    alDeleteAuxiliaryEffectSlots := alGetProcAddress('alDeleteAuxiliaryEffectSlots');
+		    alIsAuxiliaryEffectSlot := alGetProcAddress('alIsAuxiliaryEffectSlot');
+		    alAuxiliaryEffectSloti := alGetProcAddress('alAuxiliaryEffectSloti');
+		    alAuxiliaryEffectSlotiv := alGetProcAddress('alAuxiliaryEffectSlotiv');
         alAuxiliaryEffectSlotf := alGetProcAddress('alAuxiliaryEffectSlotf');
-	alAuxiliaryEffectSlotfv := alGetProcAddress('alAuxiliaryEffectSlotfv');
-	alGetAuxiliaryEffectSloti := alGetProcAddress('alGetAuxiliaryEffectSloti');
-	alGetAuxiliaryEffectSlotiv := alGetProcAddress('alGetAuxiliaryEffectSlotiv');
-	alGetAuxiliaryEffectSlotf := alGetProcAddress('alGetAuxiliaryEffectSlotf');
-	alGetAuxiliaryEffectSlotfv := alGetProcAddress('alGetAuxiliaryEffectSlotfv');
+		    alAuxiliaryEffectSlotfv := alGetProcAddress('alAuxiliaryEffectSlotfv');
+		    alGetAuxiliaryEffectSloti := alGetProcAddress('alGetAuxiliaryEffectSloti');
+		    alGetAuxiliaryEffectSlotiv := alGetProcAddress('alGetAuxiliaryEffectSlotiv');
+		    alGetAuxiliaryEffectSlotf := alGetProcAddress('alGetAuxiliaryEffectSlotf');
+		    alGetAuxiliaryEffectSlotfv := alGetProcAddress('alGetAuxiliaryEffectSlotfv');
       end;
     end;
 end;
@@ -2245,7 +2247,7 @@ begin
       if name='data' then
       begin
         //Get the size of the wave data
-        stream.Read(readint, 4);
+        stream.Read(readint,4);
         size:=readint;
         //if WavHeader.BitsPerSample = 8 then size:=size+8; //fix for 8bit???
         //Read the actual wave data
@@ -2277,20 +2279,20 @@ end;
 
 procedure alutLoadWAVFile(fname: string; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint);
 var
-  Stream: TFileStream;
+  Stream : TFileStream;
 begin
-  Stream := TFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
+  Stream:=TFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
   LoadWavStream(Stream, format, data, size, freq, loop);
-  FreeAndNil(Stream);
+  Stream.Free;
 end;
 
 procedure alutLoadWAVMemory(memory: PALbyte; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint);
 var Stream: TMemoryStream;
 begin
-  Stream := TMemoryStream.Create;
-  Stream.Write(memory, sizeof(memory^));
+  Stream:=TMemoryStream.Create;
+  Stream.Write(memory,sizeof(memory^));
   LoadWavStream(Stream, format, data, size, freq, loop);
-  FreeAndNil(Stream);
+  Stream.Free;
 end;
 
 procedure alutUnloadWAV(format: TALenum; data: TALvoid; size: TALsizei; freq: TALsizei);

@@ -12,8 +12,8 @@ uses
   GeigerMethods, Defaults;
 
 var
-  fDefaultDevice, fDeviceList: PALCubyte;
-  fDefDeviceStr: string;
+  fDefaultDevice, fDeviceList: PAnsiChar;
+  fDefDeviceStr: PAnsiChar;
 
 type
   TAudioEnum = Class(TObject)
@@ -29,23 +29,22 @@ type
   TAudioGeiger = class(TMethodAudio)
     private
       fCaptureDevice: PALCDevice;
-      fChosenDevice: string;
+      fChosenDevice: AnsiString;
       fTreshold: Double;
       // Frequency * Channels (Per full second) + Slack-space
       fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
-      function GetDevStr: string;
+      function GetDevStr: AnsiString;
     protected
       procedure Execute; override;
     public
       constructor Create(aThreshold: Double; aCPMLog, aErrorLog: TRichEdit;
                          CreateSuspended: Boolean = False); overload;
-      constructor Create(aThreshold: Double; aPort: string;
+      constructor Create(aThreshold: Double; aPort: AnsiString;
                          aCPMLog, aErrorLog: TRichEdit;
                          CreateSuspended: Boolean = False); overload;
       destructor Destroy; override;
-      property DefaultDevice: string read GetDevStr;
-      property ChosenDevice: string read fChosenDevice write fChosenDevice;
-    published
+      property DefaultDevice: AnsiString read GetDevStr;
+      property ChosenDevice: AnsiString read fChosenDevice write fChosenDevice;
       property Initialized;
   end;
 
@@ -79,7 +78,7 @@ begin
     if alcIsExtensionPresent(nil, 'ALC_ENUMERATION_EXT') then
     begin
      fDefaultDevice := alcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
-     fDefDeviceStr  := string(fDefaultDevice);
+     fDefDeviceStr  := fDefaultDevice;
      fDeviceList    := alcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER);
     end;
 
@@ -105,7 +104,7 @@ begin
 end;
 
 
-constructor TAudioGeiger.Create(aThreshold: Double; aPort: String;
+constructor TAudioGeiger.Create(aThreshold: Double; aPort: AnsiString;
                                 aCPMLog, aErrorLog: TRichEdit;
                                 CreateSuspended: Boolean = False);
 begin
@@ -124,25 +123,19 @@ var
   DateTime: string;
   CurRMS: Double;
   numSamples: Integer;
-  capDeviceFormat: TALCenum;
 begin
   inherited;
   // Prepare audio source
-  if GEIGER_CHANNELS = 2 then
-    capDeviceFormat := AL_FORMAT_STEREO16
-  else
-    capDeviceFormat := AL_FORMAT_MONO16;
-
   if fChosenDevice = '' then
-    fCaptureDevice := alcCaptureOpenDevice(nil,
-                                           GEIGER_SAMPLE_RATE,
-                                           capDeviceFormat,
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS))
+    fCaptureDevice := alcCaptureOpenDevice(nil, // Device name pointer
+                                           GEIGER_SAMPLE_RATE, // Frequency
+                                           IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
+                                           Trunc(Length(fData) Div GEIGER_CHANNELS)) // Buffer size
   else
-    fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice),
-                                           GEIGER_SAMPLE_RATE,
-                                           capDeviceFormat,
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS));
+    fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice), // Device name pointer
+                                           GEIGER_SAMPLE_RATE, // Frequency
+                                           IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
+                                           Trunc(Length(fData) Div GEIGER_CHANNELS)); // Buffer size
 
   if fCaptureDevice = nil then
     raise exception.create('Capture device is nil!');
@@ -177,9 +170,6 @@ begin
     fCPMLog.Lines.Add(#9 + 'Current CPM: ' + IntToStr(fSumCPM) + sLineBreak);
     fNetworkHandler.UploadData(fSumCPM, fErrorLog);
   end;
-  
-  alcCaptureStop(fCaptureDevice);
-  alcCaptureCloseDevice(fCaptureDevice);
 end;
 
 
@@ -193,7 +183,7 @@ begin
 end;
 
 
-function TAudioGeiger.GetDevStr;
+function TAudioGeiger.GetDevStr: AnsiString;
 begin
   result := fDefDeviceStr;
 end;

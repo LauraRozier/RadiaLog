@@ -5921,7 +5921,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 636
+          Width = 600
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5943,7 +5943,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 636
+          Width = 600
           Height = 227
           Margins.Left = 10
           Margins.Right = 10
@@ -5968,10 +5968,6 @@ object mainForm: TmainForm
     object tabGraph: TTabSheet
       Caption = 'Graph'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBox2: TScrollBox
         Left = 0
         Top = 0
@@ -6075,44 +6071,6 @@ object mainForm: TmainForm
         end
       end
     end
-    object tabAudio: TTabSheet
-      Caption = 'Audio scope'
-      ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object SLScope2: TSLScope
-        Left = 3
-        Top = 3
-        Width = 770
-        Height = 509
-        TabOrder = 0
-        InputPins.Form = mainForm
-        InputPins.Pins = (
-          (
-            mainForm.cRMSMeter.OutputPins._Pin0
-            'mainForm.cRMSMeter.OutputPins.Pin [0]')
-          (
-            mainForm.cRMSMeter.OutputPins._Pin1
-            'mainForm.cRMSMeter.OutputPins.Pin [1]'))
-        Channels = <
-          item
-            Name = 'Channel0'
-            InputPin.Form = mainForm
-            InputPin.SourcePin = (
-              mainForm.cRMSMeter.OutputPins._Pin0
-              'mainForm.cRMSMeter.OutputPins.Pin [0]')
-          end
-          item
-            Name = 'Channel1'
-            InputPin.Form = mainForm
-            InputPin.SourcePin = (
-              mainForm.cRMSMeter.OutputPins._Pin1
-              'mainForm.cRMSMeter.OutputPins.Pin [1]')
-          end>
-      end
-    end
   end
   object fStatusBar: TStatusBar
     Left = 0
@@ -6129,42 +6087,16 @@ object mainForm: TmainForm
     Enabled = False
     Interval = 100
     OnTimer = cMainTimerTimer
-    Left = 760
-  end
-  object cComPort: TApdComPort
-    Baud = 2400
-    AutoOpen = False
-    TraceName = 'APRO.TRC'
-    LogName = 'APRO.LOG'
-    Left = 728
-  end
-  object cAudioSrc: TALAudioIn
-    Enabled = False
-    OutputPin.Form = mainForm
-    OutputPin.SinkPins = (
-      mainForm.cRMSMeter.InputPin)
-    Left = 700
-  end
-  object cRMSMeter: TALRMSMeter
-    InputPin.Form = mainForm
-    InputPin.SourcePin = mainForm.cAudioSrc.OutputPin
-    OutputPins.Form = mainForm
-    OutputPins.Pins = (
-      Sinks
-      (
-        (
-          mainForm.SLScope2.InputPins._Pin0
-          'mainForm.SLScope2.InputPins.Channel0'))
-      Sinks
-      (
-        (
-          mainForm.SLScope2.InputPins._Pin1
-          'mainForm.SLScope2.InputPins.Channel1')))
-    Left = 668
+    Left = 672
   end
   object cPulseTimer: TTimer
     Interval = 50
     OnTimer = cPulseTimerTimer
     Left = 636
+  end
+  object ApdComPort1: TApdComPort
+    TraceName = 'APRO.TRC'
+    LogName = 'APRO.LOG'
+    Left = 496
   end
 end
