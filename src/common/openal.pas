@@ -55,120 +55,118 @@ unit openal;
 interface
 
 uses
-  Classes
-  , SysUtils
-  {$IFDEF MSWindows},Windows{$ENDIF}
-  ;
+  Classes, SysUtils
+  {$IFDEF MSWindows},Windows{$ENDIF};
 
 { $ DEFINE ALUT} //define ALUT to use alut.dll
 
 const
 {$IFDEF MSWindows}
-  callibname='OpenAL32.dll';
-  calutlibname='Alut.dll';
+  callibname   = 'OpenAL32.dll';
+  calutlibname = 'Alut.dll';
 {$ENDIF}
 {$IFDEF Linux}
-  callibname='libopenal.so';
-  calutlibname='libalut.so';
+  callibname   = 'libopenal.so';
+  calutlibname = 'libalut.so';
 {$ENDIF}
 
 
 type
   // OpenAL boolean type.
   TALboolean = Boolean;
-  PALboolean = PBoolean;
-  //character
+  PALboolean = ^Boolean;
+  // OpenAL character type.
   TALchar = Char;
-  PALchar = PChar;
+  PALchar = ^Char;
   // OpenAL 8bit signed byte.
   TALbyte = ShortInt;
-  PALbyte = PShortInt;
+  PALbyte = ^ShortInt;
   // OpenAL 8bit unsigned byte.
   TALuByte = AnsiChar;
-  PALuByte = PAnsiChar;
+  PALuByte = ^AnsiChar;
   // OpenAL 16bit signed short integer type.
   TALshort = SmallInt;
-  PALshort = PSmallInt;
+  PALshort = ^SmallInt;
   // OpenAL 16bit unsigned short integer type.
   TALushort = Word;
-  PALushort = PWord;
+  PALushort = ^Word;
   // OpenAL 32bit unsigned integer type.
   TALuint = Cardinal;
-  PALuint = PCardinal;
+  PALuint = ^Cardinal;
   // OpenAL 32bit signed integer type.
   TALint = Integer;
-  PALint = PInteger;
+  PALint = ^Integer;
   // OpenAL 32bit floating point type.
   TALfloat = Single;
-  PALfloat = PSingle;
+  PALfloat = ^Single;
   // OpenAL 64bit double point type.
   TALdouble = Double;
-  PALdouble = PDouble;
+  PALdouble = ^Double;
   // OpenAL 32bit type.
   TALsizei = Cardinal;
-  PALsizei = PCardinal;
+  PALsizei = ^Cardinal;
   // OpenAL void type
   TALvoid = Pointer;
-  PALvoid = PPointer;
+  PALvoid = ^Pointer;
   PPALvoid = ^PALvoid;
   // OpenAL enumerations.
   TALenum = Integer;
-  PALenum = PInteger;
+  PALenum = ^Integer;
   // OpenAL bitfields.
   TALbitfield = Cardinal;
-  PALbitfield = PCardinal;
+  PALbitfield = ^Cardinal;
   // OpenAL clamped float.
   TALclampf = Single;
-  PALclampf = PSingle;
+  PALclampf = ^Single;
   // Openal clamped double.
   TALclampd = Double;
-  PALclampd = PDouble;
+  PALclampd = ^Double;
 
   // ALC enumerations.
   TALCenum = Integer;
-  PALCenum = PInteger;
+  PALCenum = ^Integer;
   // ALC boolean type.
   TALCboolean = Boolean;
-  PALCboolean = PBoolean;
+  PALCboolean = ^Boolean;
   // ALC character type
   TALCchar = Char;
-  PALCchar = pChar;
+  PALCchar = ^Char;
   // ALC 8bit signed byte.
   TALCbyte = ShortInt;
-  PALCbyte = PShortInt;
+  PALCbyte = ^ShortInt;
   // ALC 8bit unsigned byte.
   TALCubyte = AnsiChar;
-  PALCubyte = PAnsiChar;
+  PALCubyte = ^AnsiChar;
   // ALC 16bit signed short integer type.
   TALCshort = SmallInt;
-  PALCshort = PSmallInt;
+  PALCshort = ^SmallInt;
   // ALC 16bit unsigned short integer type.
   TALCushort = Word;
-  PALCushort = PWord;
+  PALCushort = ^Word;
   // ALC 32bit unsigned integer type.
   TALCuint = Cardinal;
-  PALCuint = PCardinal;
+  PALCuint = ^Cardinal;
   // ALC 32bit signed integer type.
   TALCint = Integer;
-  PALCint = PInteger;
+  PALCint = ^Integer;
   // ALC 32bit floating point type.
   TALCfloat = Single;
-  PALCfloat = PSingle;
+  PALCfloat = ^Single;
   // ALC 64bit double point type.
   TALCdouble = Double;
-  PALCdouble = PDouble;
+  PALCdouble = ^Double;
   // ALC 32bit type.
-  TALCsizei = Integer;
-  PALCsizei = PInteger;
+  TALCsizei = Cardinal;
+  PALCsizei = ^Cardinal;
   // ALC void type
   TALCvoid = Pointer;
-  PALCvoid = PPointer;
+  PALCvoid = ^Pointer;
   // ALC device
   TALCdevice = Pointer;
-  PALCdevice = PPointer;
+  PALCdevice = ^Pointer;
   // ALC context
   TALCcontext = Pointer;
-  PALCcontext = PPointer;
+  PALCcontext = ^Pointer;
 
   //EAX extension
   DSPROPERTY_EAX_LISTENERPROPERTY = LongWORD;
@@ -191,22 +189,22 @@ type
   //       should define your own structure to insure future compatibility.
   //
   TEaxListenerProperties = packed record
-    lRoom: integer; // room effect level at low frequencies
-    lRoomHF: integer;
+    lRoom: Integer; // room effect level at low frequencies
+    lRoomHF: Integer;
     // room effect high-frequency level re. low frequency levelimplementation
-    flRoomRolloffFactor: double; // like DS3D flRolloffFactor but for room effect
-    flDecayTime: double; // reverberation decay time at low frequenciesend.
-    flDecayHFRatio: double; // high-frequency to low-frequency decay time ratio
-    lReflections: integer; // early reflections level relative to room effect
-    flReflectionsDelay: double; // initial reflection delay time
-    lReverb: integer; // late reverberation level relative to room effect
-    flReverbDelay: double;
+    flRoomRolloffFactor: Double; // like DS3D flRolloffFactor but for room effect
+    flDecayTime: Double; // reverberation decay time at low frequenciesend.
+    flDecayHFRatio: Double; // high-frequency to low-frequency decay time ratio
+    lReflections: Integer; // early reflections level relative to room effect
+    flReflectionsDelay: Double; // initial reflection delay time
+    lReverb: Integer; // late reverberation level relative to room effect
+    flReverbDelay: Double;
     // late reverberation delay time relative to initial reflection
-    dwEnvironment: cardinal; // sets all listener properties
-    flEnvironmentSize: double; // environment size in meters
-    flEnvironmentDiffusion: double; // environment diffusion
-    flAirAbsorptionHF: double; // change in level per meter at 5 kHz
-    dwFlags: cardinal; // modifies the behavior of properties
+    dwEnvironment: Cardinal; // sets all listener properties
+    flEnvironmentSize: Double; // environment size in meters
+    flEnvironmentDiffusion: Double; // environment diffusion
+    flAirAbsorptionHF: Double; // change in level per meter at 5 kHz
+    dwFlags: Cardinal; // modifies the behavior of properties
   end;
   PEaxListenerProperties = ^TEaxListenerProperties;
 
@@ -223,21 +221,21 @@ type
   //              myBuffer = { 0, -200, ... , 0x00000003 };
   //
   TEaxBufferProperties = packed record
-    lDirect: integer; // direct path level
-    lDirectHF: integer; // direct path level at high frequencies
-    lRoom: integer; // room effect level
-    lRoomHF: integer; // room effect level at high frequencies
-    flRoomRolloffFactor: double; // like DS3D flRolloffFactor but for room effect
-    lObstruction: integer;
+    lDirect: Integer; // direct path level
+    lDirectHF: Integer; // direct path level at high frequencies
+    lRoom: Integer; // room effect level
+    lRoomHF: Integer; // room effect level at high frequencies
+    flRoomRolloffFactor: Double; // like DS3D flRolloffFactor but for room effect
+    lObstruction: Integer;
     // main obstruction control (attenuation at high frequencies)
-    flObstructionLFRatio: double;
+    flObstructionLFRatio: Double;
     // obstruction low-frequency level re. main control
-    lOcclusion: integer;
+    lOcclusion: Integer;
     // main occlusion control (attenuation at high frequencies)
-    flOcclusionLFRatio: double; // occlusion low-frequency level re. main control
-    flOcclusionRoomRatio: double; // occlusion room effect level re. main control
-    lOutsideVolumeHF: integer; // outside sound cone level at high frequencies
-    flAirAbsorptionFactor: double;
+    flOcclusionLFRatio: Double; // occlusion low-frequency level re. main control
+    flOcclusionRoomRatio: Double; // occlusion room effect level re. main control
+    lOutsideVolumeHF: Integer; // outside sound cone level at high frequencies
+    flAirAbsorptionFactor: Double;
     // multiplies DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF
     dwFlags: Cardinal; // modifies the behavior of properties
   end;
@@ -252,10 +250,10 @@ const
   AL_NONE                                   = 0;
 
   //Boolean False.
-  AL_FALSE                                  = 0;
+  AL_FALSE                                  = False;
 
   //Boolean True.
-  AL_TRUE                                   = 1;
+  AL_TRUE                                   = True;
 
   //Indicate the type of AL_SOURCE.
   //Sources can be spatialized
@@ -1248,8 +1246,8 @@ type
   PEFXEAXREVERBPROPERTIES = ^_EFXEAXREVERBPROPERTIES;
 
   _EFXLOWPASSFILTER = packed record
-	  flGain: single;
-	  flGainHF: single;
+    flGain: single;
+    flGainHF: single;
   end;
   EFXLOWPASSFILTER = _EFXLOWPASSFILTER;
   PEFXLOWPASSFILTER = ^_EFXLOWPASSFILTER;
@@ -1258,8 +1256,8 @@ type
 
 const
   //EAX extension
-  DSPROPSETID_EAX20_ListenerProperties     : TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
-  DSPROPSETID_EAX20_BufferProperties       : TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_ListenerProperties: TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_BufferProperties:   TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
 
   // For compatibility with future EAX versions:
   //DSPROPSETID_EAX_ListenerProperties = DSPROPSETID_EAX20_ListenerProperties;
@@ -1897,7 +1895,7 @@ var
 {$IFDEF ALUT}
   AlutLibHandle      : THandle = 0;
 {$ENDIF}
-  EFXUtilLibHandle       : THandle = 0;
+  EFXUtilLibHandle   : THandle = 0;
 
 {$IFDEF ALUT}
 function InitOpenAL(LibName: String = callibname;AlutLibName: String = calutlibname): Boolean;
@@ -2138,38 +2136,38 @@ begin
       if alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), ALC_EXT_EFX_NAME) then
       begin
         alGenEffects := alGetProcAddress('alGenEffects');
-		    alDeleteEffects := alGetProcAddress('alDeleteEffects');
-		    alIsEffect := alGetProcAddress('alIsEffect');
-		    alEffecti := alGetProcAddress('alEffecti');
-		    alEffectiv := alGetProcAddress('alEffectiv');
-		    alEffectf := alGetProcAddress('alEffectf');
-		    alEffectfv := alGetProcAddress('alEffectfv');
-		    alGetEffecti := alGetProcAddress('alGetEffecti');
-		    alGetEffectiv := alGetProcAddress('alGetEffectiv');
-		    alGetEffectf := alGetProcAddress('alGetEffectf');
+	alDeleteEffects := alGetProcAddress('alDeleteEffects');
+	alIsEffect := alGetProcAddress('alIsEffect');
+	alEffecti := alGetProcAddress('alEffecti');
+	alEffectiv := alGetProcAddress('alEffectiv');
+	alEffectf := alGetProcAddress('alEffectf');
+	alEffectfv := alGetProcAddress('alEffectfv');
+	alGetEffecti := alGetProcAddress('alGetEffecti');
+	alGetEffectiv := alGetProcAddress('alGetEffectiv');
+	alGetEffectf := alGetProcAddress('alGetEffectf');
         alGetEffectfv := alGetProcAddress('alGetEffectfv');
         alGenFilters := alGetProcAddress('alGenFilters');
-		    alDeleteFilters := alGetProcAddress('alDeleteFilters');
-		    alIsFilter := alGetProcAddress('alIsFilter');
-		    alFilteri := alGetProcAddress('alFilteri');
-		    alFilteriv := alGetProcAddress('alFilteriv');
-		    alFilterf := alGetProcAddress('alFilterf');
-		    alFilterfv := alGetProcAddress('alFilterfv');
-		    alGetFilteri := alGetProcAddress('alGetFilteri');
-		    alGetFilteriv := alGetProcAddress('alGetFilteriv');
-		    alGetFilterf := alGetProcAddress('alGetFilterf');
-		    alGetFilterfv := alGetProcAddress('alGetFilterfv');
-		    alGenAuxiliaryEffectSlots := alGetProcAddress('alGenAuxiliaryEffectSlots');
-		    alDeleteAuxiliaryEffectSlots := alGetProcAddress('alDeleteAuxiliaryEffectSlots');
-		    alIsAuxiliaryEffectSlot := alGetProcAddress('alIsAuxiliaryEffectSlot');
-		    alAuxiliaryEffectSloti := alGetProcAddress('alAuxiliaryEffectSloti');
-		    alAuxiliaryEffectSlotiv := alGetProcAddress('alAuxiliaryEffectSlotiv');
+	alDeleteFilters := alGetProcAddress('alDeleteFilters');
+	alIsFilter := alGetProcAddress('alIsFilter');
+	alFilteri := alGetProcAddress('alFilteri');
+	alFilteriv := alGetProcAddress('alFilteriv');
+	alFilterf := alGetProcAddress('alFilterf');
+	alFilterfv := alGetProcAddress('alFilterfv');
+	alGetFilteri := alGetProcAddress('alGetFilteri');
+	alGetFilteriv := alGetProcAddress('alGetFilteriv');
+	alGetFilterf := alGetProcAddress('alGetFilterf');
+	alGetFilterfv := alGetProcAddress('alGetFilterfv');
+	alGenAuxiliaryEffectSlots := alGetProcAddress('alGenAuxiliaryEffectSlots');
+	alDeleteAuxiliaryEffectSlots := alGetProcAddress('alDeleteAuxiliaryEffectSlots');
+	alIsAuxiliaryEffectSlot := alGetProcAddress('alIsAuxiliaryEffectSlot');
+	alAuxiliaryEffectSloti := alGetProcAddress('alAuxiliaryEffectSloti');
+	alAuxiliaryEffectSlotiv := alGetProcAddress('alAuxiliaryEffectSlotiv');
         alAuxiliaryEffectSlotf := alGetProcAddress('alAuxiliaryEffectSlotf');
-		    alAuxiliaryEffectSlotfv := alGetProcAddress('alAuxiliaryEffectSlotfv');
-		    alGetAuxiliaryEffectSloti := alGetProcAddress('alGetAuxiliaryEffectSloti');
-		    alGetAuxiliaryEffectSlotiv := alGetProcAddress('alGetAuxiliaryEffectSlotiv');
-		    alGetAuxiliaryEffectSlotf := alGetProcAddress('alGetAuxiliaryEffectSlotf');
-		    alGetAuxiliaryEffectSlotfv := alGetProcAddress('alGetAuxiliaryEffectSlotfv');
+	alAuxiliaryEffectSlotfv := alGetProcAddress('alAuxiliaryEffectSlotfv');
+	alGetAuxiliaryEffectSloti := alGetProcAddress('alGetAuxiliaryEffectSloti');
+	alGetAuxiliaryEffectSlotiv := alGetProcAddress('alGetAuxiliaryEffectSlotiv');
+	alGetAuxiliaryEffectSlotf := alGetProcAddress('alGetAuxiliaryEffectSlotf');
+	alGetAuxiliaryEffectSlotfv := alGetProcAddress('alGetAuxiliaryEffectSlotfv');
       end;
     end;
 end;
@@ -2247,7 +2245,7 @@ begin
       if name='data' then
       begin
         //Get the size of the wave data
-        stream.Read(readint,4);
+        stream.Read(readint, 4);
         size:=readint;
         //if WavHeader.BitsPerSample = 8 then size:=size+8; //fix for 8bit???
         //Read the actual wave data
