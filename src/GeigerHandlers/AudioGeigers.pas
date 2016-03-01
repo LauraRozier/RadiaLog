@@ -189,6 +189,7 @@ begin
   alcCaptureStop(fCaptureDevice);
   alcCaptureCloseDevice(fCaptureDevice);
   fCaptureDevice := nil;
+  AlutExit;
 end;
 
 

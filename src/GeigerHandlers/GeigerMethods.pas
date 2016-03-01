@@ -118,7 +118,6 @@ end;
 destructor TMethodAudio.Destroy;
 begin
   inherited;
-  AlutExit;
 end;
 
 end.
