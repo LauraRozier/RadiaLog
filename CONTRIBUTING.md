@@ -34,9 +34,9 @@ There are many formats and guidelines, However I use the folowing, it also looks
 >
 > New(Hello_World.c)
 >
-> =Short=
+> =Short=  
 > New file containing a basic function.
 >
-> =Long=
+> =Long=  
 > This file must be compiled and then it must be run via the console.  
 > Once it's running it outputs the text "Hello world" to the console.
