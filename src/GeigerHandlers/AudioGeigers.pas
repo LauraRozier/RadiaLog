@@ -167,8 +167,6 @@ begin
 
       if (CurRMS / 100000) >= fTreshold then
         Inc(fSumCPM);
-
-      FreeAndNil(Data);
     end;
 
     if Terminated then Exit;
@@ -179,6 +177,7 @@ begin
   end;
   
   alcCaptureStop(fCaptureDevice);
+  Data := nil;
 end;
 
 
