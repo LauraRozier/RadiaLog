@@ -3,7 +3,7 @@ unit AudioGeigers;
 interface
 uses
   // System units
-  SysUtils, Classes,
+  SysUtils, Classes, Math,
   // VCL units
   VCL.ComCtrls,
   // OpenAL unit
@@ -28,9 +28,11 @@ type
   
   TAudioGeiger = class(TMethodAudio)
     private
-      fCaptureDevice: pALCDevice;
+      fCaptureDevice: PALCDevice;
       fChosenDevice: string;
       fTreshold: Double;
+      // Frequency * Channels (Per full second) + Slack-space
+      fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
       function GetDevStr: string;
     protected
       procedure Execute; override;
@@ -118,54 +120,54 @@ end;
 
 procedure TAudioGeiger.Execute;
 var
-  I: Integer;
+  I, J: Integer;
   DateTime: string;
   CurRMS: Double;
-  Data: array [0..2499] of SmallInt;
+  numSamples: Integer;
+  capDeviceFormat: TALCenum;
 begin
   inherited;
-  // Disable 3D spatialization for speed up
-  alDistanceModel(AL_NONE);
-  
   // Prepare audio source
+  if GEIGER_CHANNELS = 2 then
+    capDeviceFormat := AL_FORMAT_STEREO16
+  else
+    capDeviceFormat := AL_FORMAT_MONO16;
+
   if fChosenDevice = '' then
     fCaptureDevice := alcCaptureOpenDevice(nil,
-                                           22050,
-                                           AL_FORMAT_MONO16,
-                                           Length(Data) / 2)
+                                           GEIGER_SAMPLE_RATE,
+                                           capDeviceFormat,
+                                           Trunc(Length(fData) Div GEIGER_CHANNELS))
   else
     fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice),
-                                           22050,
-                                           AL_FORMAT_MONO16,
-                                           Length(Data) / 2);
+                                           GEIGER_SAMPLE_RATE,
+                                           capDeviceFormat,
+                                           Trunc(Length(fData) Div GEIGER_CHANNELS));
 
   if fCaptureDevice = nil then
-  begin
     raise exception.create('Capture device is nil!');
-    exit;
-  end;
   
   alcCaptureStart(fCaptureDevice);
   
   while not Terminated do
   begin
-    for I := 0 to Trunc(30 / 0.05) do
+    for I := 0 to GEIGER_RUN_TIME - 1 do
     begin
       if Terminated then Exit;
   
       Sleep(50);
       // Get number of frames captuered
-      alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, 1, @val);
-      alcCaptureSamples(fCaptureDevice, {@}Data, val);
+      alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, 1, @numSamples);
+      alcCaptureSamples(fCaptureDevice, @fData, numSamples); 
       // Calculate RMS
-      CurRMS = 0;
+      CurRMS := 0.0; 
 	  
-      for I = 0 to val do
-        CurRMS := CurRMS + (Data[I] * Data[I]);
+      for J := 0 to (numSamples - 1) do
+        CurRMS := CurRMS + Sqr(fData[J]);
 
-      CurRMS = Sqrt(CurRMS / val);
+      CurRMS := Sqrt(CurRMS / numSamples);
 
-      if (CurRMS / 100000) >= fTreshold then
+      if (CurRMS / THRESHOLD_DIV) >= fTreshold then
         Inc(fSumCPM);
     end;
 
@@ -177,7 +179,7 @@ begin
   end;
   
   alcCaptureStop(fCaptureDevice);
-  Data := nil;
+  alcCaptureCloseDevice(fCaptureDevice);
 end;
 
 
@@ -185,6 +187,7 @@ destructor TAudioGeiger.Destroy;
 begin
   inherited;
   alcCaptureStop(fCaptureDevice);
+  alcCaptureCloseDevice(fCaptureDevice);
   fCaptureDevice := nil;
 end;
 

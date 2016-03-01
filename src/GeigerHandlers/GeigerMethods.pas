@@ -109,6 +109,8 @@ constructor TMethodAudio.Create(CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
   fIsSoundInitialized := InitOpenAL;
+  // Disable 3D spatialization for speed up
+  alDistanceModel(AL_NONE);
   Set8087CW($133F);
 end;
 
