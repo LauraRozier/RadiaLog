@@ -28,15 +28,9 @@ type
   
   TAudioGeiger = class(TMethodAudio)
     private
-      fCaptureDevice: pALCDevice;                          //- Device used to capture audio
-      fCaptureBuffer: array[0..REC_BufferSize] of TALbyte; //- Capture buffer external from openAL, sized as calculated above for 30 second recording
-      fSamples: TALInt;                                    //- count of the number of samples recorded
+      fCaptureDevice: pALCDevice;
       fChosenDevice: string;
-      fSumCPM: Integer;
-      fCPMLog, fErrorLog: TRichEdit;
-      fStopWork: Boolean;
       fTreshold: Double;
-      procedure MeasureAudio;
       function GetDevStr: string;
     protected
       procedure Execute; override;
@@ -49,7 +43,6 @@ type
       destructor Destroy; override;
       property DefaultDevice: string read GetDevStr;
       property ChosenDevice: string read fChosenDevice write fChosenDevice;
-      property StopWork: Boolean read fStopWork write fStopWork;
     published
       property Initialized;
   end;
@@ -127,31 +120,55 @@ procedure TAudioGeiger.Execute;
 var
   I: Integer;
   DateTime: string;
+  CurRMS: Double;
+  Data: array [0..2499] of SmallInt;
 begin
   inherited;
-
+  // Disable 3D spatialization for speed up
+  alDistanceModel(AL_NONE);
+  
+  // Prepare audio source
   if fChosenDevice = '' then
     fCaptureDevice := alcCaptureOpenDevice(nil,
-                                           REC_Frequency, REC_Format,
-                                           REC_BufferSize)
+                                           22050,
+                                           AL_FORMAT_MONO16,
+                                           Length(Data) / 2)
   else
     fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice),
-                                           REC_Frequency, REC_Format,
-                                           REC_BufferSize);
+                                           22050,
+                                           AL_FORMAT_MONO16,
+                                           Length(Data) / 2);
 
   if fCaptureDevice = nil then
   begin
     raise exception.create('Capture device is nil!');
     exit;
   end;
-
+  
+  alcCaptureStart(fCaptureDevice);
+  
   while not Terminated do
   begin
-    for I := 0 to Trunc(30 / REC_Seconds) do
+    for I := 0 to Trunc(30 / 0.05) do
     begin
       if Terminated then Exit;
+  
+      Sleep(50);
+      // Get number of frames captuered
+      alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, 1, @val);
+      alcCaptureSamples(fCaptureDevice, {@}Data, val);
+      // Calculate RMS
+      CurRMS = 0;
+	  
+      for I = 0 to val do
+        CurRMS := CurRMS + (Data[I] * Data[I]);
 
-      MeasureAudio;
+      CurRMS = Sqrt(CurRMS / val);
+
+      if (CurRMS / 100000) >= fTreshold then
+        Inc(fSumCPM);
+
+      FreeAndNil(Data);
     end;
 
     if Terminated then Exit;
@@ -160,36 +177,16 @@ begin
     fCPMLog.Lines.Add(#9 + 'Current CPM: ' + IntToStr(fSumCPM) + sLineBreak);
     fNetworkHandler.UploadData(fSumCPM, fErrorLog);
   end;
+  
+  alcCaptureStop(fCaptureDevice);
 end;
 
 
 destructor TAudioGeiger.Destroy;
 begin
   inherited;
-  fStopWork := True;
   alcCaptureStop(fCaptureDevice);
   fCaptureDevice := nil;
-end;
-
-
-procedure TAudioGeiger.MeasureAudio;
-var
-  CurRMS: Double;
-begin
-  alcCaptureStart(fCaptureDevice);
-
-  repeat
-    if Terminated then Exit;
-    alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, TALsizei(sizeof(TALint)), @fSamples);
-  until fSamples >= REC_Seconds * REC_Frequency;
-
-  //- Capture the samples into our capture buffer
-  alcCaptureSamples(fCaptureDevice, @fCaptureBuffer, fSamples);
-  alcCaptureStop(fCaptureDevice);
-  CurRMS := GetRMS(fCaptureBuffer);
-
-  if CurRMS >= fTreshold then
-    Inc(fSumCPM);
 end;
 
 

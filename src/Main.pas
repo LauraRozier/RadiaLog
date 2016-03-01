@@ -9,27 +9,27 @@ uses
   Vcl.Controls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Graphics,
   Vcl.Forms, Vcl.Menus, Vcl.Mask, VCLTee.TeEngine, VCLTee.Series,
   VCLTee.TeeProcs, VCLTee.Chart, Vcl.Imaging.pngimage, VCL.LPControl,
-  // Indy units
-  //IdHTTP, IdException, IdExceptionCore, IdStack,
+  { // Indy units
+  IdHTTP, IdException, IdExceptionCore, IdStack,
   // Asynch Pro units
-  AdPort, OoMisc,
+  AdPort, OoMisc, }
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge, cyEdit,
   cyEditFloat,
-  // Audio Labs (Mitov)
+  { // Audio Labs (Mitov)
   Mitov.VCLTypes, Mitov.Types, LPControlDrawLayers,
   SLControlCollection, SLBasicDataDisplay, SLDataDisplay, SLDataChart, SLScope,
-  ALCommonMeter, ALRMSMeter, ALAudioIn,
+  ALCommonMeter, ALRMSMeter, ALAudioIn, }
   // Own units
-  Defaults, About, AudioGeigers, NetworkMethods;
+  Defaults, About, AudioGeigers, SerialGeigers;//, NetworkMethods;
 
 type
   TmainForm = class(TForm)
     cMainTimer: TTimer;
     fStatusBar: TStatusBar;
-    cComPort: TApdComPort;
-    cAudioSrc: TALAudioIn;
-    cRMSMeter: TALRMSMeter;
+    //cComPort: TApdComPort;
+    //cAudioSrc: TALAudioIn;
+    //cRMSMeter: TALRMSMeter;
     fPageControl: TPageControl;
       tabMain: TTabSheet;
         ScrollBox1: TScrollBox;
@@ -103,17 +103,20 @@ type
     procedure cPulseTimerTimer(Sender: TObject);
   private
     // CPM related
-    fCPMList: TList<Integer>;
+    fCPMList:       TList<Integer>;
     fPlotPointList: TList<TChartData>;
-    fAudioCpm: Integer;
+    fAudioCpm:      Integer;
     // Audio related
     fAudioThreshold, fAudioPulseWidth: Double;
     fAudioControl: tAudioGeiger;
     // Serial related
-    fBuffer: string[255];
+    fBuffer:  string[255];
     fComPort: string;
     fComBaud: Integer;
     fComDataBits, fComStopBits, fComParity: Word;
+	fMGControl: TMyGeiger;
+	// fGMCControl: TGMC;
+	// fNetIOControl: TNetIO;
     // User related
     fConvertFactor: Double;
     fSettings: TINIFile;
@@ -126,6 +129,7 @@ type
     fConvertmR: Boolean;
     // Misc
     fSafeToWrite: Boolean;
+	Saved8087CW:  Word;
     //fNetworkHandler: TNetworkController;
     procedure triggerAvail(CP: TObject; Count: Word);
     procedure updateCPMBar(aCPM: Integer);
@@ -150,12 +154,14 @@ var
   AudioEnumerator: TAudioEnum;
 begin
   // Set initial values
+  Saved8087CW             := Default8087CW;
+  Set8087CW($133F);
   mainForm.Caption        := 'RadiaLog ' + VERSION_PREFIX + VERSION + VERSION_SUFFIX;
   exeDir                  := ExtractFilePath(Application.ExeName);
-  cComPort.OnTriggerAvail := triggerAvail;
+  { cComPort.OnTriggerAvail := triggerAvail;
   cComPort.Open           := False;
   cComPort.DeviceLayer    := dlWin32;
-  cComPort.RS485Mode      := False;
+  cComPort.RS485Mode      := False; }
   fCPMList                := TList<Integer>.Create;
   fPlotPointList          := TList<TChartData>.Create;
   chkBoxUnitType.Hint     := 'Checked: µR/h' + sLineBreak + 'Unckecked: µSv/h';
@@ -264,25 +270,37 @@ end;
 
 procedure TmainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  cComPort.Open := False;
-  cComPort.DonePort;
-  cAudioSrc.Stop;
-  cAudioSrc.Enabled   := False;
+  //cComPort.Open := False;
+  //cComPort.DonePort;
+  //cAudioSrc.Stop;
+  //cAudioSrc.Enabled   := False;
   cMainTimer.Enabled  := False;
   cPulseTimer.Enabled := False;
+
   if not (Pointer(TObject(fAudioControl)) = nil) then
-  begin
-    fAudioControl.StopWork := True;
     fAudioControl.Terminate;
-  end;
+
+  if not (Pointer(TObject(fMGControl)) = nil) then
+    fMGControl.Terminate;
+
+  { if not (Pointer(TObject(fGMCControl)) = nil) then
+    fGMCControl.Terminate;
+
+  if not (Pointer(TObject(fNetIOControl)) = nil) then
+    fNetIOControl.Terminate; }
+
   FreeAndNil(fAudioControl);
+  FreeAndNil(fMGControl);
+  // FreeAndNil(fGMCControl);
+  // FreeAndNil(fNetIOControl);
   FreeAndNil(fCPMList);
   FreeAndNil(fPlotPointList);
   FreeAndNil(audioDevs);
+  Set8087CW(Saved8087CW); // Default value (with exceptions) is $1372.
 end;
 
 
-procedure TmainForm.triggerAvail(CP: TObject; Count: Word);
+{ procedure TmainForm.triggerAvail(CP: TObject; Count: Word);
 var
   I: Word;
   C: AnsiChar;
@@ -300,10 +318,10 @@ begin
       if C in [#32..#126] then // Only accept alpha-numeric Ansi values
         fBuffer := fBuffer + C;
   end;
-end;
+end; }
 
 
-procedure TmainForm.onAudioValChange(Sender: TObject; aChannel: Integer; aValue, aMin, aMax: Real);
+{ procedure TmainForm.onAudioValChange(Sender: TObject; aChannel: Integer; aValue, aMin, aMax: Real);
 var
   usedValue: Double;
   Interval: Integer;
@@ -317,7 +335,7 @@ begin
     cPulseTimer.Enabled  := True;
     fAudioCPM := fAudioCPM + 1;
   end;
-end;
+end; }
 
 
 procedure TmainForm.updateCPMBar(aCPM: Integer);
@@ -548,25 +566,33 @@ begin
       //cAudioSrc.Enabled := True;
       //cAudioSrc.Start;
       if cbAudioDevice.itemindex = 0 then
-        fAudioControl := tAudioGeiger.Create(fAudioThreshold,
+        fAudioControl := TAudioGeiger.Create(fAudioThreshold,
                                              cCPMEdit,
                                              cErrorEdit,
                                              False)
       else
-        fAudioControl := tAudioGeiger.Create(fAudioThreshold,
+        fAudioControl := TAudioGeiger.Create(fAudioThreshold,
                                              cbAudioDevice.Items[cbAudioDevice.itemindex],
                                              cCPMEdit,
                                              cErrorEdit,
                                              False);
     end else
     begin
-      cComPort.ComNumber := StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase]));
+      { cComPort.ComNumber := StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase]));
       cComPort.Baud      := fComBaud;
       cComPort.Parity    := TParity(fComParity);
       cComPort.DataBits  := fComDataBits;
       cComPort.StopBits  := fComStopBits;
       cComPort.Open      := True;
-      cMainTimer.Enabled := True;
+      cMainTimer.Enabled := True; }
+	  fMGControl := TMyGeiger.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase]))
+	                                 fComBaud,
+                                     TParity(fComParity),
+                                     fComDataBits,
+                                     fComStopBits,
+                                     cCPMEdit,
+                                     cErrorEdit,
+                                     False);
     end;
 
     comPortBox.Enabled     := False;
