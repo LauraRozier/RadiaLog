@@ -5587,9 +5587,9 @@ object mainForm: TmainForm
         end
         object GroupBox2: TGroupBox
           Left = 15
-          Top = 137
-          Width = 322
-          Height = 108
+          Top = 129
+          Width = 364
+          Height = 129
           Caption = 'User Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5609,7 +5609,7 @@ object mainForm: TmainForm
           end
           object Label10: TLabel
             Left = 10
-            Top = 51
+            Top = 59
             Width = 67
             Height = 14
             Margins.Left = 10
@@ -5618,7 +5618,7 @@ object mainForm: TmainForm
           end
           object Label11: TLabel
             Left = 10
-            Top = 78
+            Top = 94
             Width = 105
             Height = 14
             Margins.Left = 10
@@ -5628,7 +5628,7 @@ object mainForm: TmainForm
           object edtUsername: TEdit
             Left = 121
             Top = 20
-            Width = 192
+            Width = 232
             Height = 22
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -5641,8 +5641,8 @@ object mainForm: TmainForm
           end
           object edtPassword: TEdit
             Left = 121
-            Top = 48
-            Width = 192
+            Top = 56
+            Width = 232
             Height = 22
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -5656,7 +5656,7 @@ object mainForm: TmainForm
           end
           object chkBoxRadmon: TCheckBox
             Left = 121
-            Top = 77
+            Top = 93
             Width = 80
             Height = 17
             Caption = 'Enabled'
@@ -5713,7 +5713,7 @@ object mainForm: TmainForm
             Width = 72
             Height = 22
             TabOrder = 1
-            Text = '0.0057'
+            Text = '0.00'
             OnChange = edtChange
             Precision = 4
           end
@@ -5759,9 +5759,9 @@ object mainForm: TmainForm
           end
         end
         object GroupBox5: TGroupBox
-          Left = 352
+          Left = 392
           Top = 129
-          Width = 202
+          Width = 153
           Height = 256
           Caption = 'Capture mode'
           Font.Charset = DEFAULT_CHARSET
@@ -5818,7 +5818,7 @@ object mainForm: TmainForm
         object GroupBox6: TGroupBox
           Left = 15
           Top = 264
-          Width = 322
+          Width = 364
           Height = 121
           Caption = 'Audio Settings'
           Font.Charset = DEFAULT_CHARSET
@@ -5852,7 +5852,7 @@ object mainForm: TmainForm
           object cbAudioDevice: TComboBox
             Left = 126
             Top = 80
-            Width = 187
+            Width = 227
             Height = 22
             Style = csDropDownList
             Font.Charset = DEFAULT_CHARSET
@@ -5870,7 +5870,7 @@ object mainForm: TmainForm
             Width = 99
             Height = 22
             TabOrder = 1
-            Text = '0.0070'
+            Text = '0.00'
             OnChange = edtChange
             Precision = 4
           end
@@ -5880,7 +5880,7 @@ object mainForm: TmainForm
             Width = 99
             Height = 22
             TabOrder = 2
-            Text = '0.0300'
+            Text = '0.03'
             OnChange = edtChange
             Precision = 4
           end
@@ -5890,10 +5890,6 @@ object mainForm: TmainForm
     object tabLog: TTabSheet
       Caption = 'Log'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBox3: TScrollBox
         Left = 0
         Top = 0
@@ -5925,7 +5921,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 692
+          Width = 636
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5947,7 +5943,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 692
+          Width = 636
           Height = 227
           Margins.Left = 10
           Margins.Right = 10

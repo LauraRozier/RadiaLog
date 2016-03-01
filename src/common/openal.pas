@@ -76,99 +76,99 @@ const
 type
   // OpenAL boolean type.
   TALboolean = Boolean;
-  PALboolean = ^TALboolean;
+  PALboolean = PBoolean;
   //character
-  TALchar = Ansichar;
-  PALchar = pAnsichar;
+  TALchar = Char;
+  PALchar = PChar;
   // OpenAL 8bit signed byte.
   TALbyte = ShortInt;
-  PALbyte = ^TALbyte;
+  PALbyte = PShortInt;
   // OpenAL 8bit unsigned byte.
   TALuByte = AnsiChar;
   PALuByte = PAnsiChar;
   // OpenAL 16bit signed short integer type.
   TALshort = SmallInt;
-  PALshort = ^TALshort;
+  PALshort = PSmallInt;
   // OpenAL 16bit unsigned short integer type.
   TALushort = Word;
-  PALushort = ^TALushort;
+  PALushort = PWord;
   // OpenAL 32bit unsigned integer type.
   TALuint = Cardinal;
-  PALuint = ^TALuint;
+  PALuint = PCardinal;
   // OpenAL 32bit signed integer type.
   TALint = Integer;
-  PALint = ^TALint;
+  PALint = PInteger;
   // OpenAL 32bit floating point type.
   TALfloat = Single;
-  PALfloat = ^TALfloat;
+  PALfloat = PSingle;
   // OpenAL 64bit double point type.
   TALdouble = Double;
-  PALdouble = ^TALdouble;
+  PALdouble = PDouble;
   // OpenAL 32bit type.
   TALsizei = Cardinal;
-  PALsizei = ^TALsizei;
+  PALsizei = PCardinal;
   // OpenAL void type
   TALvoid = Pointer;
-  PALvoid = ^TALvoid;
+  PALvoid = PPointer;
   PPALvoid = ^PALvoid;
   // OpenAL enumerations.
   TALenum = Integer;
-  PALenum = ^TALenum;
+  PALenum = PInteger;
   // OpenAL bitfields.
   TALbitfield = Cardinal;
-  PALbitfield = ^TALbitfield;
+  PALbitfield = PCardinal;
   // OpenAL clamped float.
-  TALclampf = TALfloat;
-  PALclampf = ^TALclampf;
+  TALclampf = Single;
+  PALclampf = PSingle;
   // Openal clamped double.
-  TALclampd = TALdouble;
-  PALclampd = ^TALclampd;
+  TALclampd = Double;
+  PALclampd = PDouble;
 
   // ALC enumerations.
-  TALCenum = integer;
-  PALCenum = ^TALCenum;
+  TALCenum = Integer;
+  PALCenum = PInteger;
   // ALC boolean type.
-  TALCboolean = boolean;
-  PALCboolean = ^TALCboolean;
+  TALCboolean = Boolean;
+  PALCboolean = PBoolean;
   // ALC character type
-  TALCchar = Ansichar;
-  PALCchar = pAnsichar;
+  TALCchar = Char;
+  PALCchar = pChar;
   // ALC 8bit signed byte.
   TALCbyte = ShortInt;
-  PALCbyte = ^TALCbyte;
+  PALCbyte = PShortInt;
   // ALC 8bit unsigned byte.
   TALCubyte = AnsiChar;
   PALCubyte = PAnsiChar;
   // ALC 16bit signed short integer type.
-  TALCshort = smallint;
-  PALCshort = ^TALCshort;
+  TALCshort = SmallInt;
+  PALCshort = PSmallInt;
   // ALC 16bit unsigned short integer type.
   TALCushort = Word;
-  PALCushort = ^TALCushort;
+  PALCushort = PWord;
   // ALC 32bit unsigned integer type.
   TALCuint = Cardinal;
-  PALCuint = ^TALCuint;
+  PALCuint = PCardinal;
   // ALC 32bit signed integer type.
-  TALCint = integer;
-  PALCint = ^TALCint;
+  TALCint = Integer;
+  PALCint = PInteger;
   // ALC 32bit floating point type.
-  TALCfloat = single;
-  PALCfloat = ^TALCfloat;
+  TALCfloat = Single;
+  PALCfloat = PSingle;
   // ALC 64bit double point type.
-  TALCdouble = double;
-  PALCdouble = ^TALCdouble;
+  TALCdouble = Double;
+  PALCdouble = PDouble;
   // ALC 32bit type.
-  TALCsizei = integer;
-  PALCsizei = ^TALCsizei;
+  TALCsizei = Integer;
+  PALCsizei = PInteger;
   // ALC void type
   TALCvoid = Pointer;
-  PALCvoid = ^TALCvoid;
+  PALCvoid = PPointer;
   // ALC device
-  TALCdevice = TALCvoid;
-  PALCdevice = ^TALCdevice;
+  TALCdevice = Pointer;
+  PALCdevice = PPointer;
   // ALC context
-  TALCcontext = TALCvoid;
-  PALCcontext = ^TALCcontext;
+  TALCcontext = Pointer;
+  PALCcontext = PPointer;
 
   //EAX extension
   DSPROPERTY_EAX_LISTENERPROPERTY = LongWORD;
@@ -2279,20 +2279,20 @@ end;
 
 procedure alutLoadWAVFile(fname: string; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint);
 var
-  Stream : TFileStream;
+  Stream: TFileStream;
 begin
-  Stream:=TFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
+  Stream := TFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
   LoadWavStream(Stream, format, data, size, freq, loop);
-  Stream.Free;
+  FreeAndNil(Stream);
 end;
 
 procedure alutLoadWAVMemory(memory: PALbyte; var format: TALenum; var data: TALvoid; var size: TALsizei; var freq: TALsizei; var loop: TALint);
 var Stream: TMemoryStream;
 begin
-  Stream:=TMemoryStream.Create;
-  Stream.Write(memory,sizeof(memory^));
+  Stream := TMemoryStream.Create;
+  Stream.Write(memory, sizeof(memory^));
   LoadWavStream(Stream, format, data, size, freq, loop);
-  Stream.Free;
+  FreeAndNil(Stream);
 end;
 
 procedure alutUnloadWAV(format: TALenum; data: TALvoid; size: TALsizei; freq: TALsizei);

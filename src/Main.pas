@@ -10,17 +10,18 @@ uses
   Vcl.Forms, Vcl.Menus, Vcl.Mask, VCLTee.TeEngine, VCLTee.Series,
   VCLTee.TeeProcs, VCLTee.Chart, Vcl.Imaging.pngimage, VCL.LPControl,
   // Indy units
-  IdHTTP, IdException, IdExceptionCore, IdStack,
+  //IdHTTP, IdException, IdExceptionCore, IdStack,
   // Asynch Pro units
   AdPort, OoMisc,
   // Cindy units
-  cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge,
+  cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge, cyEdit,
+  cyEditFloat,
   // Audio Labs (Mitov)
   Mitov.VCLTypes, Mitov.Types, LPControlDrawLayers,
   SLControlCollection, SLBasicDataDisplay, SLDataDisplay, SLDataChart, SLScope,
   ALCommonMeter, ALRMSMeter, ALAudioIn,
   // Own units
-  Defaults, About, AudioGeigers, cyEdit, cyEditFloat;
+  Defaults, About, AudioGeigers, NetworkMethods;
 
 type
   TmainForm = class(TForm)
@@ -101,16 +102,31 @@ type
     procedure rbModeClick(Sender: TObject);
     procedure cPulseTimerTimer(Sender: TObject);
   private
+    // CPM related
     fCPMList: TList<Integer>;
     fPlotPointList: TList<TChartData>;
-    fBuffer: string[255];
-    fComPort, fUsername, fPassword: String;
-    fComBaud, fAudioCpm, fTicks, fTimeToWait: Integer;
-    fComDataBits, fComStopBits, fComParity: Word;
-    fAudioMode, fSamePulse, fUploadRM, fConvertmR, fSafeToWrite: Boolean;
-    fConvertFactor, fAudioThreshold, fAudioPulseWidth: Double;
-    fSettings: TINIFile;
+    fAudioCpm: Integer;
+    // Audio related
+    fAudioThreshold, fAudioPulseWidth: Double;
     fAudioControl: tAudioGeiger;
+    // Serial related
+    fBuffer: string[255];
+    fComPort: string;
+    fComBaud: Integer;
+    fComDataBits, fComStopBits, fComParity: Word;
+    // User related
+    fConvertFactor: Double;
+    fSettings: TINIFile;
+    // Timer related
+    fTicks, fTimeToWait: Integer;
+    fSamePulse: Boolean;
+    // Modes
+    fAudioMode, fMyGeigerMode, fGMCMode, fNetIOMode: Boolean;
+    fUploadRM:  Boolean;
+    fConvertmR: Boolean;
+    // Misc
+    fSafeToWrite: Boolean;
+    //fNetworkHandler: TNetworkController;
     procedure triggerAvail(CP: TObject; Count: Word);
     procedure updateCPMBar(aCPM: Integer);
     procedure updatePlot(aCPM: Integer);
@@ -131,6 +147,7 @@ procedure TmainForm.FormCreate(Sender: TObject);
 var
   i: integer;
   hComm: THandle;
+  AudioEnumerator: TAudioEnum;
 begin
   // Set initial values
   mainForm.Caption        := 'RadiaLog ' + VERSION_PREFIX + VERSION + VERSION_SUFFIX;
@@ -190,6 +207,9 @@ begin
     fSettings.WriteFloat('CONVERT',  'Factor',     0.0057);
     fSettings.WriteBool('CONVERT',   'UnitR',      False);
     fSettings.WriteBool('MODE',      'Audio',      False);
+    fSettings.WriteBool('MODE',      'MyGeiger',   True);
+    fSettings.WriteBool('MODE',      'GMC',        False);
+    fSettings.WriteBool('MODE',      'NetIO',      False);
   end;
 
   fComPort         := fSettings.ReadString('SERIAL',  'Port',       'COM1');
@@ -205,6 +225,9 @@ begin
   fConvertFactor   := fSettings.ReadFloat('CONVERT',  'Factor',     0.0057);
   fConvertmR       := fSettings.ReadBool('CONVERT',   'UnitR',      False);
   fAudioMode       := fSettings.ReadBool('MODE',      'Audio',      False);
+  fMyGeigerMode    := fSettings.ReadBool('MODE',      'MyGeiger',   True);
+  fGMCMode         := fSettings.ReadBool('MODE',      'GMC',        False);
+  fNetIOMode       := fSettings.ReadBool('MODE',      'NetIO',      False);
   FreeAndNil(fSettings);
 
   // Apply values to visual components
@@ -222,18 +245,20 @@ begin
   chkBoxUnitType.Checked   := fConvertmR;
   fSafeToWrite             := True;
   tabAudio.TabVisible      := fAudioMode;
-  rbMyGeiger.Checked       := not fAudioMode;
+  rbMyGeiger.Checked       := fMyGeigerMode;
+  rbGMC.Checked            := fGMCMode;
+  rbNetIO.Checked          := fNetIOMode;
   rbAudio.Checked          := fAudioMode;
   fTimeToWait              := -1;
   fSamePulse               := False;
 
-//  cbAudioDevice
   //fill the combobox
-  audioDevs     := TStringList.Create;
-  fAudioControl := tAudioGeiger.Create;
-  fAudioControl.GetAudioEnum(audioDevs);
+  audioDevs       := TStringList.Create;
+  AudioEnumerator := TAudioEnum.Create;
+  AudioEnumerator.GetAudioEnum(audioDevs);
   cbAudioDevice.Items.AddStrings(audioDevs);
   cbAudioDevice.ItemIndex := 0;
+  FreeAndNil(AudioEnumerator);
 end;
 
 
@@ -245,6 +270,12 @@ begin
   cAudioSrc.Enabled   := False;
   cMainTimer.Enabled  := False;
   cPulseTimer.Enabled := False;
+  if not (Pointer(TObject(fAudioControl)) = nil) then
+  begin
+    fAudioControl.StopWork := True;
+    fAudioControl.Terminate;
+  end;
+  FreeAndNil(fAudioControl);
   FreeAndNil(fCPMList);
   FreeAndNil(fPlotPointList);
   FreeAndNil(audioDevs);
@@ -463,15 +494,25 @@ end;
 
 procedure TmainForm.rbModeClick(Sender: TObject);
 begin
-  rbMyGeiger.Checked  := Sender = rbMyGeiger;
   rbAudio.Checked     := Sender = rbAudio;
+  rbMyGeiger.Checked  := Sender = rbMyGeiger;
+  rbGMC.Checked       := Sender = rbGMC;
+  rbNetIO.Checked     := Sender = rbNetIO;
+
   fAudioMode          := rbAudio.Checked;
+  fMyGeigerMode       := rbMyGeiger.Checked;
+  fGMCMode            := rbGMC.Checked;
+  fNetIOMode          := rbNetIO.Checked;
+
   tabAudio.TabVisible := fAudioMode;
 
   if fSafeToWrite then
   begin
     fSettings := TINIFile.Create(exeDir + '/Settings.ini');
-    fSettings.WriteBool('MODE', 'Audio', fAudioMode);
+    fSettings.WriteBool('MODE', 'Audio',    fAudioMode);
+    fSettings.WriteBool('MODE', 'MyGeiger', fMyGeigerMode);
+    fSettings.WriteBool('MODE', 'GMC',      fGMCMode);
+    fSettings.WriteBool('MODE', 'NetIO',    fNetIOMode);
     FreeAndNil(fSettings);
   end;
 end;
@@ -498,15 +539,25 @@ begin
     fSamePulse  := False;
     fBuffer     := '';
     fCPMList.Clear;
-    fCPMList.Clear;
     fPlotPointList.Clear;
     cCPMEdit.Clear;
     cErrorEdit.Clear;
 
     if fAudioMode then
     begin
-      cAudioSrc.Enabled := True;
-      cAudioSrc.Start;
+      //cAudioSrc.Enabled := True;
+      //cAudioSrc.Start;
+      if cbAudioDevice.itemindex = 0 then
+        fAudioControl := tAudioGeiger.Create(fAudioThreshold,
+                                             cCPMEdit,
+                                             cErrorEdit,
+                                             False)
+      else
+        fAudioControl := tAudioGeiger.Create(fAudioThreshold,
+                                             cbAudioDevice.Items[cbAudioDevice.itemindex],
+                                             cCPMEdit,
+                                             cErrorEdit,
+                                             False);
     end else
     begin
       cComPort.ComNumber := StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase]));
@@ -515,9 +566,9 @@ begin
       cComPort.DataBits  := fComDataBits;
       cComPort.StopBits  := fComStopBits;
       cComPort.Open      := True;
+      cMainTimer.Enabled := True;
     end;
 
-    cMainTimer.Enabled     := True;
     comPortBox.Enabled     := False;
     comBaudBox.Enabled     := False;
     comParityBox.Enabled   := False;
@@ -525,16 +576,22 @@ begin
     comStopBitsBox.Enabled := False;
     edtThreshold.Enabled   := False;
     edtPulseWidth.Enabled  := False;
-    rbMyGeiger.Enabled     := False;
     rbAudio.Enabled        := False;
+    rbMyGeiger.Enabled     := False;
+    rbGMC.Enabled          := False;
+    rbNetIO.Enabled        := False;
+
   end else
   begin
     cMainTimer.Enabled := False;
 
     if fAudioMode then
     begin
-      cAudioSrc.Stop;
-      cAudioSrc.Enabled := False;
+      //cAudioSrc.Stop;
+      //cAudioSrc.Enabled := False;
+      fAudioControl.StopWork := True;
+      fAudioControl.Terminate;
+      FreeAndNil(fAudioControl);
     end else
       cComPort.Open := False;
 
@@ -545,18 +602,18 @@ begin
     comStopBitsBox.Enabled := True;
     edtThreshold.Enabled   := True;
     edtPulseWidth.Enabled  := True;
-    rbMyGeiger.Enabled     := True;
     rbAudio.Enabled        := True;
+    rbMyGeiger.Enabled     := True;
+    rbGMC.Enabled          := True;
+    rbNetIO.Enabled        := True;
   end;
 end;
 
 
 procedure TmainForm.cMainTimerTimer(Sender: TObject);
 var
-  I, curCPM, totalCPM: Integer;
-  dateTime, urlString, httpReply, logText: string;
-  HTTPClient: TIdHTTP;
-  hadException: Boolean;
+  I, curCPM{, totalCPM}: Integer;
+  dateTime: string;
 begin
   fTicks   := fTicks + 1;
   dateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
@@ -571,7 +628,7 @@ begin
 
     cCPMEdit.Lines.Add(dateTime);
     cCPMEdit.Lines.Add(#9 + 'Raw string: ' + string(fBuffer));
-    cCPMEdit.Lines.Add(#9 + 'curCPM: ' + IntToStr(curCPM) + sLineBreak);
+    cCPMEdit.Lines.Add(#9 + 'Current CPM: ' + IntToStr(curCPM) + sLineBreak);
     fBuffer     := '';
     fTimeToWait := - 1;
 
@@ -585,12 +642,12 @@ begin
     if fTimeToWait <> -1 then
       fTimeToWait := fTimeToWait - 1;
 
-  if (fTicks mod 300 = 0) and fAudioMode then
+  { if (fTicks mod 300 = 0) and fAudioMode then
   begin
     curCPM    := fAudioCpm * 2;
     fAudioCpm := 0;
     cCPMEdit.Lines.Add(dateTime);
-    cCPMEdit.Lines.Add(#9 + 'curCPM: ' + IntToStr(curCPM) + sLineBreak);
+    cCPMEdit.Lines.Add(#9 + 'Current CPM: ' + IntToStr(curCPM) + sLineBreak);
 
     if fUploadRM then
       fCPMList.Add(curCPM);
@@ -602,108 +659,19 @@ begin
 
   if (fTicks mod 600 = 0) and fUploadRM then
   begin
-    hadException := False;
-    HTTPClient   := TIdHTTP.Create(nil);
-    httpReply    := '';
-    dateTime     := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
     totalCPM     := 0;
+    dateTime     := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
     cErrorEdit.Lines.Add(dateTime);
-    cErrorEdit.Lines.Add(#9 + 'Sending data to RadMon...');
 
     for I := 0 to fCPMList.Count - 1 do
       totalCPM := totalCPM + fCPMList[I];
 
+    fNetworkHandler := TNetworkController.Create;
     totalCPM := totalCPM Div fCPMList.Count;
-    cErrorEdit.Lines.Add(#9 + 'totalCPM: ' + IntToStr(totalCPM));
-    dateTime  := FormatDateTime('YYYY-MM-DD%20HH:MM:SS', Now);
-    urlString := 'http://'          + RADMON_HOST        + '/radmon.php' +
-                 '?user='           + fUsername          +
-                 '&password='       + fPassword          +
-                 '&function=submit' +
-                 '&datetime='       + dateTime           +
-                 '&value='          + IntToStr(totalCPM) +
-                 '&unit=CPM';
-
-    try
-      HTTPClient.ConnectTimeout    := 3000;
-      HTTPClient.ReadTimeout       := 2000;
-      HTTPClient.Request.UserAgent := 'Mozilla/5.0 (compatible; RadiaLog/' + VERSION + ')';
-
-      try
-        httpReply := HTTPClient.Get(urlString);
-      except
-        // Indy protocol exception
-        on E:EIdHTTPProtocolException do
-        begin
-          logText := #9 + 'Error: Indy raised a protocol error!' + sLineBreak +
-                     #9 + 'HTTP status code: ' + IntToStr(E.ErrorCode) + sLineBreak +
-                     #9 + 'Error message' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-        // Indy server closed connection exception
-        on E:EIdConnClosedGracefully do
-        begin
-          logText := #9 + 'Error: Indy reports, that connection was closed by the server!' + sLineBreak +
-                     #9 + 'Exception class: ' + E.ClassName + sLineBreak +
-                     #9 + 'Error message: ' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-        // Indy low-level socket exception
-        on E:EIdSocketError do
-        begin
-          logText := #9 + 'Error: Indy raised a socket error!' + sLineBreak +
-                     #9 + 'Error code: ' + IntToStr(E.LastError) + sLineBreak +
-                     #9 + 'Error message' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-        // Indy read-timeout exception
-        on E:EIdReadTimeout do
-        begin
-          logText := #9 + 'Error: Indy raised a read-timeout error!' + sLineBreak +
-                     #9 + 'Exception class: ' + E.ClassName + sLineBreak +
-                     #9 + 'Error message: ' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-        // All other Indy exceptions
-        on E:EIdException do
-        begin
-          logText := #9 + 'Error: Something went wrong with Indy!' + sLineBreak +
-                     #9 + 'Exception class: ' + E.ClassName + sLineBreak +
-                     #9 + 'Error message: ' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-        // All other Delphi exceptions
-        on E:Exception do
-        begin
-          logText := #9 + 'Error: Something non-Indy related raised an exception!' + sLineBreak +
-                     #9 + 'Exception class: ' + E.ClassName + sLineBreak +
-                     #9 + 'Error message: ' + E.Message + sLineBreak;
-          hadException := True;
-        end;
-      end;
-
-      if not hadException then
-        if httpReply.ToLower.Contains('incorrect') then
-          logText := #9 + 'Error sending data to RadMon.' + sLineBreak +
-                     #9 + 'Check your username and password.' + sLineBreak
-        else
-          if httpReply.ToLower.Contains('error') then
-            logText := #9 + 'Error sending data to RadMon.' + sLineBreak +
-                       #9 + 'An unknown error occurred.' + sLineBreak +
-                       #9 + 'Please make sure your username is correct, it is case-sensitive!' + sLineBreak
-          else
-          begin
-            logText := #9 + 'Response: ' + StringReplace(httpReply, '<br>', '', [rfReplaceAll, rfIgnoreCase]) + sLineBreak;
-            fStatusBar.Panels[0].Text := 'Last uploaded: ' + IntToStr(totalCPM) + ' CPM';
-          end;
-
-      cErrorEdit.Lines.Add(logText);
-    finally
-      FreeAndNil(HTTPClient);
-    end;
-
+    fNetworkHandler.UploadData(totalCPM, cErrorEdit);
     fCPMList.Clear;
-  end;
+    FreeAndNil(fNetworkHandler);
+  end; }
 end;
 
 

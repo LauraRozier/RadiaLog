@@ -14,6 +14,7 @@ const
 
 var
   exeDir: UnicodeString;
+  fUsername, fPassword: string;
 
 type
   TChartData = record

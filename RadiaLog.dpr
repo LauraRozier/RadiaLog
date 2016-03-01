@@ -15,7 +15,9 @@ uses
   ThimoUtils in 'src\common\ThimoUtils.pas',
   GeigerMethods in 'src\GeigerHandlers\GeigerMethods.pas',
   AudioGeigers in 'src\GeigerHandlers\AudioGeigers.pas',
-  openal in 'src\common\openal.pas';
+  openal in 'src\common\openal.pas',
+  NetworkMethods in 'src\NetworkHandlers\NetworkMethods.pas',
+  SerialGeigers in 'src\GeigerHandlers\SerialGeigers.pas';
 
 {$R *.res}
 
