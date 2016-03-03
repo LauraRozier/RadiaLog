@@ -4,12 +4,10 @@ interface
 uses
   // System units
   SysUtils, Classes, Math,
-  // VCL units
-  VCL.ComCtrls,
   // OpenAL unit
   OpenAL,
   // Custom units
-  GeigerMethods, Defaults;
+  GeigerMethods, Defaults, ThimoUtils;
 
 var
   fDefaultDevice, fDeviceList: PAnsiChar;
@@ -37,11 +35,8 @@ type
     protected
       procedure Execute; override;
     public
-      constructor Create(aThreshold: Double; aCPMLog, aErrorLog: TRichEdit;
-                         CreateSuspended: Boolean = False); overload;
-      constructor Create(aThreshold: Double; aPort: AnsiString;
-                         aCPMLog, aErrorLog: TRichEdit;
-                         CreateSuspended: Boolean = False); overload;
+      constructor Create(aThreshold: Double; CreateSuspended: Boolean = False); overload;
+      constructor Create(aThreshold: Double; aPort: AnsiString; CreateSuspended: Boolean = False); overload;
       destructor Destroy; override;
       property DefaultDevice: AnsiString read GetDevStr;
       property ChosenDevice: AnsiString read fChosenDevice write fChosenDevice;
@@ -87,7 +82,7 @@ begin
 
     for I := 0 to 12 do
     begin
-      StrCopy(fDeviceList, @fDeviceList[strlen(PChar(aDeviceList.text)) - (I + 1)]);
+      OldStrCopy(fDeviceList, @fDeviceList[strlen(PChar(aDeviceList.text)) - (I + 1)]);
       if length(fDeviceList) <= 0 then break; //exit loop if no more devices are found
       aDeviceList.Add(string(fDeviceList));
     end;
@@ -97,22 +92,17 @@ begin
 end;
 
 
-constructor TAudioGeiger.Create(aThreshold: Double; aCPMLog, aErrorLog: TRichEdit;
-                                CreateSuspended: Boolean = False);
+constructor TAudioGeiger.Create(aThreshold: Double; CreateSuspended: Boolean = False);
 begin
-  Create(aThreshold, '', aCPMLog, aErrorLog, CreateSuspended);
+  Create(aThreshold, '', CreateSuspended);
 end;
 
 
-constructor TAudioGeiger.Create(aThreshold: Double; aPort: AnsiString;
-                                aCPMLog, aErrorLog: TRichEdit;
-                                CreateSuspended: Boolean = False);
+constructor TAudioGeiger.Create(aThreshold: Double; aPort: AnsiString; CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
   fSumCPM       := 0;
   fChosenDevice := aPort;
-  fCPMLog       := aCPMLog;
-  fErrorLog     := aErrorLog;
   fTreshold     := aThreshold;
 end;
 
@@ -126,20 +116,23 @@ var
 begin
   inherited;
   // Prepare audio source
+  if not fIsSoundInitialized then
+    raise exception.create('Could not initialize OpenAL!');
+
   if fChosenDevice = '' then
     fCaptureDevice := alcCaptureOpenDevice(nil, // Device name pointer
                                            GEIGER_SAMPLE_RATE, // Frequency
                                            IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
                                            Trunc(Length(fData) Div GEIGER_CHANNELS)) // Buffer size
   else
-    fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice), // Device name pointer
+    fCaptureDevice := alcCaptureOpenDevice(PChar(String(fChosenDevice)), // Device name pointer
                                            GEIGER_SAMPLE_RATE, // Frequency
                                            IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
                                            Trunc(Length(fData) Div GEIGER_CHANNELS)); // Buffer size
 
   if fCaptureDevice = nil then
     raise exception.create('Capture device is nil!');
-  
+
   alcCaptureStart(fCaptureDevice);
   
   while not Terminated do
@@ -168,6 +161,9 @@ begin
     DateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
     fCPMLog.Lines.Add(DateTime);
     fCPMLog.Lines.Add(#9 + 'Current CPM: ' + IntToStr(fSumCPM) + sLineBreak);
+    updatePlot(fSumCPM);
+    updateCPMBar(fSumCPM);
+    updateDosiLbl(fSumCPM);
     fNetworkHandler.UploadData(fSumCPM, fErrorLog);
   end;
 end;

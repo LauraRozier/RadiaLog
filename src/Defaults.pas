@@ -2,7 +2,14 @@ unit Defaults;
 
 interface
 uses
-  Windows, Classes, SysUtils, Variants, Vcl.Forms;
+  // System units
+  Generics.Collections,
+  // Cindy units
+  cySimpleGauge,
+  // TeeChart units
+  VCLTee.Chart,
+  // VCL units
+  VCL.StdCtrls, VCL.ComCtrls;
 
 const
   VERSION = '0.5';
@@ -21,15 +28,22 @@ const
   // Frequency * Channels (Per full second) + Slack-space
   GEIGER_BUFFER_SIZE = ((GEIGER_SAMPLE_RATE * GEIGER_CHANNELS) Div SAMPLES_PER_SECOND) + 50;
 
-var
-  exeDir: UnicodeString;
-  fUsername, fPassword: string;
-
 type
   TChartData = record
     value: Integer;
     dateTime: TDateTime;
   end;
+
+var
+  exeDir: UnicodeString;
+  fUsername, fPassword: string;
+  fPlotPointList:       TList<TChartData>;
+  fConvertFactor:       Double;
+  fConvertmR:           Boolean;
+  fCPMBar:              TcySimpleGauge;
+  fLblCPM, fLblDosi:    TLabel;
+  fCPMChart:            TChart;
+  fCPMLog, fErrorLog:   TRichEdit;
 
 implementation
 

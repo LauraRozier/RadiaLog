@@ -3,54 +3,46 @@ unit GeigerMethods;
 interface
 uses
   // System units
-  Windows, Math, Classes, SysUtils,
+  Classes, SysUtils,
   // Asynch Pro units
-  // AdPort, OoMisc,
+  AdPort, OoMisc,
   // OpenAL unit
   OpenAL,
   // VCL units
-  VCL.ComCtrls,
+  VCL.ExtCtrls, VCL.Graphics,
   // Custom units
-  NetworkMethods;
+  Defaults, NetworkMethods;
+
+
+procedure updateCPMBar(aCPM: Integer);
+procedure updatePlot(aCPM: Integer);
+procedure updateDosiLbl(aCPM: Integer);
 
 type
-  TParity = (pNone, pOdd, pEven, pMark, pSpace);
-
-  TBaseGeigerMethod = class(TThread)
+  TMethodSerial = class(TObject)
     protected
-      fSumCPM: Integer;
-      fCPMLog, fErrorLog: TRichEdit;
+      fSumCPM:         Integer;
       fNetworkHandler: TNetworkController;
-      procedure Execute; override;
-    public
-      constructor Create(CreateSuspended: Boolean = False);
-      destructor Destroy; override;
-  end;
-
-  TMethodSerial = class(TBaseGeigerMethod)
-    protected
-	    fPortAddress: Integer;
-	    fPortBaud: Integer;
-	    fPortParity: TParity;
-	    fPortDataBits: Word;
-	    fPortStopBits: Word;
-      fComHandle: THandle;
-	    // fComPort: TApdComPort;
+      fBufferTimer:    TTimer;
+	    fPortAddress:    Integer;
+	    fPortBaud:       Integer;
+	    fPortParity:     TParity;
+	    fPortDataBits:   Word;
+	    fPortStopBits:   Word;
+	    fComPort:        TApdComPort;
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False);
       destructor Destroy; override;
-      function OpenCOMPort: Boolean;
-      function SetupCOMPort: Boolean;
-      procedure SendText(aText: string);
-      procedure ReadText(var aArray; aCount: DWORD);
-      procedure CloseCOMPort;
   end;
 
-  TMethodAudio = class(TBaseGeigerMethod)
-    private
+  TMethodAudio = class(TThread)
+    protected
+      fSumCPM: Integer;
+      fNetworkHandler: TNetworkController;
       fIsSoundInitialized: Boolean;
+      procedure Execute; override;
     public
       constructor Create(CreateSuspended: Boolean = False);
       destructor Destroy; override;
@@ -58,152 +50,38 @@ type
   end;
 
 implementation
-constructor TBaseGeigerMethod.Create(CreateSuspended: Boolean = False);
-begin
-  inherited Create(CreateSuspended);
-  fNetworkHandler := TNetworkController.Create;
-end;
-
-
-destructor TBaseGeigerMethod.Destroy;
-begin
-  inherited;
-  FreeAndNil(fNetworkHandler);
-end;
-
-
-procedure TBaseGeigerMethod.Execute;
-begin
-  FreeOnTerminate := True;
-end;
-
-
 constructor TMethodSerial.Create(aPort, aBaud: Integer; aParity: TParity;
                                  aDataBits, aStopBits: Word;
                                  CreateSuspended: Boolean = False);
 begin
-  inherited Create(CreateSuspended);
-  // fComPort      := TApdComPort.Create(nil);
-  fPortAddress  := aPort;
-  fPortBaud     := aBaud;
-  fPortParity   := aParity;
-  fPortDataBits := aDataBits;
-  fPortStopBits := aStopBits;
+  inherited Create;
+  fNetworkHandler      := TNetworkController.Create;
+  fComPort             := TApdComPort.Create(nil);
+  fPortAddress         := aPort;
+  fPortBaud            := aBaud;
+  fPortParity          := aParity;
+  fPortDataBits        := aDataBits;
+  fPortStopBits        := aStopBits;
+  fBufferTimer         := TTimer.Create(nil);
+  fBufferTimer.Enabled := False;
+  Set8087CW($133F);
 end;
 
 
 destructor TMethodSerial.Destroy;
 begin
   inherited;
-  // fComPort.DonePort;
-  // fComPort.Open := False;
-  // FreeAndNil(fComPort);
-  CloseCOMPort;
-end;
-
-
-function TMethodSerial.OpenCOMPort: Boolean;
-begin
-  fComHandle := CreateFile(PChar('COM' + IntToStr(fPortAddress)),
-                           GENERIC_READ or GENERIC_WRITE,
-                           0,
-                           nil,
-                           OPEN_EXISTING,
-                           FILE_ATTRIBUTE_NORMAL,
-                           0);
-
-  if fComHandle = INVALID_HANDLE_VALUE then
-    Result := False
-  else
-    Result := True;
-end;
-
-
-function TMethodSerial.SetupCOMPort: Boolean;
-const
-  RxBufferSize = 256;
-  TxBufferSize = 256;
-var
-  DCB: TDCB;
-  Config: string;
-  TimeoutBuffer: PCOMMTIMEOUTS;
-  ParityStr: string;
-begin
-  Result := True;
-
-  if not SetupComm(fComHandle, RxBufferSize, TxBufferSize) then
-    raise Exception.Create('Could not setup serial port!');
-
-  if not GetCommState(fComHandle, DCB) then
-    raise Exception.Create('Could not get port state!');
-
-  case fPortParity of
-    pMark:  ParityStr := 'm';
-    pOdd:   ParityStr := 'o';
-    pEven:  ParityStr := 'e';
-    pNone:  ParityStr := 'n';
-    pSpace: ParityStr := 's';
-  end;
-
-  Config := 'baud='    + IntToStr(fPortBaud) +
-            ' parity=' + ParityStr +
-            ' data='   + IntToStr(fPortDataBits) +
-            ' stop='   + IntToStr(fPortStopBits);
-
-  //if not BuildCommDCB(PChar(Config), DCB) then
-    //raise Exception.Create('Could not build port config!');
-
-  //if not SetCommState(fComHandle, DCB) then
-    //raise Exception.Create('Could not set port state!');
-
-  GetMem(TimeoutBuffer, sizeof(COMMTIMEOUTS));
-
-  if not GetCommTimeouts(fComHandle, TimeoutBuffer^) then
-    raise Exception.Create('Could not get timeouts!');
-
-  TimeoutBuffer.ReadIntervalTimeout := 300;
-  TimeoutBuffer.ReadTotalTimeoutMultiplier := 300;
-  TimeoutBuffer.ReadTotalTimeoutConstant := 300;
-
-  if not SetCommTimeouts(fComHandle, TimeoutBuffer^) then
-    raise Exception.Create('Could not set timeouts!');
-
-  FreeMem(TimeoutBuffer, sizeof(COMMTIMEOUTS));
-
-  //if not GetCommTimeouts(fComHandle, CommTimeouts) then
-    //Result := False;
-
-  //if not SetCommTimeouts(fComHandle, CommTimeouts) then
-    //Result := False;
-end;
-
-
-procedure TMethodSerial.SendText(aText: string);
-var
-  BytesWritten: DWORD;
-begin
-  aText := aText + #13 + #10;
-  WriteFile(fComHandle, PChar(aText)^, Length(aText), BytesWritten, nil);
-end;
-
-
-procedure TMethodSerial.ReadText(var aArray; aCount: DWORD);
-begin
-  if not ReadFile(fComHandle, PChar(aArray)^, SizeOf(aArray), aCount, nil) then
-    raise Exception.Create('Could not read from port!');
-end;
-
-
-procedure TMethodSerial.CloseCOMPort;
-begin
-  CloseHandle(fComHandle);
-  FreeAndNil(fComHandle);
+  fComPort.Open := False;
+  fComPort.DonePort;
+  FreeAndNil(fComPort);
+  FreeAndNil(fNetworkHandler);
 end;
 
 
 constructor TMethodAudio.Create(CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
+  fNetworkHandler     := TNetworkController.Create;
   fIsSoundInitialized := InitOpenAL;
   // Disable 3D spatialization for speed up
   alDistanceModel(AL_NONE);
@@ -214,6 +92,87 @@ end;
 destructor TMethodAudio.Destroy;
 begin
   inherited;
+  FreeAndNil(fNetworkHandler);
+end;
+
+
+procedure TMethodAudio.Execute;
+begin
+  FreeOnTerminate := True;
+end;
+
+
+procedure updateCPMBar(aCPM: Integer);
+begin
+  if aCPM < 200 then // Safe
+  begin
+    fCPMBar.Max               := 200;
+    fCPMBar.ItemOnBrush.Color := clLime;
+    fCPMBar.ItemOnPen.Color   := clGreen;
+  end else
+    if aCPM < 500 then // Attention
+    begin
+      fCPMBar.Max               := 500;
+      fCPMBar.ItemOnBrush.Color := clYellow;
+      fCPMBar.ItemOnPen.Color   := clOlive;
+    end else
+      if aCPM < 1000 then // Warning
+      begin
+        fCPMBar.Max               := 1000;
+        fCPMBar.ItemOnBrush.Color := $0000A5FF; // clWebOrange
+        fCPMBar.ItemOnPen.Color   := $000045FF; // clWebOrangeRed
+      end else // Danger
+      begin
+        fCPMBar.Max               := 15000;
+        fCPMBar.ItemOnBrush.Color := clRed;
+        fCPMBar.ItemOnPen.Color   := clMaroon;
+      end;
+
+  fCPMBar.Position := aCPM;
+  fLblCPM.Caption   := IntToStr(aCPM);
+end;
+
+
+procedure updatePlot(aCPM: Integer);
+var
+  I: Integer;
+  plotData: TChartData;
+begin
+  plotData.value    := aCPM;
+  plotData.dateTime := Now;
+
+  if fPlotPointList.Count - 1 = PLOTCAP then // Make space for new plot point
+    fPlotPointList.Delete(0);
+
+  fPlotPointList.Add(plotData);
+  fCPMChart.Series[0].Clear;
+
+  for I := 0 to PLOTCAP do
+  begin
+    if I <= fPlotPointList.Count - 1 then
+    begin
+      if fPlotPointList[I].value >= fCPMChart.LeftAxis.Maximum then
+        fCPMChart.LeftAxis.Maximum := fPlotPointList[I].value + 10;
+
+      fCPMChart.Series[0].Add(fPlotPointList[I].value, FormatDateTime('HH:MM:SS', fPlotPointList[I].dateTime));
+    end else
+      fCPMChart.Series[0].Add(0, 'Empty');
+  end;
+
+  fCPMChart.Update;
+end;
+
+
+procedure updateDosiLbl(aCPM: Integer);
+var
+  DosiValue: Double;
+begin
+  DosiValue := aCPM * fConvertFactor;
+
+  if fConvertmR then
+    fLblDosi.Caption := FormatFloat(',0.000000', DosiValue / SVTOR) + ' µR/h'
+  else
+    fLblDosi.Caption := FormatFloat(',0.000000', DosiValue) + ' µSv/h';
 end;
 
 end.

@@ -5587,9 +5587,9 @@ object mainForm: TmainForm
         end
         object GroupBox2: TGroupBox
           Left = 15
-          Top = 129
+          Top = 136
           Width = 364
-          Height = 129
+          Height = 133
           Caption = 'User Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5760,9 +5760,9 @@ object mainForm: TmainForm
         end
         object GroupBox5: TGroupBox
           Left = 392
-          Top = 129
+          Top = 136
           Width = 153
-          Height = 256
+          Height = 249
           Caption = 'Capture mode'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5817,9 +5817,9 @@ object mainForm: TmainForm
         end
         object GroupBox6: TGroupBox
           Left = 15
-          Top = 264
+          Top = 280
           Width = 364
-          Height = 121
+          Height = 105
           Caption = 'Audio Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5835,23 +5835,16 @@ object mainForm: TmainForm
             Height = 14
             Caption = 'Threshold (RMS): '
           end
-          object Label16: TLabel
-            Left = 10
-            Top = 56
-            Width = 96
-            Height = 14
-            Caption = 'Pulsewidth (s): '
-          end
           object Label18: TLabel
             Left = 10
-            Top = 85
+            Top = 69
             Width = 86
             Height = 14
             Caption = 'Audio device: '
           end
           object cbAudioDevice: TComboBox
             Left = 126
-            Top = 80
+            Top = 64
             Width = 227
             Height = 22
             Style = csDropDownList
@@ -5864,22 +5857,12 @@ object mainForm: TmainForm
             TabOrder = 0
             OnChange = edtChange
           end
-          object edtPulseWidth: TcyEditFloat
-            Left = 126
-            Top = 52
-            Width = 99
-            Height = 22
-            TabOrder = 1
-            Text = '0.00'
-            OnChange = edtChange
-            Precision = 4
-          end
           object edtThreshold: TcyEditFloat
             Left = 126
             Top = 24
             Width = 99
             Height = 22
-            TabOrder = 2
+            TabOrder = 1
             Text = '0.03'
             OnChange = edtChange
             Precision = 4
@@ -5921,7 +5904,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 600
+          Width = 752
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5943,7 +5926,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 600
+          Width = 752
           Height = 227
           Margins.Left = 10
           Margins.Right = 10
@@ -6082,21 +6065,5 @@ object mainForm: TmainForm
         Text = 'Last uploaded: 0'
         Width = 150
       end>
-  end
-  object cMainTimer: TTimer
-    Enabled = False
-    Interval = 100
-    OnTimer = cMainTimerTimer
-    Left = 672
-  end
-  object cPulseTimer: TTimer
-    Interval = 50
-    OnTimer = cPulseTimerTimer
-    Left = 636
-  end
-  object ApdComPort1: TApdComPort
-    TraceName = 'APRO.TRC'
-    LogName = 'APRO.LOG'
-    Left = 496
   end
 end
