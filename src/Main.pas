@@ -1,4 +1,4 @@
-unit Main;
+﻿unit Main;
 
 {
   This is the main form unit file of RadiaLog.
@@ -111,7 +111,7 @@ type
   private
     // Audio related
     fAudioThreshold: Double;
-    fAudioControl:   tAudioGeiger;
+    fAudioControl:   TAudioGeiger;
     // Serial related
     fComPort:      string;
     fComBaud:      Integer;
@@ -128,7 +128,6 @@ type
     fMyGeigerMode: Boolean;
     fGMCMode:      Boolean;
     fNetIOMode:    Boolean;
-    fUploadRM:     Boolean;
     // Misc
     fSettings:    TINIFile;
     fSafeToWrite: Boolean;
@@ -264,17 +263,19 @@ end;
 
 procedure TmainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if not (Pointer(TObject(fAudioControl)) = nil) then
+  if fAudioMode and not (Pointer(TObject(fAudioControl)) = nil) then
     fAudioControl.Terminate;
 
-  FreeAndNil(fAudioControl);
-  FreeAndNil(fMGControl);
-  FreeAndNil(fGMCControl);
-  FreeAndNil(fNetIOControl);
-  FreeAndNil(fPlotPointList);
-  FreeAndNil(audioDevs);
-  FreeAndNil(fThreadReapTimer);
   Set8087CW(Saved8087CW); // Default value (with exceptions) is $1372.
+
+  if fMyGeigerMode then
+    FreeAndNil(fMGControl);
+
+  if fGMCMode then
+    FreeAndNil(fGMCControl);
+
+  if fNetIOMode then
+    FreeAndNil(fNetIOControl);
 end;
 
 
@@ -485,19 +486,17 @@ begin
   fThreadReapTimer.Enabled := False;
 
   if fAudioMode then
-  begin
     fAudioControl.Terminate;
-    fAudioControl := nil;
-  end;
+    // TerminateThread(fAudioControl.Handle, 1);
 
   if fMyGeigerMode then
     FreeAndNil(fMGControl);
 
-  { if fGMCMode then
+  if fGMCMode then
     FreeAndNil(fGMCControl);
 
   if fNetIOMode then
-    FreeAndNil(fNetIOControl); }
+    FreeAndNil(fNetIOControl);
 
   fCPMBar                := nil;
   fLblCPM                := nil;

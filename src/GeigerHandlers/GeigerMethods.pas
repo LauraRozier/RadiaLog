@@ -47,13 +47,14 @@ type
       fBuffer:         array of AnsiChar;
       fSumCPM:         Integer;
       fNetworkHandler: TNetworkController;
-      fBufferTimer:    TTimer;
       fPortAddress:    Integer;
       fPortBaud:       Integer;
       fPortParity:     TParity;
       fPortDataBits:   Word;
       fPortStopBits:   Word;
       fComPort:        TApdComPort;
+      fBufferTimer:    TTimer;
+      procedure triggerAvail(CP: TObject; Count: Word);
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
@@ -99,6 +100,19 @@ begin
   fComPort.DonePort;
   FreeAndNil(fComPort);
   FreeAndNil(fNetworkHandler);
+end;
+
+
+procedure TMethodSerial.triggerAvail(CP: TObject; Count: Word);
+begin
+  if not fBufferTimer.Enabled then
+  begin
+    fBufferTimer.Interval := 300;
+    fBufferTimer.Enabled  := True;
+  end;
+
+  SetLength(fBuffer, Length(fBuffer) + 1);
+  fBuffer[High(fBuffer)] := fComPort.GetChar;
 end;
 
 

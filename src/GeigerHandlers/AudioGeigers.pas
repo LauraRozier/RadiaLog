@@ -25,11 +25,11 @@ unit AudioGeigers;
 interface
 uses
   // System units
-  SysUtils, Classes, Math,
+  Windows, SysUtils, Classes, Math,
   // OpenAL unit
   OpenAL,
   // Custom units
-  GeigerMethods, Defaults, ThimoUtils;
+  GeigerMethods, NetworkMethods, Defaults, ThimoUtils;
 
 var
   fDefaultDevice, fDeviceList: PAnsiChar;
@@ -54,6 +54,7 @@ type
       // Frequency * Channels (Per full second) + Slack-space
       fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
       function GetDevStr: string;
+      procedure SafeExit;
     protected
       procedure Execute; override;
     public
@@ -137,6 +138,7 @@ var
   numSamples: Integer;
 begin
   inherited;
+
   // Prepare audio source
   if not fIsSoundInitialized then
     raise exception.create('Could not initialize OpenAL!');
@@ -159,11 +161,21 @@ begin
   
   while not Terminated do
   begin
+    fSumCPM := 0;
+
     for I := 0 to GEIGER_RUN_TIME - 1 do
     begin
-      if Terminated then Exit;
-  
-      Sleep(50);
+      for J := 0 to THREAD_WAIT_TIME - 1 do
+      begin
+        Sleep(1);
+
+        if Terminated then
+        begin
+          SafeExit;
+          Exit;
+        end;
+      end;
+
       // Get number of frames captuered
       alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, 1, @numSamples);
       alcCaptureSamples(fCaptureDevice, @fData, numSamples); 
@@ -175,35 +187,63 @@ begin
 
       CurRMS := Sqrt(CurRMS / numSamples);
 
-      if (CurRMS / THRESHOLD_DIV) >= fTreshold then
-        Inc(fSumCPM);
+      if DEBUG_AUDIO then
+      begin
+        if (CurRMS / THRESHOLD_DIV) >= fTreshold then
+        begin
+          Inc(fSumCPM);
+          fErrorLog.Lines.Add('Tick at I=' + IntToStr(I) + ' with RMS: ' + FloatToStr(CurRMS));
+          fErrorLog.Lines.Add('Tick at I=' + IntToStr(I) + ' with  RMS(Clean): ' + FloatToStr(CurRMS / THRESHOLD_DIV));
+        end;
+      end else
+        if (CurRMS / THRESHOLD_DIV) >= fTreshold then
+          Inc(fSumCPM);
     end;
 
-    if Terminated then Exit;
+    if Terminated then
+    begin
+      SafeExit;
+      Exit;
+    end;
+
     DateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
     fCPMLog.Lines.Add(DateTime);
     fCPMLog.Lines.Add(#9 + 'Current CPM: ' + IntToStr(fSumCPM) + sLineBreak);
     updatePlot(fSumCPM);
     updateCPMBar(fSumCPM);
     updateDosiLbl(fSumCPM);
-    fNetworkHandler.UploadData(fSumCPM, fErrorLog);
+
+    if fUploadRM then
+      fNetworkHandler.UploadData(fSumCPM, fErrorLog);
   end;
+
+  SafeExit;
 end;
 
 
 destructor TAudioGeiger.Destroy;
 begin
   inherited;
-  alcCaptureStop(fCaptureDevice);
-  alcCaptureCloseDevice(fCaptureDevice);
-  fCaptureDevice := nil;
-  AlutExit;
+  SafeExit;
 end;
 
 
-function TAudioGeiger.GetDevStr: AnsiString;
+function TAudioGeiger.GetDevStr: string;
 begin
-  result := fDefDeviceStr;
+  result := string(fDefDeviceStr);
+end;
+
+
+procedure TAudioGeiger.SafeExit;
+begin
+  try
+    alcCaptureStop(fCaptureDevice);
+    alcCaptureCloseDevice(fCaptureDevice);
+    fCaptureDevice := nil;
+  finally
+    AlutExit;
+    ExitThread(1);
+  end;
 end;
 
 end.

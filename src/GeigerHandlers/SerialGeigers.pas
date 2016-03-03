@@ -31,13 +31,10 @@ uses
   // Custom units
   Defaults, GeigerMethods;
 
-private
-  procedure TimerTick(Sender: TObject);
-
 type
   TMyGeiger = class(TMethodSerial)
-    protected
-      procedure triggerAvail(CP: TObject; Count: Word);
+    private
+      procedure TimerTick(Sender: TObject);
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
@@ -45,8 +42,8 @@ type
   end;
 
   TGMC = class(TMethodSerial)
-    protected
-      procedure triggerAvail(CP: TObject; Count: Word);
+    private
+      procedure TimerTick(Sender: TObject);
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
@@ -54,27 +51,15 @@ type
   end;
 
   TNetIO = class(TMethodSerial)
-    protected
-      procedure triggerAvail(CP: TObject; Count: Word);
+    private
+      procedure TimerTick(Sender: TObject);
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False); overload;
   end;
+
 implementation
-procedure triggerAvail(CP: TObject; Count: Word);
-begin
-  if not fBufferTimer.Enabled then
-  begin
-    fBufferTimer.Interval := 300;
-    fBufferTimer.Enabled  := True;
-  end;
-
-  SetLength(fBuffer, Length(fBuffer) + 1);
-  fBuffer[High(fBuffer)] := fComPort.GetChar;
-end;
-
-
 { TMyGeiger class }
 constructor TMyGeiger.Create(aPort, aBaud: Integer; aParity: TParity;
                              aDataBits, aStopBits: Word;
@@ -128,7 +113,9 @@ begin
   updatePlot(fSumCPM);
   updateCPMBar(fSumCPM);
   updateDosiLbl(fSumCPM);
-  fNetworkHandler.UploadData(fSumCPM, fErrorLog);
+
+  if fUploadRM then
+      fNetworkHandler.UploadData(fSumCPM, fErrorLog);
 end;
 
 
@@ -185,7 +172,9 @@ begin
   updatePlot(fSumCPM);
   updateCPMBar(fSumCPM);
   updateDosiLbl(fSumCPM);
-  fNetworkHandler.UploadData(fSumCPM, fErrorLog);
+
+  if fUploadRM then
+      fNetworkHandler.UploadData(fSumCPM, fErrorLog);
 end;
 
 
@@ -242,7 +231,9 @@ begin
   updatePlot(fSumCPM);
   updateCPMBar(fSumCPM);
   updateDosiLbl(fSumCPM);
-  fNetworkHandler.UploadData(fSumCPM, fErrorLog);
+
+  if fUploadRM then
+      fNetworkHandler.UploadData(fSumCPM, fErrorLog);
 end;
 
 end.

@@ -1883,9 +1883,7 @@ procedure ReadOpenALExtensions;
 
 
 implementation
-
-//{$IFDEF MSWindows} uses mmsystem; {$ENDIF}
-{$IFDEF MSWindows} uses DirectSound3D; {$ENDIF}
+{$IFDEF MSWindows} uses mmsystem; {$ENDIF}
 
 type
   //WAV file header
