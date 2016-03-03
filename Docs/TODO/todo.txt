@@ -1,0 +1,4 @@
+L - Make installer via Inno Setup 5 (Delphi based)
+M - Add GMC support
+L - Add NetIO support
+L - Clean up code
