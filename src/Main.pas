@@ -1,5 +1,27 @@
 unit Main;
 
+{
+  This is the main form unit file of RadiaLog.
+  File GUID: [EA9ED897-741D-40AA-B97A-319538BA02E2]
+
+  Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
+
+  This source is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+
+  This code is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  details.
+
+  A copy of the GNU General Public License is available on the World Wide Web
+  at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
+  to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+  MA 02111-1307, USA.
+}
+
 interface
 
 uses
@@ -21,7 +43,6 @@ uses
 type
   TmainForm = class(TForm)
     fStatusBar: TStatusBar;
-    //cComPort: TApdComPort;
     fPageControl: TPageControl;
       tabMain: TTabSheet;
         ScrollBox1: TScrollBox;
@@ -92,14 +113,14 @@ type
     fAudioThreshold: Double;
     fAudioControl:   tAudioGeiger;
     // Serial related
-    fComPort:     string;
-    fComBaud:     Integer;
-    fComDataBits: Word;
-    fComStopBits: Word;
-    fComParity:   Word;
-	  fMGControl:   TMyGeiger;
-	  // fGMCControl: TGMC;
-	  // fNetIOControl: TNetIO;
+    fComPort:      string;
+    fComBaud:      Integer;
+    fComDataBits:  Word;
+    fComStopBits:  Word;
+    fComParity:    Word;
+    fMGControl:    TMyGeiger;
+    fGMCControl:   TGMC;
+    fNetIOControl: TNetIO;
     // Timer related
     fThreadReapTimer: TTimer;
     // Modes
@@ -138,7 +159,7 @@ begin
   mainForm.Caption         := 'RadiaLog ' + VERSION_PREFIX + VERSION + VERSION_SUFFIX;
   exeDir                   := ExtractFilePath(Application.ExeName);
   fPlotPointList           := TList<TChartData>.Create;
-  chkBoxUnitType.Hint      := 'Checked: µR/h' + sLineBreak + 'Unckecked: µSv/h';
+  chkBoxUnitType.Hint      := 'Checked: ÂµR/h' + sLineBreak + 'Unckecked: ÂµSv/h';
   lblTubes.Caption         := 'SBM-20' + sLineBreak + 'SBM-19' + sLineBreak +
                               'SI-29BG' + sLineBreak + 'SI-180G' + sLineBreak +
                               'LND-712' + sLineBreak + 'LND-7317' + sLineBreak +
@@ -167,10 +188,10 @@ begin
 
   comPortBox.Items.EndUpdate;
   comPortBox.ItemIndex := 0;
-  // Read INI values
   fSafeToWrite         := False;
   fSettings            := TINIFile.Create(exeDir + '/Settings.ini');
 
+  // Write initial file if it does not exist.
   if not FileExists(exeDir + '/Settings.ini') then
   begin
     fSettings.WriteString('SERIAL',  'Port',       'COM1');
@@ -190,6 +211,7 @@ begin
     fSettings.WriteBool('MODE',      'NetIO',      False);
   end;
 
+  // Read INI values
   fComPort         := fSettings.ReadString('SERIAL',  'Port',       'COM1');
   fComBaud         := fSettings.ReadInteger('SERIAL', 'Baud',       2400);
   fComParity       := fSettings.ReadInteger('SERIAL', 'Parity',     0);
@@ -225,7 +247,7 @@ begin
   rbNetIO.Checked          := fNetIOMode;
   rbAudio.Checked          := fAudioMode;
 
-  //fill the combobox
+  // Fill the audio source combobox
   audioDevs       := TStringList.Create;
   AudioEnumerator := TAudioEnum.Create;
   AudioEnumerator.GetAudioEnum(audioDevs);
@@ -247,8 +269,8 @@ begin
 
   FreeAndNil(fAudioControl);
   FreeAndNil(fMGControl);
-  // FreeAndNil(fGMCControl);
-  // FreeAndNil(fNetIOControl);
+  FreeAndNil(fGMCControl);
+  FreeAndNil(fNetIOControl);
   FreeAndNil(fPlotPointList);
   FreeAndNil(audioDevs);
   FreeAndNil(fThreadReapTimer);
@@ -263,9 +285,9 @@ begin
   DosiValue := aCPM * fConvertFactor;
 
   if fConvertmR then
-    lblDosi.Caption := FormatFloat(',0.000000', DosiValue / SVTOR) + ' µR/h'
+    lblDosi.Caption := FormatFloat(',0.000000', DosiValue / SVTOR) + ' ÂµR/h'
   else
-    lblDosi.Caption := FormatFloat(',0.000000', DosiValue) + ' µSv/h';
+    lblDosi.Caption := FormatFloat(',0.000000', DosiValue) + ' ÂµSv/h';
 end;
 
 
@@ -414,20 +436,20 @@ begin
         fAudioControl := TAudioGeiger.Create(fAudioThreshold, False)
       else
         fAudioControl := TAudioGeiger.Create(fAudioThreshold,
-                                             AnsiString(cbAudioDevice.Items[cbAudioDevice.itemindex]),
+                                             cbAudioDevice.Items[cbAudioDevice.itemindex],
                                              False);
 
     if fMyGeigerMode then
       fMGControl := TMyGeiger.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
-	                                   fComBaud,
+                                     fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
                                      fComStopBits,
                                      False);
 
-    { if fGMCMode then
+    if fGMCMode then
       fGMCControl := TGMC.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
-	                               fComBaud,
+                                 fComBaud,
                                  TParity(fComParity),
                                  fComDataBits,
                                  fComStopBits,
@@ -435,11 +457,11 @@ begin
 
     if fNetIOMode then
       fNetIOControl := TNetIO.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
-	                                   fComBaud,
+                                     fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
                                      fComStopBits,
-                                     False); }
+                                     False);
 
     comPortBox.Enabled     := False;
     comBaudBox.Enabled     := False;

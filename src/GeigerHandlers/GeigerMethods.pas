@@ -1,5 +1,27 @@
 unit GeigerMethods;
 
+{
+  This is the main counter handeling unit file of RadiaLog.
+  File GUID: [6DCC7A5D-D2A4-4146-AF6B-5D817D61DC01]
+
+  Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
+
+  This source is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+
+  This code is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  details.
+
+  A copy of the GNU General Public License is available on the World Wide Web
+  at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
+  to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+  MA 02111-1307, USA.
+}
+
 interface
 uses
   // System units
@@ -21,15 +43,17 @@ procedure updateDosiLbl(aCPM: Integer);
 type
   TMethodSerial = class(TObject)
     protected
+      fBufferString:   AnsiString;
+      fBuffer:         array of AnsiChar;
       fSumCPM:         Integer;
       fNetworkHandler: TNetworkController;
       fBufferTimer:    TTimer;
-	    fPortAddress:    Integer;
-	    fPortBaud:       Integer;
-	    fPortParity:     TParity;
-	    fPortDataBits:   Word;
-	    fPortStopBits:   Word;
-	    fComPort:        TApdComPort;
+      fPortAddress:    Integer;
+      fPortBaud:       Integer;
+      fPortParity:     TParity;
+      fPortDataBits:   Word;
+      fPortStopBits:   Word;
+      fComPort:        TApdComPort;
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;

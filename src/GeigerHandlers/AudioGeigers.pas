@@ -1,5 +1,27 @@
 unit AudioGeigers;
 
+{
+  This is the audio handeling unit file of RadiaLog.
+  File GUID: [BA9DDA90-B79E-4199-88B9-87BFFC4B5FF4]
+
+  Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
+
+  This source is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your option)
+  any later version.
+
+  This code is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  details.
+
+  A copy of the GNU General Public License is available on the World Wide Web
+  at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing
+  to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+  MA 02111-1307, USA.
+}
+
 interface
 uses
   // System units
@@ -27,19 +49,19 @@ type
   TAudioGeiger = class(TMethodAudio)
     private
       fCaptureDevice: PALCDevice;
-      fChosenDevice: AnsiString;
+      fChosenDevice: string;
       fTreshold: Double;
       // Frequency * Channels (Per full second) + Slack-space
       fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
-      function GetDevStr: AnsiString;
+      function GetDevStr: string;
     protected
       procedure Execute; override;
     public
       constructor Create(aThreshold: Double; CreateSuspended: Boolean = False); overload;
-      constructor Create(aThreshold: Double; aPort: AnsiString; CreateSuspended: Boolean = False); overload;
+      constructor Create(aThreshold: Double; aPort: string; CreateSuspended: Boolean = False); overload;
       destructor Destroy; override;
-      property DefaultDevice: AnsiString read GetDevStr;
-      property ChosenDevice: AnsiString read fChosenDevice write fChosenDevice;
+      property DefaultDevice: string read GetDevStr;
+      property ChosenDevice:  string read fChosenDevice write fChosenDevice;
       property Initialized;
   end;
 
@@ -98,7 +120,7 @@ begin
 end;
 
 
-constructor TAudioGeiger.Create(aThreshold: Double; aPort: AnsiString; CreateSuspended: Boolean = False);
+constructor TAudioGeiger.Create(aThreshold: Double; aPort: string; CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
   fSumCPM       := 0;
@@ -125,7 +147,7 @@ begin
                                            IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
                                            Trunc(Length(fData) Div GEIGER_CHANNELS)) // Buffer size
   else
-    fCaptureDevice := alcCaptureOpenDevice(PChar(String(fChosenDevice)), // Device name pointer
+    fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice), // Device name pointer
                                            GEIGER_SAMPLE_RATE, // Frequency
                                            IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
                                            Trunc(Length(fData) Div GEIGER_CHANNELS)); // Buffer size
