@@ -1,12 +1,12 @@
 object Form1: TForm1
-  Left = -657
+  Left = 333
   Height = 240
-  Top = 117
+  Top = 581
   Width = 320
   Caption = 'Form1'
   ClientHeight = 240
   ClientWidth = 320
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.6.0.4'
   object Memo1: TMemo
     Left = 8
     Height = 192
@@ -27,5 +27,14 @@ object Form1: TForm1
     Caption = 'Start'
     OnClick = Button1Click
     TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 232
+    Height = 25
+    Top = 208
+    Width = 75
+    Caption = 'Stop'
+    OnClick = Button2Click
+    TabOrder = 2
   end
 end
