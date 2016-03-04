@@ -4,6 +4,9 @@
   This is the main form unit file of RadiaLog.
   File GUID: [EA9ED897-741D-40AA-B97A-319538BA02E2]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
@@ -425,44 +428,90 @@ begin
     fPlotPointList.Clear;
     cCPMEdit.Clear;
     cErrorEdit.Clear;
-    fCPMBar   := cCPMBar;
-    fLblCPM   := lblCPM;
-    fLblDosi  := lblDosi;
-    fCPMChart := cCPMChart;
-    fCPMLog   := cCPMEdit;
-    fErrorLog := cErrorEdit;
 
     if fAudioMode then
+    begin
       if cbAudioDevice.itemindex = 0 then
-        fAudioControl := TAudioGeiger.Create(fAudioThreshold, False)
+        fAudioControl := TAudioGeiger.Create(fAudioThreshold, True)
       else
         fAudioControl := TAudioGeiger.Create(fAudioThreshold,
                                              cbAudioDevice.Items[cbAudioDevice.itemindex],
-                                             False);
+                                             True);
+
+      fAudioControl.ConvertFactor := fConvertFactor;
+      fAudioControl.ConvertmR     := fConvertmR;
+      fAudioControl.UploadRM      := fUploadRM;
+      fAudioControl.CPMBar        := cCPMBar;
+      fAudioControl.LblCPM        := lblCPM;
+      fAudioControl.LblDosi       := lblDosi;
+      fAudioControl.CPMChart      := cCPMChart;
+      fAudioControl.CPMLog        := cCPMEdit;
+      fAudioControl.ErrorLog      := cErrorEdit;
+      fAudioControl.Start;
+    end;
 
     if fMyGeigerMode then
+    begin
       fMGControl := TMyGeiger.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
                                      fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
                                      fComStopBits,
-                                     False);
+                                     True);
+
+      fMGControl.ConvertFactor := fConvertFactor;
+      fMGControl.ConvertmR     := fConvertmR;
+      fMGControl.UploadRM      := fUploadRM;
+      fMGControl.CPMBar        := cCPMBar;
+      fMGControl.LblCPM        := lblCPM;
+      fMGControl.LblDosi       := lblDosi;
+      fMGControl.CPMChart      := cCPMChart;
+      fMGControl.CPMLog        := cCPMEdit;
+      fMGControl.ErrorLog      := cErrorEdit;
+      fMGControl.Start;
+    end;
 
     if fGMCMode then
+    begin
       fGMCControl := TGMC.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
                                  fComBaud,
                                  TParity(fComParity),
                                  fComDataBits,
                                  fComStopBits,
-                                 False);
+                                 True);
+
+      fGMCControl.ConvertFactor := fConvertFactor;
+      fGMCControl.ConvertmR     := fConvertmR;
+      fGMCControl.UploadRM      := fUploadRM;
+      fGMCControl.CPMBar        := cCPMBar;
+      fGMCControl.LblCPM        := lblCPM;
+      fGMCControl.LblDosi       := lblDosi;
+      fGMCControl.CPMChart      := cCPMChart;
+      fGMCControl.CPMLog        := cCPMEdit;
+      fGMCControl.ErrorLog      := cErrorEdit;
+      fGMCControl.Start;
+    end;
 
     if fNetIOMode then
+    begin
       fNetIOControl := TNetIO.Create(StrToInt(StringReplace(fComPort, 'COM', '', [rfReplaceAll, rfIgnoreCase])),
                                      fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
                                      fComStopBits,
-                                     False);
+                                     True);
+
+      fNetIOControl.ConvertFactor := fConvertFactor;
+      fNetIOControl.ConvertmR     := fConvertmR;
+      fNetIOControl.UploadRM      := fUploadRM;
+      fNetIOControl.CPMBar        := cCPMBar;
+      fNetIOControl.LblCPM        := lblCPM;
+      fNetIOControl.LblDosi       := lblDosi;
+      fNetIOControl.CPMChart      := cCPMChart;
+      fNetIOControl.CPMLog        := cCPMEdit;
+      fNetIOControl.ErrorLog      := cErrorEdit;
+      fNetIOControl.Start;
+    end;
 
     comPortBox.Enabled     := False;
     comBaudBox.Enabled     := False;

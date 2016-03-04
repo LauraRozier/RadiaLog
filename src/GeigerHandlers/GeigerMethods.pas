@@ -4,6 +4,9 @@ unit GeigerMethods;
   This is the main counter handeling unit file of RadiaLog.
   File GUID: [6DCC7A5D-D2A4-4146-AF6B-5D817D61DC01]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
@@ -26,12 +29,16 @@ interface
 uses
   // System units
   Classes, SysUtils,
-  // Asynch Pro units
-  AdPort, OoMisc,
+  // VCL units
+  VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls, VCL.Graphics,
+  // TeeChart units
+  VCLTee.Chart,
   // OpenAL unit
   OpenAL,
-  // VCL units
-  VCL.ExtCtrls, VCL.Graphics,
+  // Asynch Pro units
+  AdPort, OoMisc,
+  // Cindy units
+  cySimpleGauge,
   // Custom units
   Defaults, NetworkMethods;
 
@@ -43,39 +50,73 @@ procedure updateDosiLbl(aCPM: Integer);
 type
   TMethodSerial = class(TObject)
     protected
-      fBufferString:   AnsiString;
-      fBuffer:         array of AnsiChar;
-      fSumCPM:         Integer;
-      fNetworkHandler: TNetworkController;
-      fPortAddress:    Integer;
-      fPortBaud:       Integer;
-      fPortParity:     TParity;
-      fPortDataBits:   Word;
-      fPortStopBits:   Word;
-      fComPort:        TApdComPort;
-      fBufferTimer:    TTimer;
+      fBufferString:      AnsiString;
+      fBuffer:            array of AnsiChar;
+      fSumCPM:            Integer;
+      fNetworkHandler:    TNetworkController;
+      fPortAddress:       Integer;
+      fPortBaud:          Integer;
+      fPortParity:        TParity;
+      fPortDataBits:      Word;
+      fPortStopBits:      Word;
+      fComPort:           TApdComPort;
+      fBufferTimer:       TTimer;
+      fConvertFactor:     Double;
+      fConvertmR:         Boolean;
+      fUploadRM:          Boolean;
+      fCPMBar:            TcySimpleGauge;
+      fLblCPM, fLblDosi:  TLabel;
+      fCPMChart:          TChart;
+      fCPMLog, fErrorLog: TRichEdit;
       procedure triggerAvail(CP: TObject; Count: Word);
     public
-      constructor Create(aPort, aBaud: Integer; aParity: TParity;
+      constructor Create(aPort, aBaud: Integer;
+                         aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False);
       destructor Destroy; override;
+      property ConvertFactor: Double         read fConvertFactor write fConvertFactor;
+      property ConvertmR:     Boolean        read fConvertmR     write fConvertmR;
+      property UploadRM:      Boolean        read fUploadRM      write fUploadRM;
+      property CPMBar:        TcySimpleGauge read fCPMBar        write fCPMBar;
+      property LblCPM:        TLabel         read fLblCPM        write fLblCPM;
+      property LblDosi:       TLabel         read LblDosi        write LblDosi;
+      property CPMChart:      TChart         read fCPMChart      write fCPMChart;
+      property CPMLog:        TRichEdit      read fCPMLog        write fCPMLog;
+      property ErrorLog:      TRichEdit      read fErrorLog      write fErrorLog;
   end;
 
   TMethodAudio = class(TThread)
     protected
-      fSumCPM: Integer;
-      fNetworkHandler: TNetworkController;
-      fIsSoundInitialized: Boolean;
+      fSumCPM:              Integer;
+      fNetworkHandler:      TNetworkController;
+      fIsSoundInitialized:  Boolean;
+      fConvertFactor:       Double;
+      fConvertmR:           Boolean;
+      fUploadRM:            Boolean;
+      fCPMBar:              TcySimpleGauge;
+      fLblCPM, fLblDosi:    TLabel;
+      fCPMChart:            TChart;
+      fCPMLog, fErrorLog:   TRichEdit;
       procedure Execute; override;
     public
       constructor Create(CreateSuspended: Boolean = False);
       destructor Destroy; override;
-      property Initialized: Boolean Read fIsSoundInitialized;
+      property Initialized:   Boolean        read fIsSoundInitialized;
+      property ConvertFactor: Double         read fConvertFactor write fConvertFactor;
+      property ConvertmR:     Boolean        read fConvertmR     write fConvertmR;
+      property UploadRM:      Boolean        read fUploadRM      write fUploadRM;
+      property CPMBar:        TcySimpleGauge read fCPMBar        write fCPMBar;
+      property LblCPM:        TLabel         read fLblCPM        write fLblCPM;
+      property LblDosi:       TLabel         read LblDosi        write LblDosi;
+      property CPMChart:      TChart         read fCPMChart      write fCPMChart;
+      property CPMLog:        TRichEdit      read fCPMLog        write fCPMLog;
+      property ErrorLog:      TRichEdit      read fErrorLog      write fErrorLog;
   end;
 
 implementation
-constructor TMethodSerial.Create(aPort, aBaud: Integer; aParity: TParity;
+constructor TMethodSerial.Create(aPort, aBaud: Integer;
+                                 aParity: TParity;
                                  aDataBits, aStopBits: Word;
                                  CreateSuspended: Boolean = False);
 begin

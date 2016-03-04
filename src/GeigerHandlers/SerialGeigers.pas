@@ -4,6 +4,9 @@ unit SerialGeigers;
   This is the serial port handeling unit file of RadiaLog.
   File GUID: [FC0C0E40-CEDE-4ADF-A4FD-AE304D0B3AB6]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
@@ -39,6 +42,15 @@ type
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False); overload;
+      property ConvertFactor;
+      property ConvertmR;
+      property UploadRM;
+      property CPMBar;
+      property LblCPM;
+      property LblDosi;
+      property CPMChart;
+      property CPMLog;
+      property ErrorLog;
   end;
 
   TGMC = class(TMethodSerial)
@@ -48,6 +60,15 @@ type
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False); overload;
+      property ConvertFactor;
+      property ConvertmR;
+      property UploadRM;
+      property CPMBar;
+      property LblCPM;
+      property LblDosi;
+      property CPMChart;
+      property CPMLog;
+      property ErrorLog;
   end;
 
   TNetIO = class(TMethodSerial)
@@ -57,6 +78,15 @@ type
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word;
                          CreateSuspended: Boolean = False); overload;
+      property ConvertFactor;
+      property ConvertmR;
+      property UploadRM;
+      property CPMBar;
+      property LblCPM;
+      property LblDosi;
+      property CPMChart;
+      property CPMLog;
+      property ErrorLog;
   end;
 
 implementation

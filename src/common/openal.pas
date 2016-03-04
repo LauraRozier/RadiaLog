@@ -1195,105 +1195,105 @@ const
   // EFX utils version 1.0
 type
   _EFXEAXREVERBPROPERTIES = packed record
-	  flDensity: single;
-	  flDiffusion: single;
-	  flGain: single;
-	  flGainHF: single;
-	  flGainLF: single;
-	  flDecayTime: single;
-	  flDecayHFRatio: single;
-	  flDecayLFRatio: single;
-	  flReflectionsGain: single;
-	  flReflectionsDelay: single;
-	  flReflectionsPan: packed array[0..2] of single;
-	  flLateReverbGain: single;
-	  flLateReverbDelay: single;
-	  flLateReverbPan: packed array[0..2] of single;
-	  flEchoTime: single;
-	  flEchoDepth: single;
-	  flModulationTime: single;
-	  flModulationDepth: single;
-	  flAirAbsorptionGainHF: single;
-	  flHFReference: single;
-	  flLFReference: single;
-	  flRoomRolloffFactor: single;
-	  iDecayHFLimit: integer;
+	  flDensity:             Single;
+	  flDiffusion:           Single;
+	  flGain:                Single;
+	  flGainHF:              Single;
+	  flGainLF:              Single;
+	  flDecayTime:           Single;
+	  flDecayHFRatio:        Single;
+	  flDecayLFRatio:        Single;
+	  flReflectionsGain:     Single;
+	  flReflectionsDelay:    Single;
+	  flReflectionsPan:      packed array[0..2] of Single;
+	  flLateReverbGain:      Single;
+	  flLateReverbDelay:     Single;
+	  flLateReverbPan:       packed array[0..2] of Single;
+	  flEchoTime:            Single;
+	  flEchoDepth:           Single;
+	  flModulationTime:      Single;
+	  flModulationDepth:     Single;
+	  flAirAbsorptionGainHF: Single;
+	  flHFReference:         Single;
+	  flLFReference:         Single;
+	  flRoomRolloffFactor:   Single;
+	  iDecayHFLimit:         Integer;
   end;
-  EFXEAXREVERBPROPERTIES = _EFXEAXREVERBPROPERTIES;
+  EFXEAXREVERBPROPERTIES  = _EFXEAXREVERBPROPERTIES;
   PEFXEAXREVERBPROPERTIES = ^_EFXEAXREVERBPROPERTIES;
 
   _EFXLOWPASSFILTER = packed record
-	  flGain: single;
-	  flGainHF: single;
+	  flGain:   Single;
+	  flGainHF: Single;
   end;
-  EFXLOWPASSFILTER = _EFXLOWPASSFILTER;
+  EFXLOWPASSFILTER  = _EFXLOWPASSFILTER;
   PEFXLOWPASSFILTER = ^_EFXLOWPASSFILTER;
 
   //END EFX extension
 
 const
   //EAX extension
-  DSPROPSETID_EAX20_ListenerProperties     : TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
-  DSPROPSETID_EAX20_BufferProperties       : TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_ListenerProperties: TGuid = '{0306A6A8-B224-11d2-99E5-0000E8D8C722}';
+  DSPROPSETID_EAX20_BufferProperties:   TGuid = '{0306A6A7-B224-11d2-99E5-0000E8D8C722}';
 
   // For compatibility with future EAX versions:
   //DSPROPSETID_EAX_ListenerProperties = DSPROPSETID_EAX20_ListenerProperties;
-  //DSPROPSETID_EAX_SourceProperties = DSPROPSETID_EAX20_BufferProperties;
+  //DSPROPSETID_EAX_SourceProperties   = DSPROPSETID_EAX20_BufferProperties;
 
   //Enumerations DSPROPERTY_EAX_LISTENERPROPERTY
-  DSPROPERTY_EAXLISTENER_NONE              = 0;
-  DSPROPERTY_EAXLISTENER_ALLPARAMETERS     = 1;
-  DSPROPERTY_EAXLISTENER_ROOM              = 2;
-  DSPROPERTY_EAXLISTENER_ROOMHF            = 3;
-  DSPROPERTY_EAXLISTENER_ROOMROLLOFFFACTOR = 4;
-  DSPROPERTY_EAXLISTENER_DECAYTIME         = 5;
-  DSPROPERTY_EAXLISTENER_DECAYHFRATIO      = 6;
-  DSPROPERTY_EAXLISTENER_REFLECTIONS       = 7;
-  DSPROPERTY_EAXLISTENER_REFLECTIONSDELAY  = 8;
-  DSPROPERTY_EAXLISTENER_REVERB            = 9;
-  DSPROPERTY_EAXLISTENER_REVERBDELAY       = 10;
-  DSPROPERTY_EAXLISTENER_ENVIRONMENT       = 11;
-  DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE   = 12;
+  DSPROPERTY_EAXLISTENER_NONE                 = 0;
+  DSPROPERTY_EAXLISTENER_ALLPARAMETERS        = 1;
+  DSPROPERTY_EAXLISTENER_ROOM                 = 2;
+  DSPROPERTY_EAXLISTENER_ROOMHF               = 3;
+  DSPROPERTY_EAXLISTENER_ROOMROLLOFFFACTOR    = 4;
+  DSPROPERTY_EAXLISTENER_DECAYTIME            = 5;
+  DSPROPERTY_EAXLISTENER_DECAYHFRATIO         = 6;
+  DSPROPERTY_EAXLISTENER_REFLECTIONS          = 7;
+  DSPROPERTY_EAXLISTENER_REFLECTIONSDELAY     = 8;
+  DSPROPERTY_EAXLISTENER_REVERB               = 9;
+  DSPROPERTY_EAXLISTENER_REVERBDELAY          = 10;
+  DSPROPERTY_EAXLISTENER_ENVIRONMENT          = 11;
+  DSPROPERTY_EAXLISTENER_ENVIRONMENTSIZE      = 12;
   DSPROPERTY_EAXLISTENER_ENVIRONMENTDIFFUSION = 13;
-  DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF   = 14;
-  DSPROPERTY_EAXLISTENER_FLAGS             = 15;
+  DSPROPERTY_EAXLISTENER_AIRABSORPTIONHF      = 14;
+  DSPROPERTY_EAXLISTENER_FLAGS                = 15;
 
   // OR these flags with property id
-  DSPROPERTY_EAXLISTENER_IMMEDIATE         = $00000000;
+  DSPROPERTY_EAXLISTENER_IMMEDIATE              = $00000000;
   // changes take effect immediately
-  DSPROPERTY_EAXLISTENER_DEFERRED          = LongWORD($80000000);
+  DSPROPERTY_EAXLISTENER_DEFERRED               = LongWORD($80000000);
   DSPROPERTY_EAXLISTENER_COMMITDEFERREDSETTINGS = (DSPROPERTY_EAXLISTENER_NONE or
                                                    DSPROPERTY_EAXLISTENER_IMMEDIATE);
 
   // used by DSPROPERTY_EAXLISTENER_ENVIRONMENT
   //Enummetation
-  EAX_ENVIRONMENT_GENERIC                  = 0;
-  EAX_ENVIRONMENT_PADDEDCELL               = 1;
-  EAX_ENVIRONMENT_ROOM                     = 2;
-  EAX_ENVIRONMENT_BATHROOM                 = 3;
-  EAX_ENVIRONMENT_LIVINGROOM               = 4;
-  EAX_ENVIRONMENT_STONEROOM                = 5;
-  EAX_ENVIRONMENT_AUDITORIUM               = 6;
-  EAX_ENVIRONMENT_CONCERTHALL              = 7;
-  EAX_ENVIRONMENT_CAVE                     = 8;
-  EAX_ENVIRONMENT_ARENA                    = 9;
-  EAX_ENVIRONMENT_HANGAR                   = 10;
-  EAX_ENVIRONMENT_CARPETEDHALLWAY          = 11;
-  EAX_ENVIRONMENT_HALLWAY                  = 12;
-  EAX_ENVIRONMENT_STONECORRIDOR            = 13;
-  EAX_ENVIRONMENT_ALLEY                    = 14;
-  EAX_ENVIRONMENT_FOREST                   = 15;
-  EAX_ENVIRONMENT_CITY                     = 16;
-  EAX_ENVIRONMENT_MOUNTAINS                = 17;
-  EAX_ENVIRONMENT_QUARRY                   = 18;
-  EAX_ENVIRONMENT_PLAIN                    = 19;
-  EAX_ENVIRONMENT_PARKINGLOT               = 20;
-  EAX_ENVIRONMENT_SEWERPIPE                = 21;
-  EAX_ENVIRONMENT_UNDERWATER               = 22;
-  EAX_ENVIRONMENT_DRUGGED                  = 23;
-  EAX_ENVIRONMENT_DIZZY                    = 24;
-  EAX_ENVIRONMENT_PSYCHOTIC                = 25;
-  EAX_ENVIRONMENT_COUNT                    = 26;
+  EAX_ENVIRONMENT_GENERIC         = 0;
+  EAX_ENVIRONMENT_PADDEDCELL      = 1;
+  EAX_ENVIRONMENT_ROOM            = 2;
+  EAX_ENVIRONMENT_BATHROOM        = 3;
+  EAX_ENVIRONMENT_LIVINGROOM      = 4;
+  EAX_ENVIRONMENT_STONEROOM       = 5;
+  EAX_ENVIRONMENT_AUDITORIUM      = 6;
+  EAX_ENVIRONMENT_CONCERTHALL     = 7;
+  EAX_ENVIRONMENT_CAVE            = 8;
+  EAX_ENVIRONMENT_ARENA           = 9;
+  EAX_ENVIRONMENT_HANGAR          = 10;
+  EAX_ENVIRONMENT_CARPETEDHALLWAY = 11;
+  EAX_ENVIRONMENT_HALLWAY         = 12;
+  EAX_ENVIRONMENT_STONECORRIDOR   = 13;
+  EAX_ENVIRONMENT_ALLEY           = 14;
+  EAX_ENVIRONMENT_FOREST          = 15;
+  EAX_ENVIRONMENT_CITY            = 16;
+  EAX_ENVIRONMENT_MOUNTAINS       = 17;
+  EAX_ENVIRONMENT_QUARRY          = 18;
+  EAX_ENVIRONMENT_PLAIN           = 19;
+  EAX_ENVIRONMENT_PARKINGLOT      = 20;
+  EAX_ENVIRONMENT_SEWERPIPE       = 21;
+  EAX_ENVIRONMENT_UNDERWATER      = 22;
+  EAX_ENVIRONMENT_DRUGGED         = 23;
+  EAX_ENVIRONMENT_DIZZY           = 24;
+  EAX_ENVIRONMENT_PSYCHOTIC       = 25;
+  EAX_ENVIRONMENT_COUNT           = 26;
 
   // Used by DSPROPERTY_EAXLISTENER_FLAGS
   //
@@ -1304,78 +1304,78 @@ const
   //              myFlags = 0x00000009;
   //
   // These flags determine what properties are affected by environment size.
-  EAXLISTENERFLAGS_DECAYTIMESCALE          = $00000001;
+  EAXLISTENERFLAGS_DECAYTIMESCALE        = $00000001;
   // reverberation decay time
-  EAXLISTENERFLAGS_REFLECTIONSSCALE        = $00000002; // reflection level
-  EAXLISTENERFLAGS_REFLECTIONSDELAYSCALE   = $00000004;
+  EAXLISTENERFLAGS_REFLECTIONSSCALE      = $00000002; // reflection level
+  EAXLISTENERFLAGS_REFLECTIONSDELAYSCALE = $00000004;
   // initial reflection delay time
-  EAXLISTENERFLAGS_REVERBSCALE             = $00000008; // reflections level
-  EAXLISTENERFLAGS_REVERBDELAYSCALE        = $00000010;
+  EAXLISTENERFLAGS_REVERBSCALE           = $00000008; // reflections level
+  EAXLISTENERFLAGS_REVERBDELAYSCALE      = $00000010;
   // late reverberation delay time
-
   // This flag limits high-frequency decay time according to air absorption.
-  EAXLISTENERFLAGS_DECAYHFLIMIT            = $00000020;
-  EAXLISTENERFLAGS_RESERVED                = $FFFFFFC0; // reserved future use
+  EAXLISTENERFLAGS_DECAYHFLIMIT          = $00000020;
+  EAXLISTENERFLAGS_RESERVED              = $FFFFFFC0; // reserved future use
 
-  // property ranges and defaults:
-  EAXLISTENER_MINROOM                      = -10000;
-  EAXLISTENER_MAXROOM                      = 0;
-  EAXLISTENER_DEFAULTROOM                  = -1000;
-
-  EAXLISTENER_MINROOMHF                    = -10000;
-  EAXLISTENER_MAXROOMHF                    = 0;
-  EAXLISTENER_DEFAULTROOMHF                = -100;
-
-  EAXLISTENER_MINROOMROLLOFFFACTOR         = 0.0;
-  EAXLISTENER_MAXROOMROLLOFFFACTOR         = 10.0;
-  EAXLISTENER_DEFAULTROOMROLLOFFFACTOR     = 0.0;
-
-  EAXLISTENER_MINDECAYTIME                 = 0.1;
-  EAXLISTENER_MAXDECAYTIME                 = 20.0;
-  EAXLISTENER_DEFAULTDECAYTIME             = 1.49;
-
-  EAXLISTENER_MINDECAYHFRATIO              = 0.1;
-  EAXLISTENER_MAXDECAYHFRATIO              = 2.0;
-  EAXLISTENER_DEFAULTDECAYHFRATIO          = 0.83;
-
-  EAXLISTENER_MINREFLECTIONS               = -10000;
-  EAXLISTENER_MAXREFLECTIONS               = 1000;
-  EAXLISTENER_DEFAULTREFLECTIONS           = -2602;
-
-  EAXLISTENER_MINREFLECTIONSDELAY          = 0.0;
-  EAXLISTENER_MAXREFLECTIONSDELAY          = 0.3;
-  EAXLISTENER_DEFAULTREFLECTIONSDELAY      = 0.007;
-
-  EAXLISTENER_MINREVERB                    = -10000;
-  EAXLISTENER_MAXREVERB                    = 2000;
-  EAXLISTENER_DEFAULTREVERB                = 200;
-
-  EAXLISTENER_MINREVERBDELAY               = 0.0;
-  EAXLISTENER_MAXREVERBDELAY               = 0.1;
-  EAXLISTENER_DEFAULTREVERBDELAY           = 0.011;
-
-  EAXLISTENER_MINENVIRONMENT               = 0;
-  EAXLISTENER_MAXENVIRONMENT               = EAX_ENVIRONMENT_COUNT - 1;
-  EAXLISTENER_DEFAULTENVIRONMENT           = EAX_ENVIRONMENT_GENERIC;
-
-  EAXLISTENER_MINENVIRONMENTSIZE           = 1.0;
-  EAXLISTENER_MAXENVIRONMENTSIZE           = 100.0;
-  EAXLISTENER_DEFAULTENVIRONMENTSIZE       = 7.5;
-
-  EAXLISTENER_MINENVIRONMENTDIFFUSION      = 0.0;
-  EAXLISTENER_MAXENVIRONMENTDIFFUSION      = 1.0;
-  EAXLISTENER_DEFAULTENVIRONMENTDIFFUSION  = 1.0;
-
-  EAXLISTENER_MINAIRABSORPTIONHF           = -100.0;
-  EAXLISTENER_MAXAIRABSORPTIONHF           = 0.0;
-  EAXLISTENER_DEFAULTAIRABSORPTIONHF       = -5.0;
-
-  EAXLISTENER_DEFAULTFLAGS                 = EAXLISTENERFLAGS_DECAYTIMESCALE or
-                                             EAXLISTENERFLAGS_REFLECTIONSSCALE or
-  	                                     EAXLISTENERFLAGS_REFLECTIONSDELAYSCALE or
-		                             EAXLISTENERFLAGS_REVERBSCALE or
-		                             EAXLISTENERFLAGS_REVERBDELAYSCALE or
-		                             EAXLISTENERFLAGS_DECAYHFLIMIT;
+  // Listener property ranges and defaults:
+  // Room size
+  EAXLISTENER_MINROOM                     = -10000;
+  EAXLISTENER_MAXROOM                     = 0;
+  EAXLISTENER_DEFAULTROOM                 = -1000;
+  // High frequency room size
+  EAXLISTENER_MINROOMHF                   = -10000;
+  EAXLISTENER_MAXROOMHF                   = 0;
+  EAXLISTENER_DEFAULTROOMHF               = -100;
+  // Room roll-off factor
+  EAXLISTENER_MINROOMROLLOFFFACTOR        = 0.0;
+  EAXLISTENER_MAXROOMROLLOFFFACTOR        = 10.0;
+  EAXLISTENER_DEFAULTROOMROLLOFFFACTOR    = 0.0;
+  // Decay time
+  EAXLISTENER_MINDECAYTIME                = 0.1;
+  EAXLISTENER_MAXDECAYTIME                = 20.0;
+  EAXLISTENER_DEFAULTDECAYTIME            = 1.49;
+  // Decay ratio
+  EAXLISTENER_MINDECAYHFRATIO             = 0.1;
+  EAXLISTENER_MAXDECAYHFRATIO             = 2.0;
+  EAXLISTENER_DEFAULTDECAYHFRATIO         = 0.83;
+  // Reflections
+  EAXLISTENER_MINREFLECTIONS              = -10000;
+  EAXLISTENER_MAXREFLECTIONS              = 1000;
+  EAXLISTENER_DEFAULTREFLECTIONS          = -2602;
+  // Reflection delay
+  EAXLISTENER_MINREFLECTIONSDELAY         = 0.0;
+  EAXLISTENER_MAXREFLECTIONSDELAY         = 0.3;
+  EAXLISTENER_DEFAULTREFLECTIONSDELAY     = 0.007;
+  // Reverb
+  EAXLISTENER_MINREVERB                   = -10000;
+  EAXLISTENER_MAXREVERB                   = 2000;
+  EAXLISTENER_DEFAULTREVERB               = 200;
+  // Reverb delay
+  EAXLISTENER_MINREVERBDELAY              = 0.0;
+  EAXLISTENER_MAXREVERBDELAY              = 0.1;
+  EAXLISTENER_DEFAULTREVERBDELAY          = 0.011;
+  // Environment
+  EAXLISTENER_MINENVIRONMENT              = 0;
+  EAXLISTENER_MAXENVIRONMENT              = EAX_ENVIRONMENT_COUNT - 1;
+  EAXLISTENER_DEFAULTENVIRONMENT          = EAX_ENVIRONMENT_GENERIC;
+  // Environment size
+  EAXLISTENER_MINENVIRONMENTSIZE          = 1.0;
+  EAXLISTENER_MAXENVIRONMENTSIZE          = 100.0;
+  EAXLISTENER_DEFAULTENVIRONMENTSIZE      = 7.5;
+  // Environment diffusion
+  EAXLISTENER_MINENVIRONMENTDIFFUSION     = 0.0;
+  EAXLISTENER_MAXENVIRONMENTDIFFUSION     = 1.0;
+  EAXLISTENER_DEFAULTENVIRONMENTDIFFUSION = 1.0;
+  // High frequency air absorption
+  EAXLISTENER_MINAIRABSORPTIONHF          = -100.0;
+  EAXLISTENER_MAXAIRABSORPTIONHF          = 0.0;
+  EAXLISTENER_DEFAULTAIRABSORPTIONHF      = -5.0;
+  // Default flags
+  EAXLISTENER_DEFAULTFLAGS                = EAXLISTENERFLAGS_DECAYTIMESCALE or
+                                            EAXLISTENERFLAGS_REFLECTIONSSCALE or
+  	                                    EAXLISTENERFLAGS_REFLECTIONSDELAYSCALE or
+		                            EAXLISTENERFLAGS_REVERBSCALE or
+		                            EAXLISTENERFLAGS_REVERBDELAYSCALE or
+		                            EAXLISTENERFLAGS_DECAYHFLIMIT;
 
   // For compatibility with future EAX versions:
   //DSPROPSETID_EAX_BufferProperties = DSPROPSETID_EAX20_BufferProperties;
@@ -1398,9 +1398,9 @@ const
   DSPROPERTY_EAXBUFFER_FLAG                = 14;
 
   // OR these flags with property id
-  DSPROPERTY_EAXBUFFER_IMMEDIATE           = $00000000;
+  DSPROPERTY_EAXBUFFER_IMMEDIATE              = $00000000;
   // changes take effect immediately
-  DSPROPERTY_EAXBUFFER_DEFERRED            = LongWORD($80000000);
+  DSPROPERTY_EAXBUFFER_DEFERRED               = LongWORD($80000000);
   DSPROPERTY_EAXBUFFER_COMMITDEFERREDSETTINGS = DSPROPERTY_EAXBUFFER_NONE or
   DSPROPERTY_EAXBUFFER_IMMEDIATE;
 
@@ -1414,67 +1414,68 @@ const
   //       instead of:
   //              myFlags = 0x00000003;
   //
-  EAXBUFFERFLAGS_DIRECTHFAUTO              = $00000001;
   // affects DSPROPERTY_EAXBUFFER_DIRECTHF
-  EAXBUFFERFLAGS_ROOMAUTO                  = $00000002;
+  EAXBUFFERFLAGS_DIRECTHFAUTO              = $00000001;
   // affects DSPROPERTY_EAXBUFFER_ROOM
-  EAXBUFFERFLAGS_ROOMHFAUTO                = $00000004;
+  EAXBUFFERFLAGS_ROOMAUTO                  = $00000002;
   // affects DSPROPERTY_EAXBUFFER_ROOMHF
+  EAXBUFFERFLAGS_ROOMHFAUTO                = $00000004;
+  // reserved future use
+  EAXBUFFERFLAGS_RESERVED                  = $FFFFFFF8;
 
-  EAXBUFFERFLAGS_RESERVED                  = $FFFFFFF8; // reserved future use
-
-  // property ranges and defaults:
-  EAXBUFFER_MINDIRECT                      = -10000;
-  EAXBUFFER_MAXDIRECT                      = 1000;
-  EAXBUFFER_DEFAULTDIRECT                  = 0;
-
-  EAXBUFFER_MINDIRECTHF                    = -10000;
-  EAXBUFFER_MAXDIRECTHF                    = 0;
-  EAXBUFFER_DEFAULTDIRECTHF                = 0;
-
-  EAXBUFFER_MINROOM                        = -10000;
-  EAXBUFFER_MAXROOM                        = 1000;
-  EAXBUFFER_DEFAULTROOM                    = 0;
-
-  EAXBUFFER_MINROOMHF                      = -10000;
-  EAXBUFFER_MAXROOMHF                      = 0;
-  EAXBUFFER_DEFAULTROOMHF                  = 0;
-
-  EAXBUFFER_MINROOMROLLOFFFACTOR           = 0.0;
-  EAXBUFFER_MAXROOMROLLOFFFACTOR           = 10.;
-  EAXBUFFER_DEFAULTROOMROLLOFFFACTOR       = 0.0;
-
-  EAXBUFFER_MINOBSTRUCTION                 = -10000;
-  EAXBUFFER_MAXOBSTRUCTION                 = 0;
-  EAXBUFFER_DEFAULTOBSTRUCTION             = 0;
-
-  EAXBUFFER_MINOBSTRUCTIONLFRATIO          = 0.0;
-  EAXBUFFER_MAXOBSTRUCTIONLFRATIO          = 1.0;
-  EAXBUFFER_DEFAULTOBSTRUCTIONLFRATIO      = 0.0;
-
-  EAXBUFFER_MINOCCLUSION                   = -10000;
-  EAXBUFFER_MAXOCCLUSION                   = 0;
-  EAXBUFFER_DEFAULTOCCLUSION               = 0;
-
-  EAXBUFFER_MINOCCLUSIONLFRATIO            = 0.0;
-  EAXBUFFER_MAXOCCLUSIONLFRATIO            = 1.0;
-  EAXBUFFER_DEFAULTOCCLUSIONLFRATIO        = 0.25;
-
-  EAXBUFFER_MINOCCLUSIONROOMRATIO          = 0.0;
-  EAXBUFFER_MAXOCCLUSIONROOMRATIO          = 10.0;
-  EAXBUFFER_DEFAULTOCCLUSIONROOMRATIO      = 0.5;
-
-  EAXBUFFER_MINOUTSIDEVOLUMEHF             = -10000;
-  EAXBUFFER_MAXOUTSIDEVOLUMEHF             = 0;
-  EAXBUFFER_DEFAULTOUTSIDEVOLUMEHF         = 0;
-
-  EAXBUFFER_MINAIRABSORPTIONFACTOR         = 0.0;
-  EAXBUFFER_MAXAIRABSORPTIONFACTOR         = 10.0;
-  EAXBUFFER_DEFAULTAIRABSORPTIONFACTOR     = 1.0;
-
+  // Buffer property ranges and defaults:
+  // Direct
+  EAXBUFFER_MINDIRECT                  = -10000;
+  EAXBUFFER_MAXDIRECT                  = 1000;
+  EAXBUFFER_DEFAULTDIRECT              = 0;
+  // High frequency direct
+  EAXBUFFER_MINDIRECTHF                = -10000;
+  EAXBUFFER_MAXDIRECTHF                = 0;
+  EAXBUFFER_DEFAULTDIRECTHF            = 0;
+  // Room
+  EAXBUFFER_MINROOM                    = -10000;
+  EAXBUFFER_MAXROOM                    = 1000;
+  EAXBUFFER_DEFAULTROOM                = 0;
+  // High frequency room
+  EAXBUFFER_MINROOMHF                  = -10000;
+  EAXBUFFER_MAXROOMHF                  = 0;
+  EAXBUFFER_DEFAULTROOMHF              = 0;
+  // Room roll-off factor
+  EAXBUFFER_MINROOMROLLOFFFACTOR       = 0.0;
+  EAXBUFFER_MAXROOMROLLOFFFACTOR       = 10.;
+  EAXBUFFER_DEFAULTROOMROLLOFFFACTOR   = 0.0;
+  // Obstruction
+  EAXBUFFER_MINOBSTRUCTION             = -10000;
+  EAXBUFFER_MAXOBSTRUCTION             = 0;
+  EAXBUFFER_DEFAULTOBSTRUCTION         = 0;
+  // Low frequency obstruction ratio
+  EAXBUFFER_MINOBSTRUCTIONLFRATIO      = 0.0;
+  EAXBUFFER_MAXOBSTRUCTIONLFRATIO      = 1.0;
+  EAXBUFFER_DEFAULTOBSTRUCTIONLFRATIO  = 0.0;
+  // Occlusion
+  EAXBUFFER_MINOCCLUSION               = -10000;
+  EAXBUFFER_MAXOCCLUSION               = 0;
+  EAXBUFFER_DEFAULTOCCLUSION           = 0;
+  // Low frequency occlusion ratio
+  EAXBUFFER_MINOCCLUSIONLFRATIO        = 0.0;
+  EAXBUFFER_MAXOCCLUSIONLFRATIO        = 1.0;
+  EAXBUFFER_DEFAULTOCCLUSIONLFRATIO    = 0.25;
+  // Room occlusion ratio
+  EAXBUFFER_MINOCCLUSIONROOMRATIO      = 0.0;
+  EAXBUFFER_MAXOCCLUSIONROOMRATIO      = 10.0;
+  EAXBUFFER_DEFAULTOCCLUSIONROOMRATIO  = 0.5;
+  // High frequency outside volume
+  EAXBUFFER_MINOUTSIDEVOLUMEHF         = -10000;
+  EAXBUFFER_MAXOUTSIDEVOLUMEHF         = 0;
+  EAXBUFFER_DEFAULTOUTSIDEVOLUMEHF     = 0;
+  // Air absorption factor
+  EAXBUFFER_MINAIRABSORPTIONFACTOR     = 0.0;
+  EAXBUFFER_MAXAIRABSORPTIONFACTOR     = 10.0;
+  EAXBUFFER_DEFAULTAIRABSORPTIONFACTOR = 1.0;
+  // Default flags
   EAXBUFFER_DEFAULTFLAGS                   = EAXBUFFERFLAGS_DIRECTHFAUTO or
-  EAXBUFFERFLAGS_ROOMAUTO or
-  EAXBUFFERFLAGS_ROOMHFAUTO;
+                                             EAXBUFFERFLAGS_ROOMAUTO or
+                                             EAXBUFFERFLAGS_ROOMHFAUTO;
 
   // Material transmission presets
   // 3 values in this order:
@@ -1486,37 +1487,30 @@ const
   EAX_MATERIAL_SINGLEWINDOW                = -2800;
   EAX_MATERIAL_SINGLEWINDOWLF              = 0.71;
   EAX_MATERIAL_SINGLEWINDOWROOMRATIO       = 0.43;
-
   // Double window material preset
   EAX_MATERIAL_DOUBLEWINDOW                = -5000;
   EAX_MATERIAL_DOUBLEWINDOWHF              = 0.40;
   EAX_MATERIAL_DOUBLEWINDOWROOMRATIO       = 0.24;
-
   // Thin door material preset
   EAX_MATERIAL_THINDOOR                    = -1800;
   EAX_MATERIAL_THINDOORLF                  = 0.66;
   EAX_MATERIAL_THINDOORROOMRATIO           = 0.66;
-
   // Thick door material preset
   EAX_MATERIAL_THICKDOOR                   = -4400;
   EAX_MATERIAL_THICKDOORLF                 = 0.64;
   EAX_MATERIAL_THICKDOORROOMRTATION        = 0.27;
-
   // Wood wall material preset
   EAX_MATERIAL_WOODWALL                    = -4000;
   EAX_MATERIAL_WOODWALLLF                  = 0.50;
   EAX_MATERIAL_WOODWALLROOMRATIO           = 0.30;
-
   // Brick wall material preset
   EAX_MATERIAL_BRICKWALL                   = -5000;
   EAX_MATERIAL_BRICKWALLLF                 = 0.60;
   EAX_MATERIAL_BRICKWALLROOMRATIO          = 0.24;
-
   // Stone wall material preset
   EAX_MATERIAL_STONEWALL                   = -6000;
   EAX_MATERIAL_STONEWALLLF                 = 0.68;
   EAX_MATERIAL_STONEWALLROOMRATIO          = 0.20;
-
   // Curtain material preset
   EAX_MATERIAL_CURTAIN                     = -1200;
   EAX_MATERIAL_CURTAINLF                   = 0.15;

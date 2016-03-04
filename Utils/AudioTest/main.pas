@@ -5,8 +5,8 @@ unit Main;
 interface
 
 uses
-  Windows, Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, OpenAL, Math;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
+  StdCtrls, OpenAL;
 
 const
   SAMPLES_PER_SECOND = 10;
@@ -14,18 +14,18 @@ const
   THRESHOLD_DIV = 100000;
   GEIGER_RUN_TIME = TIMESPAN_SECONDS * SAMPLES_PER_SECOND;
   GEIGER_SAMPLE_RATE = 22050;
-  GEIGER_ALPHA_NUM = 0.4;
   GEIGER_CHANNELS = 2;
   GEIGER_BUFFER_SIZE = (GEIGER_SAMPLE_RATE * GEIGER_CHANNELS) Div SAMPLES_PER_SECOND;
+  THREAD_WAIT_TIME = 1000 Div SAMPLES_PER_SECOND; // 1 second divided by samples per second
 
 type
   { TAudioThread }
   TAudioThread = class(TThread)
     private
-      fSumCPM: Integer;
+      fSumCPM:        Integer;
       fCaptureDevice: PALCDevice;
-      fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
-      fLogMemo: TMemo;
+      fData:          array [0..GEIGER_BUFFER_SIZE] of SmallInt;
+      fLogMemo:       TMemo;
       procedure SetMemo(aMemo: TMemo);
       function GetMemo: TMemo;
     protected
@@ -45,8 +45,6 @@ type
     procedure Button2Click(Sender: TObject);
     private
       fAudioThread: TAudioThread;
-    public
-      { public declarations }
   end;
 
 var
@@ -57,10 +55,11 @@ implementation
 { TForm1 }
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-  fAudioThread := TAudioThread.Create(True);
+  fAudioThread         := TAudioThread.Create(True);
   fAudioThread.LogMemo := Memo1;
   fAudioThread.Start;
 end;
+
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
@@ -72,6 +71,7 @@ begin
 end;
 
 
+{ TAudioThread }
 constructor TAudioThread.Create(CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
@@ -79,7 +79,6 @@ begin
   // Disable 3D spatialization for speed up
   alDistanceModel(AL_NONE);
   // Prepare audio source
-
   if GEIGER_CHANNELS = 2 then
     fCaptureDevice := alcCaptureOpenDevice(nil,
                                            GEIGER_SAMPLE_RATE, // Only “Ticks”
@@ -92,23 +91,24 @@ begin
                                            Trunc(Length(fData) Div GEIGER_CHANNELS));
 end;
 
+
 destructor TAudioThread.Destroy;
 begin
   inherited;
   try
     alcCaptureStop(fCaptureDevice);
     alcCaptureCloseDevice(fCaptureDevice);
-    fCaptureDevice := nil;
   finally
+    fCaptureDevice := nil;
     AlutExit;
-    // ExitThread(1);
   end;
 end;
+
 
 procedure TAudioThread.Execute;
 var
   I, J: Integer;
-  CurRMS, rmsSmooth, CurDB: Double;
+  CurRMS: Double;
   numSamples: Integer;
 begin
   if fCaptureDevice = nil then
@@ -120,7 +120,7 @@ begin
   begin
     for I := 0 to GEIGER_RUN_TIME - 1 do
     begin
-      for J := 0 to 100 do
+      for J := 0 to THREAD_WAIT_TIME do
       begin
         if Terminated then Exit;
         Sleep(1);
@@ -144,10 +144,6 @@ begin
         Inc(fSumCPM);
         fLogMemo.Lines.Add('Tick at I=' + IntToStr(I) + ' with RMS: ' + FloatToStr(CurRMS));
         fLogMemo.Lines.Add('Tick at I=' + IntToStr(I) + ' with  RMS(Clean): ' + FloatToStr(CurRMS / THRESHOLD_DIV));
-        rmsSmooth := 0;
-        rmsSmooth := rmsSmooth * GEIGER_ALPHA_NUM + (1 - GEIGER_ALPHA_NUM) * CurRMS;
-        CurDB := 20.0 * log10(rmsSmooth / (1 << 15));
-        fLogMemo.Lines.Add('Tick at I=' + IntToStr(I) + ' with: ' + FloatToStr(CurDB) + ' dB');
       end;
     end;
 

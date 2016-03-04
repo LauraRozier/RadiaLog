@@ -4,6 +4,9 @@ unit AudioGeigers;
   This is the audio handeling unit file of RadiaLog.
   File GUID: [BA9DDA90-B79E-4199-88B9-87BFFC4B5FF4]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
@@ -64,6 +67,15 @@ type
       property DefaultDevice: string read GetDevStr;
       property ChosenDevice:  string read fChosenDevice write fChosenDevice;
       property Initialized;
+      property ConvertFactor;
+      property ConvertmR;
+      property UploadRM;
+      property CPMBar;
+      property LblCPM;
+      property LblDosi;
+      property CPMChart;
+      property CPMLog;
+      property ErrorLog;
   end;
 
 implementation

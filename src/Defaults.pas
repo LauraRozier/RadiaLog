@@ -4,6 +4,9 @@ unit Defaults;
   This is the defaults unit file of RadiaLog.
   File GUID: [59CB718E-B0E2-4A4D-B723-FE164D7D9023]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
@@ -25,13 +28,7 @@ unit Defaults;
 interface
 uses
   // System units
-  Generics.Collections,
-  // Cindy units
-  cySimpleGauge,
-  // TeeChart units
-  VCLTee.Chart,
-  // VCL units
-  VCL.StdCtrls, VCL.ComCtrls;
+  Generics.Collections;
 
 const
   VERSION = '0.5';
@@ -40,7 +37,7 @@ const
   RADMON_HOST = 'www.radmon.org';
   PLOTCAP = 100;
   SVTOR = 0.0100718499998148;
-  SAMPLES_PER_SECOND = 20;
+  SAMPLES_PER_SECOND = 10; // 10 seems to be the safe max.
   TIMESPAN_SECONDS = 30;
   THRESHOLD_DIV = 100000;
   GEIGER_RUN_TIME = TIMESPAN_SECONDS * SAMPLES_PER_SECOND;
@@ -54,21 +51,14 @@ const
 
 type
   TChartData = record
-    value: Integer;
+    value:    Integer;
     dateTime: TDateTime;
   end;
 
 var
-  exeDir: UnicodeString;
+  exeDir:               UnicodeString;
   fUsername, fPassword: string;
   fPlotPointList:       TList<TChartData>;
-  fConvertFactor:       Double;
-  fConvertmR:           Boolean;
-  fUploadRM:            Boolean;
-  fCPMBar:              TcySimpleGauge;
-  fLblCPM, fLblDosi:    TLabel;
-  fCPMChart:            TChart;
-  fCPMLog, fErrorLog:   TRichEdit;
 
 implementation
 

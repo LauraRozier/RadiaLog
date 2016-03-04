@@ -14,8 +14,9 @@ object Form1: TForm1
     Width = 304
     Anchors = [akTop, akLeft, akRight, akBottom]
     Lines.Strings = (
-      'Memo1'
+      ''
     )
+    ReadOnly = True
     TabOrder = 0
   end
   object Button1: TButton

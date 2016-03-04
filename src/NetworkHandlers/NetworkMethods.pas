@@ -3,6 +3,9 @@ unit NetworkMethods;
   This is the networking unit file of RadiaLog.
   File GUID: [E75C3601-8EAA-45FB-A3BE-77D8E3650A96]
 
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
+
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
   This source is free software; you can redistribute it and/or modify it under
