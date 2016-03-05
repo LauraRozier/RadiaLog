@@ -28,15 +28,17 @@ unit AudioGeigers;
 interface
 uses
   // System units
-  Windows, SysUtils, Classes, Math,
+  Windows, Classes, SysUtils, Math, Generics.Collections,
+  // VCL units
+  VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls, VCL.Graphics,
+  // TeeChart units
+  VCLTee.Chart,
+  // Cindy units
+  cySimpleGauge,
   // OpenAL unit
   OpenAL,
   // Custom units
-  GeigerMethods, NetworkMethods, Defaults, ThimoUtils;
-
-var
-  fDefaultDevice, fDeviceList: PAnsiChar;
-  fDefDeviceStr: PAnsiChar;
+  NetworkMethods, Defaults, ThimoUtils;
 
 type
   TAudioEnum = Class(TObject)
@@ -49,33 +51,41 @@ type
   end;
 
   
-  TAudioGeiger = class(TMethodAudio)
+  TAudioGeiger = class(TThread)
     private
-      fCaptureDevice: PALCDevice;
-      fChosenDevice: string;
-      fTreshold: Double;
+      fSumCPM:             Integer;
+      fNetworkHandler:     TNetworkController;
+      fIsSoundInitialized: Boolean;
+      fConvertFactor:      Double;
+      fConvertmR:          Boolean;
+      fUploadRM:           Boolean;
+      fCPMBar:             TcySimpleGauge;
+      fLblCPM, fLblDosi:   TLabel;
+      fCPMChart:           TChart;
+      fCPMLog, fErrorLog:  TRichEdit;
+      fCaptureDevice:      PALCDevice;
+      fTreshold:           Double;
       // Frequency * Channels (Per full second) + Slack-space
-      fData: array [0..GEIGER_BUFFER_SIZE] of SmallInt;
+      fData:               array[0..GEIGER_BUFFER_SIZE] of SmallInt;
       function GetDevStr: string;
-      procedure SafeExit;
     protected
       procedure Execute; override;
     public
-      constructor Create(aThreshold: Double; CreateSuspended: Boolean = False); overload;
-      constructor Create(aThreshold: Double; aPort: string; CreateSuspended: Boolean = False); overload;
+      constructor Create(aThreshold: Double; aDevice: PALCchar; CreateSuspended: Boolean = False);
       destructor Destroy; override;
-      property DefaultDevice: string read GetDevStr;
-      property ChosenDevice:  string read fChosenDevice write fChosenDevice;
-      property Initialized;
-      property ConvertFactor;
-      property ConvertmR;
-      property UploadRM;
-      property CPMBar;
-      property LblCPM;
-      property LblDosi;
-      property CPMChart;
-      property CPMLog;
-      property ErrorLog;
+      procedure updateCPMBar(aCPM: Integer);
+      procedure updatePlot(aCPM: Integer);
+      procedure updateDosiLbl(aCPM: Integer);
+      property Initialized:   Boolean        read fIsSoundInitialized;
+      property ConvertFactor: Double         read fConvertFactor write fConvertFactor;
+      property ConvertmR:     Boolean        read fConvertmR     write fConvertmR;
+      property UploadRM:      Boolean        read fUploadRM      write fUploadRM;
+      property CPMBar:        TcySimpleGauge read fCPMBar        write fCPMBar;
+      property LblCPM:        TLabel         read fLblCPM        write fLblCPM;
+      property LblDosi:       TLabel         read fLblDosi       write fLblDosi;
+      property CPMChart:      TChart         read fCPMChart      write fCPMChart;
+      property CPMLog:        TRichEdit      read fCPMLog        write fCPMLog;
+      property ErrorLog:      TRichEdit      read fErrorLog      write fErrorLog;
   end;
 
 implementation
@@ -95,11 +105,13 @@ end;
 
 procedure TAudioEnum.GetAudioEnum(aDeviceList: TStringList);
 var
+  defaultDevice: PAnsiChar;
+  deviceList: PAnsiChar;
   I: Integer;
 begin
-  //enumerate devices
-  fDefaultDevice := '';
-  fDeviceList    := '';
+  // Enumerate devices
+  defaultDevice := '';
+  deviceList := '';
   
   if fInitSuccess then
   begin
@@ -107,19 +119,20 @@ begin
     
     if alcIsExtensionPresent(nil, 'ALC_ENUMERATION_EXT') then
     begin
-     fDefaultDevice := alcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
-     fDefDeviceStr  := fDefaultDevice;
-     fDeviceList    := alcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER);
+      defaultDevice := alcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+      deviceList := alcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER);
     end;
 
     //make devices tstringlist
-    aDeviceList.Add(string(fDeviceList));
+    aDeviceList.Add(string(devicelist));
 
     for I := 0 to 12 do
     begin
-      OldStrCopy(fDeviceList, @fDeviceList[strlen(PChar(aDeviceList.text)) - (I + 1)]);
-      if length(fDeviceList) <= 0 then break; //exit loop if no more devices are found
-      aDeviceList.Add(string(fDeviceList));
+      ThibStrCopy(Devicelist, @Devicelist[strlen(PChar(aDeviceList.text)) - (I + 1)]);
+
+      if length(DeviceList) <= 0 then break; //exit loop if no more devices are found
+
+      aDeviceList.Add(string(Devicelist));
     end;
 
     aDeviceList[0] := 'Default ('+ aDeviceList[0] +')';
@@ -127,18 +140,20 @@ begin
 end;
 
 
-constructor TAudioGeiger.Create(aThreshold: Double; CreateSuspended: Boolean = False);
-begin
-  Create(aThreshold, '', CreateSuspended);
-end;
-
-
-constructor TAudioGeiger.Create(aThreshold: Double; aPort: string; CreateSuspended: Boolean = False);
+constructor TAudioGeiger.Create(aThreshold: Double; aDevice: PALCchar; CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
   fSumCPM       := 0;
-  fChosenDevice := aPort;
   fTreshold     := aThreshold;
+
+  if not fIsSoundInitialized then
+    raise exception.create('Could not initialize OpenAL!');
+
+  // Prepare audio source
+  fCaptureDevice := alcCaptureOpenDevice(aDevice, // Device name pointer
+                                         GEIGER_SAMPLE_RATE, // Frequency
+                                         IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
+                                         Trunc(Length(fData) Div GEIGER_CHANNELS)); // Buffer size
 end;
 
 
@@ -150,22 +165,6 @@ var
   numSamples: Integer;
 begin
   inherited;
-
-  // Prepare audio source
-  if not fIsSoundInitialized then
-    raise exception.create('Could not initialize OpenAL!');
-
-  if fChosenDevice = '' then
-    fCaptureDevice := alcCaptureOpenDevice(nil, // Device name pointer
-                                           GEIGER_SAMPLE_RATE, // Frequency
-                                           IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS)) // Buffer size
-  else
-    fCaptureDevice := alcCaptureOpenDevice(PChar(fChosenDevice), // Device name pointer
-                                           GEIGER_SAMPLE_RATE, // Frequency
-                                           IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16), // Format
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS)); // Buffer size
-
   if fCaptureDevice = nil then
     raise exception.create('Capture device is nil!');
 
@@ -179,25 +178,22 @@ begin
     begin
       for J := 0 to THREAD_WAIT_TIME - 1 do
       begin
+        if Terminated then Exit;
         Sleep(1);
-
-        if Terminated then
-        begin
-          SafeExit;
-          Exit;
-        end;
       end;
 
       // Get number of frames captuered
       alcGetIntegerv(fCaptureDevice, ALC_CAPTURE_SAMPLES, 1, @numSamples);
       alcCaptureSamples(fCaptureDevice, @fData, numSamples); 
       // Calculate RMS
-      CurRMS := 0.0; 
+      CurRMS := 0.0;
+      if Terminated then Exit;
 	  
       for J := 0 to (numSamples - 1) do
         CurRMS := CurRMS + Sqr(fData[J]);
 
       CurRMS := Sqrt(CurRMS / numSamples);
+      if Terminated then Exit;
 
       if DEBUG_AUDIO then
       begin
@@ -206,55 +202,43 @@ begin
           Inc(fSumCPM);
           fErrorLog.Lines.Add('Tick at I=' + IntToStr(I) + ' with RMS: ' + FloatToStr(CurRMS));
           fErrorLog.Lines.Add('Tick at I=' + IntToStr(I) + ' with  RMS(Clean): ' + FloatToStr(CurRMS / THRESHOLD_DIV));
-        end;
+        end else
+          fErrorLog.Lines.Add('No tick at I=' + IntToStr(I) + ' with  RMS(Clean): ' + FloatToStr(CurRMS / THRESHOLD_DIV));
       end else
         if (CurRMS / THRESHOLD_DIV) >= fTreshold then
-          Inc(fSumCPM);
+          Inc(fSumCPM)
+        else
+          fErrorLog.Lines.Add('No tick at I=' + IntToStr(I) + ' with  RMS(Clean): ' + FloatToStr(CurRMS / THRESHOLD_DIV));
     end;
 
-    if Terminated then
-    begin
-      SafeExit;
-      Exit;
-    end;
+    if Terminated then Exit;
 
     DateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
     fCPMLog.Lines.Add(DateTime);
     fCPMLog.Lines.Add(#9 + 'Current CPM: ' + IntToStr(fSumCPM) + sLineBreak);
+    if Terminated then Exit;
     updatePlot(fSumCPM);
     updateCPMBar(fSumCPM);
+    if Terminated then Exit;
     updateDosiLbl(fSumCPM);
 
     if fUploadRM then
       fNetworkHandler.UploadData(fSumCPM, fErrorLog);
-  end;
 
-  SafeExit;
+    if Terminated then Exit;
+  end;
 end;
 
 
 destructor TAudioGeiger.Destroy;
 begin
   inherited;
-  SafeExit;
-end;
-
-
-function TAudioGeiger.GetDevStr: string;
-begin
-  result := string(fDefDeviceStr);
-end;
-
-
-procedure TAudioGeiger.SafeExit;
-begin
   try
     alcCaptureStop(fCaptureDevice);
     alcCaptureCloseDevice(fCaptureDevice);
-    fCaptureDevice := nil;
   finally
+    fCaptureDevice := nil;
     AlutExit;
-    ExitThread(1);
   end;
 end;
 

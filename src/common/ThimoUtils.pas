@@ -40,7 +40,7 @@ uses
 
 function BrowseURL(const URL: string = 'http://www.thibmoprograms.com/'): Boolean;
 procedure MailTo(Subject, Body: string; Address: string = 'thibmorozier@gmail.com');
-function OldStrCopy(Dest: PAnsiChar; const Source: PAnsiChar): PAnsiChar;
+function ThibStrCopy(Dest, Source: PChar): PChar;
 
 implementation
 
@@ -94,56 +94,25 @@ begin
 end;
 
 
-{ To get rid of depricated message. }
-{$IFNDEF NEXTGEN}
-function OldStrCopy(Dest: PAnsiChar; const Source: PAnsiChar): PAnsiChar;
-{$IFDEF PUREPASCAL}
+{
+  FPC style StrCopy.
+  To get rid of depricated message.
+}
+function ThibStrCopy(Dest, Source: PChar): PChar; overload;
+var
+  counter: Int64;
 begin
-  Move(Source^, Dest^, (StrLen(Source) + 1) * SizeOf(AnsiChar));
-  Result := Dest;
+  counter := 0;
+
+  while Source[counter] <> #0 do
+  begin
+    Dest[counter] := Char(Source[counter]);
+    Inc(counter);
+  end;
+
+  { terminate the string }
+  Dest[counter] := #0;
+  ThibStrCopy := Dest;
 end;
-{$ELSE !PUREPASCAL}
-{$IFDEF X86ASM}
-(* ***** BEGIN LICENSE BLOCK *****
- *
- * The function StrCopy is licensed under the CodeGear license terms.
- *
- * The initial developer of the original code is Fastcode
- *
- * Portions created by the initial developer are Copyright (C) 2002-2004
- * the initial developer. All Rights Reserved.
- *
- * Contributor(s): Aleksandr Sharahov
- *
- * ***** END LICENSE BLOCK ***** *)
-asm //StackAlignSafe
-        SUB   EDX, EAX
-        TEST  EAX, 1
-        PUSH  EAX
-        JZ    @loop
-        MOVZX ECX, BYTE PTR[EAX+EDX]
-        MOV   [EAX], CL
-        TEST  ECX, ECX
-        JZ    @RET
-        INC   EAX
-@loop:
-        MOVZX ECX, BYTE PTR[EAX+EDX]
-        TEST  ECX, ECX
-        JZ    @move0
-        MOVZX ECX, WORD PTR[EAX+EDX]
-        MOV   [EAX], CX
-        ADD   EAX, 2
-        CMP   ECX, 255
-        JA    @loop
-@ret:
-        POP   EAX
-        RET
-@move0:
-        MOV   [EAX], CL
-        POP   EAX
-end;
-{$ENDIF X86ASM}
-{$ENDIF !PUREPASCAL}
-{$ENDIF !NEXTGEN}
 
 end.
