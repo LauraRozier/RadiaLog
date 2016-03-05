@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, OpenAL;
+  StdCtrls, OpenAL, Math;
 
 const
   SAMPLES_PER_SECOND = 10;
@@ -31,7 +31,7 @@ type
     protected
       procedure Execute; override;
     public
-      constructor Create(CreateSuspended: Boolean = False);
+      constructor Create(aDevice: PALCchar; CreateSuspended: Boolean = False);
       destructor Destroy; override;
       property LogMemo: TMemo read GetMemo write SetMemo;
   end;
@@ -40,11 +40,15 @@ type
   TForm1 = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    cbDevices: TComboBox;
+    Label1: TLabel;
     Memo1: TMemo;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     private
       fAudioThread: TAudioThread;
+      procedure EnumAudioDevices;
   end;
 
 var
@@ -55,7 +59,12 @@ implementation
 { TForm1 }
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-  fAudioThread         := TAudioThread.Create(True);
+  //Open (selected) device
+  if cbDevices.itemindex = 0 then
+    fAudioThread := TAudioThread.Create(nil, True) // This is supposed to select the "preferred device"
+  else
+    fAudioThread := TAudioThread.Create(PChar(cbDevices.Items[cbDevices.itemindex]), True); // Use the chosen one
+
   fAudioThread.LogMemo := Memo1;
   fAudioThread.Start;
 end;
@@ -71,24 +80,61 @@ begin
 end;
 
 
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  EnumAudioDevices;
+end;
+
+
+procedure TForm1.EnumAudioDevices;
+var
+  defaultDevice: PAnsiChar;
+  deviceList: PAnsiChar;
+  devices: TStringList;
+  I: Integer;
+begin
+  InitOpenAL;
+  defaultDevice := '';
+  deviceList := '';
+
+  if alcIsExtensionPresent(nil,'ALC_ENUMERATION_EXT') = TRUE then
+  begin
+   defaultDevice := alcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+   deviceList := alcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER);
+  end;
+
+  devices := TStringList.Create;
+  //make devices tstringlist
+  devices.Add(string(devicelist));
+
+  for I := 0 to 12 do
+  begin
+    StrCopy(Devicelist, @Devicelist[strlen(PChar(devices.text)) - (I + 1)]);
+
+    if length(DeviceList)<=0 then break; //exit loop if no more devices are found
+
+    devices.Add(string(Devicelist));
+  end;
+
+  //fill the combobox
+  cbDevices.Items.Add('Default ('+defaultDevice+')');
+  cbDevices.ItemIndex:=0;
+  cbDevices.Items.AddStrings(devices);
+  AlutExit;
+end;
+
 { TAudioThread }
-constructor TAudioThread.Create(CreateSuspended: Boolean = False);
+constructor TAudioThread.Create(aDevice: PALCchar; CreateSuspended: Boolean = False);
 begin
   inherited Create(CreateSuspended);
   InitOpenAL;
   // Disable 3D spatialization for speed up
   alDistanceModel(AL_NONE);
   // Prepare audio source
-  if GEIGER_CHANNELS = 2 then
-    fCaptureDevice := alcCaptureOpenDevice(nil,
-                                           GEIGER_SAMPLE_RATE, // Only “Ticks”
-                                           AL_FORMAT_STEREO16,
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS))
-  else
-    fCaptureDevice := alcCaptureOpenDevice(nil,
-                                           GEIGER_SAMPLE_RATE, // Only “Ticks”
-                                           AL_FORMAT_MONO16,
-                                           Trunc(Length(fData) Div GEIGER_CHANNELS));
+  fCaptureDevice := alcCaptureOpenDevice(aDevice, // nil,
+                                         GEIGER_SAMPLE_RATE, // Only “Ticks”
+                                         IfThen(GEIGER_CHANNELS = 2, AL_FORMAT_STEREO16, AL_FORMAT_MONO16),
+                                         Trunc(Length(fData) Div GEIGER_CHANNELS));
 end;
 
 

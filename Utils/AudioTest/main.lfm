@@ -1,17 +1,18 @@
 object Form1: TForm1
-  Left = 333
-  Height = 240
-  Top = 581
-  Width = 320
+  Left = 12
+  Height = 536
+  Top = 240
+  Width = 796
   Caption = 'Form1'
-  ClientHeight = 240
-  ClientWidth = 320
-  LCLVersion = '1.6.0.4'
+  ClientHeight = 536
+  ClientWidth = 796
+  OnCreate = FormCreate
+  LCLVersion = '1.4.0.4'
   object Memo1: TMemo
     Left = 8
-    Height = 192
+    Height = 488
     Top = 8
-    Width = 304
+    Width = 780
     Anchors = [akTop, akLeft, akRight, akBottom]
     Lines.Strings = (
       ''
@@ -22,7 +23,7 @@ object Form1: TForm1
   object Button1: TButton
     Left = 8
     Height = 25
-    Top = 208
+    Top = 504
     Width = 75
     Anchors = [akLeft, akBottom]
     Caption = 'Start'
@@ -30,12 +31,32 @@ object Form1: TForm1
     TabOrder = 1
   end
   object Button2: TButton
-    Left = 232
+    Left = 712
     Height = 25
-    Top = 208
+    Top = 504
     Width = 75
+    Anchors = [akRight, akBottom]
     Caption = 'Stop'
     OnClick = Button2Click
     TabOrder = 2
+  end
+  object cbDevices: TComboBox
+    Left = 176
+    Height = 23
+    Top = 505
+    Width = 528
+    Anchors = [akLeft, akRight, akBottom]
+    ItemHeight = 15
+    Style = csDropDownList
+    TabOrder = 3
+  end
+  object Label1: TLabel
+    Left = 88
+    Height = 15
+    Top = 508
+    Width = 85
+    Anchors = [akLeft, akBottom]
+    Caption = 'Capture device: '
+    ParentColor = False
   end
 end
