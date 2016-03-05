@@ -49,7 +49,6 @@
       <Unit2>
         <Filename Value="openal.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="openal"/>
       </Unit2>
     </Units>
   </ProjectOptions>

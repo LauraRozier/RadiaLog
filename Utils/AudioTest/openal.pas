@@ -1595,7 +1595,7 @@ var
 
   alListeneriv: procedure(param: TALenum; const values: PALint );
 
-  //TODO: verder ontbrekende functies toevoegen.
+  //TODO: Add missing functions
 
   //Retrieve listener information
   alGetListeneriv: procedure(param: TALenum; values: PALint); cdecl;

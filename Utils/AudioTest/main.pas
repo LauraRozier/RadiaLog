@@ -97,7 +97,7 @@ begin
   defaultDevice := '';
   deviceList := '';
 
-  if alcIsExtensionPresent(nil,'ALC_ENUMERATION_EXT') = TRUE then
+  if alcIsExtensionPresent(nil,'ALC_ENUMERATION_EXT') then
   begin
    defaultDevice := alcGetString(nil, ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
    deviceList := alcGetString(nil, ALC_CAPTURE_DEVICE_SPECIFIER);
@@ -111,7 +111,7 @@ begin
   begin
     StrCopy(Devicelist, @Devicelist[strlen(PChar(devices.text)) - (I + 1)]);
 
-    if length(DeviceList)<=0 then break; //exit loop if no more devices are found
+    if length(DeviceList) <= 0 then break; //exit loop if no more devices are found
 
     devices.Add(string(Devicelist));
   end;

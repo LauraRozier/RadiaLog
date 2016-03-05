@@ -1,15 +1,15 @@
 object Form1: TForm1
-  Left = 12
+  Left = 23
   Height = 536
-  Top = 240
+  Top = 237
   Width = 796
   Caption = 'Form1'
   ClientHeight = 536
   ClientWidth = 796
   OnCreate = FormCreate
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.6.0.4'
   object Memo1: TMemo
-    Left = 8
+    Left = 7
     Height = 488
     Top = 8
     Width = 780
