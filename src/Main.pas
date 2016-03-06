@@ -426,8 +426,7 @@ begin
 
     if fAudioMode then
     begin
-      fAudioControl := TAudioGeiger.Create(fAudioThreshold, True);
-
+      fAudioControl               := TAudioGeiger.Create(fAudioThreshold, True);
       fAudioControl.ConvertFactor := fConvertFactor;
       fAudioControl.ConvertmR     := fConvertmR;
       fAudioControl.UploadRM      := fUploadRM;

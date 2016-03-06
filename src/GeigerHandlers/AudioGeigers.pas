@@ -1,5 +1,4 @@
 unit AudioGeigers;
-
 {
   This is the audio handeling unit file of RadiaLog.
   File GUID: [BA9DDA90-B79E-4199-88B9-87BFFC4B5FF4]
@@ -38,7 +37,7 @@ uses
   // OpenAL unit
   OpenAL,
   // Custom units
-  NetworkMethods, Defaults, ThimoUtils;
+  NetworkMethods, Defaults {$IFDEF VER290} , ThimoUtils {$ENDIF VER290};
 
 type
   TAudioGeiger = class(TThread)

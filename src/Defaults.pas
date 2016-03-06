@@ -1,5 +1,4 @@
 unit Defaults;
-
 {
   This is the defaults unit file of RadiaLog.
   File GUID: [59CB718E-B0E2-4A4D-B723-FE164D7D9023]
