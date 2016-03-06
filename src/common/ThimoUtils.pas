@@ -1,8 +1,10 @@
 unit ThimoUtils;
-
 {
   This is the utilities unit file of RadiaLog.
   File GUID: [46A1BCA6-2B57-4456-A868-5EC8FDFD95EB]
+
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
 
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
@@ -22,25 +24,7 @@ unit ThimoUtils;
   MA 02111-1307, USA.
 }
 
-{$I ../../RadiaLog.inc}
-
-interface
-{$IFDEF CPUX86}
-  {$DEFINE X86ASM}
-{$ELSE !CPUX86}
-  {$DEFINE PUREPASCAL}
-{$ENDIF !CPUX86}
-
-uses
-  Forms,
-  {$IFDEF MSWindows} Windows, {$ENDIF}
-  {$IFDEF Unix} LCLType, {$ENDIF}
-  {$IFDEF WDC} ShellApi {$ENDIF}
-  {$IFDEF FPC} LCLIntf, UTF8Process, LazHelpHTML {$ENDIF};
-
-function BrowseURL(const URL: string = 'http://www.thibmoprograms.com/'): Boolean;
-procedure MailTo(Subject, Body: string; Address: string = 'thibmorozier@gmail.com');
-function ThibStrCopy(Dest, Source: PChar): PChar;
+{$I ThimoUtilsH.inc}
 
 implementation
 
@@ -55,24 +39,17 @@ var
 {$ENDIF}
 begin
   Result := False;
-
-  {$IFDEF WDC}
-    // ShellExecute returns > 32 if successful, or an error value <= 32
-    if ShellExecute(Application.Handle, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL) > 32 then
-      Result := True;
-  {$ENDIF}
-
   {$IFDEF FPC}
   BHelpViewer := THTMLBrowserHelpViewer.Create(nil);
+
   try
     BHelpViewer.FindDefaultBrowser(BrowserPath, BrowserParams);
-
     ParamPos := System.Pos('%s', BrowserParams);
     System.Delete(BrowserParams, ParamPos, 2);
     System.Insert(URL, BrowserParams, ParamPos);
-
     // Start browser
     BrowserProcess := TProcessUTF8.Create(nil);
+
     try
       BrowserProcess.CommandLine := BrowserPath + ' ' + BrowserParams;
       BrowserProcess.Execute;
@@ -83,6 +60,10 @@ begin
   finally
     BHelpViewer.Free;
   end;
+  {$ELSE}
+  // ShellExecute returns > 32 if successful, or an error value <= 32
+  if ShellExecute(Application.Handle, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL) > 32 then
+    Result := True;
   {$ENDIF}
 end;
 
@@ -94,25 +75,75 @@ begin
 end;
 
 
-{
-  FPC style StrCopy.
-  To get rid of depricated message.
-}
-function ThibStrCopy(Dest, Source: PChar): PChar; overload;
-var
-  counter: Int64;
+{ Seems Sqr() is missing in XE8? }
+{$IFDEF VER290}
+function Sqr(aValue: Single): Single;
 begin
-  counter := 0;
-
-  while Source[counter] <> #0 do
-  begin
-    Dest[counter] := Char(Source[counter]);
-    Inc(counter);
-  end;
-
-  { terminate the string }
-  Dest[counter] := #0;
-  ThibStrCopy := Dest;
+  FClearExcept;
+  Result := aValue * aValue;
+  if aValue < 0.0 then FRaiseExcept(feeINVALID);
+  FCheckExcept;
 end;
+
+
+function Sqr(aValue: Double): Double;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  if aValue < 0.0 then FRaiseExcept(feeINVALID);
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Extended): Extended;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  if aValue < 0.0 then FRaiseExcept(feeINVALID);
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Byte): Byte;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Word): Word;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Cardinal): Cardinal;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Integer): Integer;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  if aValue < 0 then FRaiseExcept(feeINVALID);
+  FCheckExcept;
+end;
+
+
+function Sqr(aValue: Int64): Int64;
+begin
+  FClearExcept;
+  Result := aValue * aValue;
+  if aValue < 0 then FRaiseExcept(feeINVALID);
+  FCheckExcept;
+end;
+{$ENDIF}
 
 end.
