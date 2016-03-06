@@ -1,0 +1,49 @@
+Cindy components V7.05
+09/12/2015 - cyDebenuPDFLibrary.pas Added unit with some funcitons to use with DebenuPDFLibrary components
+04/12/2015 - cyJedi.pas Added unit with some funcitons to use with Jedi components
+
+Cindy components V7.04
+27/11/2015 - cyImageEn.pas - Added function ConvertTiffToTIFFG4FAX(SrcFileTIF, DestFileTIF: String; var Modified: Boolean): Boolean;
+24/11/2015 - cyJedi.pas - Added function GetStreamGraphicClass(aStream: TMemoryStream; const ReplaceTMetafileBy: TGraphicClass = Nil): TGraphicClass;
+24/11/2015 - cyJedi.pas - Added function GetBlobFieldGraphicClass(aBlobField: TBlobField; const ReplaceTMetafileBy: TGraphicClass = Nil): TGraphicClass;
+24/11/2015 - cyJedi.pas - Added function AssignBlobFieldToPicture(aBlobField: TBlobField; aPicture: TPicture; const ReplaceTMetafileBy: TGraphicClass = Nil): Boolean;
+
+24/11/2015 - cyJedi.pas - Created unit
+
+Cindy components V7.00
+23/07/2015 - F_QuickRep_PrintDBGrid.pas - Added Memo field print feature. 
+22/07/2015 - F_QuickRep_PrintDBGrid.pas - Optimized graphic field print feature using TcyDBAdvGrid.OnSetContentFieldRendering event
+13/07/2015 - Renamed unit cyImageEn5.pas to cyImageEn.pas
+
+Cindy components V6.84
+30/06/2015 - F_QuickRep_PrintDBGrid.pas - Added graphic field print feature. 
+29/06/2015 - F_QuickRep_PrintDBGrid.pas - Corrected bug on print selected rows with TcyDBAdvGrid. 
+29/06/2015 - F_QuickRep_PrintDBGrid.pas - Corrected bug on print summary if SpanPagesHorizontally = false
+
+Cindy components V6.81
+22/04/2015 - Added F_QuickRep_PrintDBGrid.pas form with print dataset/DBGrid functions
+
+Cindy components V6.80
+22/04/2015 - Added support for Delphi XE8
+
+Cindy components V6.79
+12/02/2015 - cyIndy.pas - Modified ForceDecodeHeader() in order to decode TIdMsg.From.Address
+
+Cindy components V6.76
+10/10/2014 - cyIndy.pas - Modified FTP_GetFiles() and FTP_GetDirectories() when TidFTP.UseMLIS = false
+
+Cindy components V6.75
+24/09/2014 - Added support for Delphi XE7
+30/06/2014 - cyIndy.pas - Made some modifications in order to compile with newest Indy components version
+
+Cindy components V6.73
+29/05/2014 - cyIndy.pas - Added function FTP_GetFiles(AIdFTP: TIdFTP; ADirectory: String; AList: TStrings): Boolean;
+29/05/2014 - cyIndy.pas - Added function FTP_GetDirectories(AIdFTP: TIdFTP; ADirectory: String; AList: TStrings): Boolean;
+29/05/2014 - cyIndy.pas - Added function FTP_DirectoryExists(AIdFTP: TIdFTP; ADirectory: String): Boolean;
+29/05/2014 - cyIndy.pas - Added function FTP_ForceAndChangeDirectories(AIdFTP: TIdFTP; Directories: String): Boolean;
+
+Cindy components V6.70
+11/03/2014 - cyImagenEn4 - Added functions ConvertTiff2Pdf() and SaveToTiff()
+
+Cindy components V6.60
+13/02/2013 - Added third party utilities
