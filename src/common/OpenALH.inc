@@ -52,7 +52,6 @@
 {$ENDIF}
 
 {.$DEFINE ALUT} // Define ALUT to use alut.dll
-{$DEFINE OPENALSOFT} // Define OpenAL Soft lib
 
 interface
 
@@ -62,13 +61,8 @@ uses
 
 const
 {$IFDEF MSWindows}
-  {$IFDEF OPENALSOFT}
-  callibname   = 'soft_oal.dll';
-  calutlibname = 'Alut.dll';
-  {$ELSE !OPENALSOFT}
   callibname   = 'OpenAL32.dll';
   calutlibname = 'Alut.dll';
-  {$ENDIF !OPENALSOFT}
 {$ENDIF MSWindows}
 {$IFDEF Linux}
   callibname   = 'libopenal.so';
