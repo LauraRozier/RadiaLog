@@ -159,13 +159,14 @@
         <DCCReference Include="src\About.pas">
             <Form>aboutForm</Form>
         </DCCReference>
+        <DCCReference Include="src\common\OpenAL.pas"/>
         <DCCReference Include="src\Defaults.pas"/>
         <DCCReference Include="src\common\ThimoUtils.pas"/>
-        <DCCReference Include="src\GeigerHandlers\GeigerMethods.pas"/>
-        <DCCReference Include="src\GeigerHandlers\AudioGeigers.pas"/>
-        <DCCReference Include="src\common\openal.pas"/>
         <DCCReference Include="src\NetworkHandlers\NetworkMethods.pas"/>
+        <DCCReference Include="src\GeigerHandlers\AudioGeigers.pas"/>
         <DCCReference Include="src\GeigerHandlers\SerialGeigers.pas"/>
+        <None Include="src\common\ThimoUtilsH.inc"/>
+        <None Include="src\common\OpenALH.inc"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -194,9 +195,21 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="1">
+                <DeployFile LocalName="src\common\ThimoUtilsH.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Win64\Release\RadiaLog.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>RadiaLog.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="src\common\OpenALH.inc" Configuration="Debug" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -582,13 +595,13 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>
                 <Platform value="Win32">True</Platform>

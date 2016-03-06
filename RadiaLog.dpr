@@ -1,8 +1,10 @@
 program RadiaLog;
-
 {
   This is the main project file of RadiaLog.
   File GUID: [E75C3601-8EAA-45FB-A3BE-77D8E3650A96]
+
+  Contributor(s):
+    Thimo Braker (thibmorozier@gmail.com)
 
   Copyright (C) 2016 Thimo Braker thibmorozier@gmail.com
 
@@ -23,28 +25,20 @@ program RadiaLog;
 }
 
 uses
-  // Mad except
   madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
   madListModules,
-  // VCL
   VCL.Forms,
   VCL.Themes,
   VCL.Styles,
-  // Forms
   Main in 'src\Main.pas' {mainForm},
   About in 'src\About.pas' {aboutForm},
-  // Open AL
-  openal in 'src\common\openal.pas',
-  // Generic
+  OpenAL in 'src\common\OpenAL.pas',
   Defaults in 'src\Defaults.pas',
   ThimoUtils in 'src\common\ThimoUtils.pas',
-  // Networking
   NetworkMethods in 'src\NetworkHandlers\NetworkMethods.pas',
-  // Counters
-  GeigerMethods in 'src\GeigerHandlers\GeigerMethods.pas',
   AudioGeigers in 'src\GeigerHandlers\AudioGeigers.pas',
   SerialGeigers in 'src\GeigerHandlers\SerialGeigers.pas';
 

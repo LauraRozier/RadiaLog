@@ -5421,7 +5421,7 @@ object mainForm: TmainForm
           Left = 15
           Top = 13
           Width = 364
-          Height = 108
+          Height = 132
           Margins.Left = 5
           Margins.Top = 5
           Margins.Right = 5
@@ -5436,7 +5436,7 @@ object mainForm: TmainForm
           TabOrder = 0
           object Label1: TLabel
             Left = 10
-            Top = 23
+            Top = 31
             Width = 72
             Height = 14
             Margins.Left = 10
@@ -5445,35 +5445,35 @@ object mainForm: TmainForm
           end
           object Label5: TLabel
             Left = 10
-            Top = 51
+            Top = 59
             Width = 72
             Height = 14
             Caption = 'Baud Rate: '
           end
           object Label6: TLabel
             Left = 10
-            Top = 79
+            Top = 87
             Width = 44
             Height = 14
             Caption = 'Parity: '
           end
           object Label7: TLabel
             Left = 202
-            Top = 23
+            Top = 31
             Width = 64
             Height = 14
             Caption = 'Data bits: '
           end
           object Label8: TLabel
             Left = 201
-            Top = 51
+            Top = 59
             Width = 65
             Height = 14
             Caption = 'Stop bits: '
           end
           object comPortBox: TComboBox
             Left = 88
-            Top = 20
+            Top = 28
             Width = 99
             Height = 22
             Margins.Top = 20
@@ -5489,7 +5489,7 @@ object mainForm: TmainForm
           end
           object comBaudBox: TComboBox
             Left = 88
-            Top = 48
+            Top = 56
             Width = 99
             Height = 22
             Style = csDropDownList
@@ -5519,7 +5519,7 @@ object mainForm: TmainForm
           end
           object comParityBox: TComboBox
             Left = 88
-            Top = 76
+            Top = 84
             Width = 99
             Height = 22
             Style = csDropDownList
@@ -5542,7 +5542,7 @@ object mainForm: TmainForm
           end
           object comDataBitsBox: TComboBox
             Left = 272
-            Top = 20
+            Top = 28
             Width = 81
             Height = 22
             Style = csDropDownList
@@ -5565,7 +5565,7 @@ object mainForm: TmainForm
           end
           object comStopBitsBox: TComboBox
             Left = 272
-            Top = 48
+            Top = 56
             Width = 81
             Height = 22
             Style = csDropDownList
@@ -5587,9 +5587,9 @@ object mainForm: TmainForm
         end
         object GroupBox2: TGroupBox
           Left = 15
-          Top = 136
+          Top = 159
           Width = 364
-          Height = 133
+          Height = 145
           Caption = 'User Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5600,7 +5600,7 @@ object mainForm: TmainForm
           TabOrder = 1
           object Label9: TLabel
             Left = 10
-            Top = 23
+            Top = 39
             Width = 67
             Height = 14
             Margins.Left = 10
@@ -5609,7 +5609,7 @@ object mainForm: TmainForm
           end
           object Label10: TLabel
             Left = 10
-            Top = 59
+            Top = 75
             Width = 67
             Height = 14
             Margins.Left = 10
@@ -5618,7 +5618,7 @@ object mainForm: TmainForm
           end
           object Label11: TLabel
             Left = 10
-            Top = 94
+            Top = 110
             Width = 105
             Height = 14
             Margins.Left = 10
@@ -5627,7 +5627,7 @@ object mainForm: TmainForm
           end
           object edtUsername: TEdit
             Left = 121
-            Top = 20
+            Top = 36
             Width = 232
             Height = 22
             Font.Charset = DEFAULT_CHARSET
@@ -5641,7 +5641,7 @@ object mainForm: TmainForm
           end
           object edtPassword: TEdit
             Left = 121
-            Top = 56
+            Top = 72
             Width = 232
             Height = 22
             Font.Charset = DEFAULT_CHARSET
@@ -5656,7 +5656,7 @@ object mainForm: TmainForm
           end
           object chkBoxRadmon: TCheckBox
             Left = 121
-            Top = 93
+            Top = 109
             Width = 80
             Height = 17
             Caption = 'Enabled'
@@ -5670,7 +5670,7 @@ object mainForm: TmainForm
           Left = 392
           Top = 13
           Width = 153
-          Height = 108
+          Height = 132
           Caption = 'Conversation'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5680,15 +5680,15 @@ object mainForm: TmainForm
           ParentFont = False
           TabOrder = 2
           object Label13: TLabel
-            Left = 10
-            Top = 28
+            Left = 18
+            Top = 31
             Width = 46
             Height = 14
             Caption = 'Factor: '
           end
           object Label15: TLabel
-            Left = 10
-            Top = 66
+            Left = 18
+            Top = 69
             Width = 65
             Height = 14
             Margins.Left = 10
@@ -5696,8 +5696,8 @@ object mainForm: TmainForm
             Caption = 'Unit type: '
           end
           object chkBoxUnitType: TCheckBox
-            Left = 81
-            Top = 65
+            Left = 89
+            Top = 68
             Width = 64
             Height = 17
             Hint = 'Hint hint'
@@ -5708,8 +5708,8 @@ object mainForm: TmainForm
             OnClick = chkBoxClick
           end
           object edtFactor: TcyEditFloat
-            Left = 62
-            Top = 26
+            Left = 70
+            Top = 29
             Width = 72
             Height = 22
             TabOrder = 1
@@ -5760,9 +5760,9 @@ object mainForm: TmainForm
         end
         object GroupBox5: TGroupBox
           Left = 392
-          Top = 136
+          Top = 159
           Width = 153
-          Height = 249
+          Height = 226
           Caption = 'Capture mode'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5817,9 +5817,9 @@ object mainForm: TmainForm
         end
         object GroupBox6: TGroupBox
           Left = 15
-          Top = 280
+          Top = 320
           Width = 364
-          Height = 105
+          Height = 65
           Caption = 'Audio Settings'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -5835,34 +5835,12 @@ object mainForm: TmainForm
             Height = 14
             Caption = 'Threshold (RMS): '
           end
-          object Label18: TLabel
-            Left = 10
-            Top = 69
-            Width = 86
-            Height = 14
-            Caption = 'Audio device: '
-          end
-          object cbAudioDevice: TComboBox
-            Left = 126
-            Top = 64
-            Width = 227
-            Height = 22
-            Style = csDropDownList
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -12
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            OnChange = edtChange
-          end
           object edtThreshold: TcyEditFloat
             Left = 126
             Top = 24
             Width = 99
             Height = 22
-            TabOrder = 1
+            TabOrder = 0
             Text = '0.03'
             OnChange = edtChange
             Precision = 4
@@ -5904,7 +5882,7 @@ object mainForm: TmainForm
         object cCPMEdit: TRichEdit
           Left = 10
           Top = 29
-          Width = 752
+          Width = 736
           Height = 210
           Margins.Left = 10
           Margins.Right = 10
@@ -5926,7 +5904,7 @@ object mainForm: TmainForm
         object cErrorEdit: TRichEdit
           Left = 10
           Top = 274
-          Width = 752
+          Width = 736
           Height = 227
           Margins.Left = 10
           Margins.Right = 10

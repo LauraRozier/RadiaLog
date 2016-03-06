@@ -1,5 +1,4 @@
 ﻿unit Main;
-
 {
   This is the main form unit file of RadiaLog.
   File GUID: [EA9ED897-741D-40AA-B97A-319538BA02E2]
@@ -40,6 +39,8 @@ uses
   // Cindy units
   cyBaseLed, cyLed, cyBaseMeasure, cyCustomGauge, cySimpleGauge, cyEdit,
   cyEditFloat,
+  // OpenAL
+  OpenAL,
   // Own units
   Defaults, About, AudioGeigers, SerialGeigers;
 
@@ -91,8 +92,6 @@ type
           GroupBox6: TGroupBox;
             Label14: TLabel;
             edtThreshold: TcyEditFloat;
-            Label18: TLabel;
-            cbAudioDevice: TComboBox;
       tabLog: TTabSheet;
         ScrollBox3: TScrollBox;
           cCPMEdit: TRichEdit;
@@ -126,6 +125,9 @@ type
     fNetIOControl: TNetIO;
     // Timer related
     fThreadReapTimer: TTimer;
+    // Conversion
+    fConvertFactor: Double;
+    fConvertmR:     Boolean;
     // Modes
     fAudioMode:    Boolean;
     fMyGeigerMode: Boolean;
@@ -134,10 +136,9 @@ type
     // Misc
     fSettings:    TINIFile;
     fSafeToWrite: Boolean;
+    fUploadRM:    Boolean;
 	  Saved8087CW:  Word;
     procedure updateDosiLbl(aCPM: Integer);
-  public
-    audioDevs: TStringList;
   end;
 
 var
@@ -151,7 +152,6 @@ procedure TmainForm.FormCreate(Sender: TObject);
 var
   i: integer;
   hComm: THandle;
-  AudioEnumerator: TAudioEnum;
 begin
   // Set initial values
   {$WARN SYMBOL_PLATFORM OFF}
@@ -249,14 +249,6 @@ begin
   rbNetIO.Checked          := fNetIOMode;
   rbAudio.Checked          := fAudioMode;
 
-  // Fill the audio source combobox
-  audioDevs       := TStringList.Create;
-  AudioEnumerator := TAudioEnum.Create;
-  AudioEnumerator.GetAudioEnum(audioDevs);
-  cbAudioDevice.Items.AddStrings(audioDevs);
-  cbAudioDevice.ItemIndex := 0;
-  FreeAndNil(AudioEnumerator);
-
   fThreadReapTimer          := TTimer.Create(nil);
   fThreadReapTimer.Enabled  := False;
   fThreadReapTimer.OnTimer  := ReapTimerTick;
@@ -267,7 +259,10 @@ end;
 procedure TmainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if fAudioMode and not (Pointer(TObject(fAudioControl)) = nil) then
+  begin
     fAudioControl.Terminate;
+    FreeAndNil(fAudioControl);
+  end;
 
   Set8087CW(Saved8087CW); // Default value (with exceptions) is $1372.
 
@@ -431,12 +426,7 @@ begin
 
     if fAudioMode then
     begin
-      if cbAudioDevice.itemindex = 0 then
-        fAudioControl := TAudioGeiger.Create(fAudioThreshold, True)
-      else
-        fAudioControl := TAudioGeiger.Create(fAudioThreshold,
-                                             cbAudioDevice.Items[cbAudioDevice.itemindex],
-                                             True);
+      fAudioControl := TAudioGeiger.Create(fAudioThreshold, True);
 
       fAudioControl.ConvertFactor := fConvertFactor;
       fAudioControl.ConvertmR     := fConvertmR;
@@ -456,8 +446,7 @@ begin
                                      fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
-                                     fComStopBits,
-                                     True);
+                                     fComStopBits);
 
       fMGControl.ConvertFactor := fConvertFactor;
       fMGControl.ConvertmR     := fConvertmR;
@@ -468,7 +457,6 @@ begin
       fMGControl.CPMChart      := cCPMChart;
       fMGControl.CPMLog        := cCPMEdit;
       fMGControl.ErrorLog      := cErrorEdit;
-      fMGControl.Start;
     end;
 
     if fGMCMode then
@@ -477,8 +465,7 @@ begin
                                  fComBaud,
                                  TParity(fComParity),
                                  fComDataBits,
-                                 fComStopBits,
-                                 True);
+                                 fComStopBits);
 
       fGMCControl.ConvertFactor := fConvertFactor;
       fGMCControl.ConvertmR     := fConvertmR;
@@ -489,7 +476,6 @@ begin
       fGMCControl.CPMChart      := cCPMChart;
       fGMCControl.CPMLog        := cCPMEdit;
       fGMCControl.ErrorLog      := cErrorEdit;
-      fGMCControl.Start;
     end;
 
     if fNetIOMode then
@@ -498,8 +484,7 @@ begin
                                      fComBaud,
                                      TParity(fComParity),
                                      fComDataBits,
-                                     fComStopBits,
-                                     True);
+                                     fComStopBits);
 
       fNetIOControl.ConvertFactor := fConvertFactor;
       fNetIOControl.ConvertmR     := fConvertmR;
@@ -510,7 +495,6 @@ begin
       fNetIOControl.CPMChart      := cCPMChart;
       fNetIOControl.CPMLog        := cCPMEdit;
       fNetIOControl.ErrorLog      := cErrorEdit;
-      fNetIOControl.Start;
     end;
 
     comPortBox.Enabled     := False;
@@ -523,7 +507,6 @@ begin
     rbMyGeiger.Enabled     := False;
     rbGMC.Enabled          := False;
     rbNetIO.Enabled        := False;
-    cbAudioDevice.Enabled  := False;
   end else
     fThreadReapTimer.Enabled := True;
 end;
@@ -535,7 +518,10 @@ begin
   fThreadReapTimer.Enabled := False;
 
   if fAudioMode then
+  begin
     fAudioControl.Terminate;
+    FreeAndNil(fAudioControl);
+  end;
     // TerminateThread(fAudioControl.Handle, 1);
 
   if fMyGeigerMode then
@@ -547,12 +533,6 @@ begin
   if fNetIOMode then
     FreeAndNil(fNetIOControl);
 
-  fCPMBar                := nil;
-  fLblCPM                := nil;
-  fLblDosi               := nil;
-  fCPMChart              := nil;
-  fCPMLog                := nil;
-  fErrorLog              := nil;
   comPortBox.Enabled     := True;
   comBaudBox.Enabled     := True;
   comParityBox.Enabled   := True;
@@ -563,7 +543,6 @@ begin
   rbMyGeiger.Enabled     := True;
   rbGMC.Enabled          := True;
   rbNetIO.Enabled        := True;
-  cbAudioDevice.Enabled  := True;
 end;
 
 end.
