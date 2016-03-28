@@ -348,7 +348,6 @@ end;
 
 procedure TGMC.TimerTick(Sender: TObject);
 var
-  I: Integer;
   DateTime: string;
 begin
   fBufferTimer.Enabled := False;
