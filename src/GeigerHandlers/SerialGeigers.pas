@@ -100,10 +100,14 @@ type
 
   TGMC = class(TSerialBase)
     private
+      GetDataTimer: TTimer;
+      StartingUp, StepTwo: Boolean;
       procedure TimerTick(Sender: TObject);
+      procedure GetData(Sender: TObject);
     public
       constructor Create(aPort, aBaud: Integer; aParity: TParity;
                          aDataBits, aStopBits: Word); overload;
+      destructor Destroy; override;
       property ConvertFactor;
       property ConvertmR;
       property UploadRM;
@@ -202,7 +206,7 @@ begin
       end;
 
   fCPMBar.Position := aCPM;
-  fLblCPM.Caption   := IntToStr(aCPM);
+  fLblCPM.Caption  := IntToStr(aCPM);
 end;
 
 
@@ -312,6 +316,7 @@ constructor TGMC.Create(aPort, aBaud: Integer; aParity: TParity;
                         aDataBits, aStopBits: Word);
 begin
   inherited Create(aPort, aBaud, aParity, aDataBits, aStopBits);
+  StartingUp              := True;
   fComPort.OnTriggerAvail := triggerAvail;
   fComPort.Open           := False;
   fComPort.DeviceLayer    := dlWin32;
@@ -324,6 +329,20 @@ begin
   fComPort.InitPort;
   fComPort.Open           := True;
   fBufferTimer.OnTimer    := TimerTick;
+  GetDataTimer            := TTimer.Create(nil);
+  GetDataTimer.Enabled    := False;
+  GetDataTimer.Interval   := 30000;
+  GetDataTimer.OnTimer    := GetData;
+  GetDataTimer.Enabled    := True;
+  fComPort.PutString('<GETVER>>');
+end;
+
+
+destructor TGMC.Destroy;
+begin
+  GetDataTimer.Enabled := False;
+  FreeAndNil(GetDataTimer);
+  inherited;
 end;
 
 
@@ -336,20 +355,29 @@ begin
   fSumCPM              := 0;
   fBufferString        := '';
 
-  for I := 0 to Length(fBuffer) - 1 do
+  if StartingUp then
   begin
-    if fBuffer[I] = #7 then
+    if Length(fBuffer) > 0 then
     begin
-      MessageBeep(0);
-      Exit;
-    end;
+      fComPort.PutString('<HEARTBEAT0>>');
+      StepTwo := True;
+    end else
+      raise Exception.Create('Device is not GMC compatible!');
 
-    if fBuffer[I] in [#32..#126] then // Only accept alpha-numeric Ansi values
-      fBufferString := fBufferString + fBuffer[I];
-
-    if fBuffer[I] in [#48..#57] then
-      fSumCPM := (fSumCPM * 10) + (Ord(fBuffer[I]) - 48);
+    StartingUp := False;
+    Exit;
   end;
+
+  if StepTwo then
+  begin
+    StepTwo := False;
+    Exit;
+  end;
+
+  if Length(fBuffer) = 2 then
+    fSumCPM := ord(fBuffer[0]) * 256 + ord(fBuffer[1])
+  else
+    raise Exception.Create('Unexpected reply.');
 
   SetLength(fBuffer, 0);
   DateTime := FormatDateTime('DD-MM-YYYY HH:MM:SS', Now);
@@ -362,6 +390,12 @@ begin
 
   if fUploadRM then
       fNetworkHandler.UploadData(fSumCPM, fErrorLog);
+end;
+
+
+procedure TGMC.GetData(Sender: TObject);
+begin
+  fComPort.PutString('<GETCPM>>');
 end;
 
 
