@@ -30,7 +30,7 @@ uses
   Generics.Collections;
 
 const
-  VERSION = '0.5';
+  VERSION = '0.6';
   VERSION_PREFIX = '- Version: ';
   VERSION_SUFFIX = ' Alpha';
   RADMON_HOST = 'www.radmon.org';
